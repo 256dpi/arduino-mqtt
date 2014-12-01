@@ -9,6 +9,7 @@ void messageArrived(MQTT::MessageData& messageData) {
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->network.setClient(&_client);
+  //TODO: find a way to use dynamic allocation
   this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE>(this->network);
   this->hostname = _hostname;
   this->port = _port;
