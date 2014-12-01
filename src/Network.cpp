@@ -26,7 +26,7 @@ int Network::read(unsigned char* buffer, int len, int timeout) {
 	}
     
 	if (client->available() >= len) {
-		 return client->readBytes((char*)buffer, len);
+		return client->readBytes((char*)buffer, len);;
 	}
 			
 	return -1;

@@ -1,5 +1,7 @@
-#ifndef MQTTClient_h
-#define MQTTClient_h
+#ifndef MQTT_CLIENT_H
+#define MQTT_CLIENT_H
+
+#define MQTT_BUFFER_SIZE 512
 
 #define MQTTCLIENT_QOS1 0
 #define MQTTCLIENT_QOS2 0
@@ -16,7 +18,7 @@ void messageReceived(String topic, String payload);
 class MQTTClient {
 private:
   Network network;
-  MQTT::Client<Network, Timer> * client;
+  MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE> * client;
   const char * hostname;
   int port;
 public:

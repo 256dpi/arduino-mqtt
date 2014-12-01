@@ -6,11 +6,15 @@ YunClient net;
 MQTTClient client("connect.shiftr.io", 1883, net);
 
 void setup() {
-  Serial.begin(9600);
   Bridge.begin();
+  Serial.begin(9600);
+  Serial.println("connecting...");
   if (client.connect("arduino", "demo", "demo")) {
+    Serial.println("connected!");
     client.publish("/topic", "Hello world!");
     client.subscribe("/another/topic");
+  } else {
+    Serial.println("not connected!");
   }
 }
 

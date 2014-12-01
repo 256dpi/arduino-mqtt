@@ -9,7 +9,7 @@ void messageArrived(MQTT::MessageData& messageData) {
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->network.setClient(&_client);
-  this->client = new MQTT::Client<Network, Timer>(this->network);
+  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE>(this->network);
   this->hostname = _hostname;
   this->port = _port;
 }
@@ -23,15 +23,10 @@ boolean MQTTClient::connect(const char * clientId, const char * _username, const
     return false;
   }
   
-  MQTTString username;
-  username.cstring = (char*)_username;
-  MQTTString password;
-  password.cstring = (char*)_password;
-  
   MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-  data.MQTTVersion = 3;
-  data.username = username;
-  data.password = password;
+  data.MQTTVersion = 4;
+  data.username.cstring = (char*)_username;
+  data.password.cstring = (char*)_password;
   data.clientID.cstring = (char*)clientId;
   return this->client->connect(data) == 0;
 }
