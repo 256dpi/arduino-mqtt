@@ -13,12 +13,8 @@
 #include <YunClient.h>
 #include <MQTTClient.h>
 
-void callback(String topic, String payload) {
-  Serial.println(String("incoming: ") + payload);
-}
-
 YunClient net;
-MQTTClient client("connect.shiftr.io", 1883, callback, net);
+MQTTClient client("connect.shiftr.io", 1883, net);
 
 void setup() {
   Serial.begin(9600);
@@ -31,5 +27,9 @@ void setup() {
 
 void loop() {
   client.loop();
+}
+
+void messageReceived(String topic, String payload) {
+  Serial.println(String("incoming: ") + payload);
 }
 ```
