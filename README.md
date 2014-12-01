@@ -34,6 +34,8 @@ void loop() {
 }
 
 void messageReceived(String topic, char * payload, unsigned int length) {
-  Serial.println(String("incoming: ") + payload);
+  Serial.print("incomming: ");
+  Serial.write(payload, length);
+  Serial.println();
 }
 ```
