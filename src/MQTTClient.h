@@ -13,7 +13,7 @@
 #include "Network.h"
 #include "Timer.h"
 
-void messageReceived(String topic, String payload);
+void messageReceived(String topic, char * payload, unsigned int length);
 
 class MQTTClient {
 private:

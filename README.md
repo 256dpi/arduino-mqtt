@@ -33,7 +33,7 @@ void loop() {
   client.loop();
 }
 
-void messageReceived(String topic, String payload) {
+void messageReceived(String topic, char * payload, unsigned int length) {
   Serial.println(String("incoming: ") + payload);
 }
 ```

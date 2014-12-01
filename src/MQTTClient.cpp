@@ -3,8 +3,7 @@
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
   char * topic = messageData.topicName.cstring;
-  char * payload = (char*)message.payload;
-  messageReceived(String(topic), String(payload));
+  messageReceived(String(topic), (char*)message.payload, message.payloadlen);
 }
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
