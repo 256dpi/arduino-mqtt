@@ -2,7 +2,7 @@
 
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
-  char * topic = messageData.topicName.cstring;
+  char * topic = messageData.topicName.lenstring.data;
   messageReceived(String(topic), (char*)message.payload, message.payloadlen);
 }
 
