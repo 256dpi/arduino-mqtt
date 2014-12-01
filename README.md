@@ -24,6 +24,7 @@ void setup() {
     Serial.println("connected!");
     client.publish("/topic", "Hello world!");
     client.subscribe("/another/topic");
+    // client.unsubscribe("/hello");
   } else {
     Serial.println("not connected!");
   }
@@ -35,6 +36,8 @@ void loop() {
 
 void messageReceived(String topic, char * payload, unsigned int length) {
   Serial.print("incomming: ");
+  Serial.print(topic);
+  Serial.print(" - ");
   Serial.write(payload, length);
   Serial.println();
 }

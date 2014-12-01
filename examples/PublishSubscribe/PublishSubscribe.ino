@@ -13,6 +13,7 @@ void setup() {
     Serial.println("connected!");
     client.publish("/topic", "Hello world!");
     client.subscribe("/another/topic");
+    // client.unsubscribe("/hello");
   } else {
     Serial.println("not connected!");
   }
