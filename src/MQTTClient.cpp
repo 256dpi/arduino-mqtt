@@ -15,7 +15,7 @@ MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
 }
 
 boolean MQTTClient::connect(const char * clientId) {
-  this->connect(clientId, "", "");
+  return this->connect(clientId, "", "");
 }
 
 boolean MQTTClient::connect(const char * clientId, const char * _username, const char * _password) {
@@ -33,7 +33,14 @@ boolean MQTTClient::connect(const char * clientId, const char * _username, const
   data.username = username;
   data.password = password;
   data.clientID.cstring = (char*)clientId;
-  return client->connect(data) == 0;
+  return this->client->connect(data) == 0;
+}
+
+boolean MQTTClient::publish(const char * topic, String payload) {
+  char * buf = (char*)malloc(payload.length());
+  payload.toCharArray(buf, payload.length());
+  return this->publish(topic, buf);
+  free(buf);
 }
 
 boolean MQTTClient::publish(const char * topic, const char * payload) {
