@@ -18,24 +18,23 @@ boolean MQTTClient::connect(const char * clientId) {
   return this->connect(clientId, "", "");
 }
 
-boolean MQTTClient::connect(const char * clientId, const char * _username, const char * _password) {
+boolean MQTTClient::connect(const char * clientId, const char * username, const char * password) {
   if(!this->network.connect((char*)this->hostname, this->port)) {
     return false;
   }
   
   MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-  data.MQTTVersion = 4;
-  data.username.cstring = (char*)_username;
-  data.password.cstring = (char*)_password;
   data.clientID.cstring = (char*)clientId;
+  if(username && password) {
+    data.username.cstring = (char*)username;
+    data.password.cstring = (char*)password;
+  }
+  
   return this->client->connect(data) == 0;
 }
 
 boolean MQTTClient::publish(const char * topic, String payload) {
-  char * buf = (char*)malloc(payload.length());
-  payload.toCharArray(buf, payload.length());
-  return this->publish(topic, buf);
-  free(buf);
+  return this->publish(topic, payload.c_str());
 }
 
 boolean MQTTClient::publish(const char * topic, const char * payload) {
