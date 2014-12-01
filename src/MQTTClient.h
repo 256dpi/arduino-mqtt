@@ -10,7 +10,7 @@
 #include "Network.h"
 #include "Timer.h"
 
-typedef void(*cb)(String topic, String payload);
+void messageReceived(String topic, String payload);
 
 class MQTTClient {
 private:
@@ -19,7 +19,7 @@ private:
   const char * hostname;
   int port;
 public:
-  MQTTClient(const char * hostname, int port, cb callback, Client& client);
+  MQTTClient(const char * hostname, int port, Client& client);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   boolean publish(const char * topic, const char * payload);

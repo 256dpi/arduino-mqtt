@@ -1,20 +1,17 @@
 #include <MQTTClient.h>
 
-static cb globalCallback;
-
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
   char * topic = messageData.topicName.cstring;
   char * payload = (char*)message.payload;
-  globalCallback(String(topic), String(payload));
+  messageReceived(String(topic), String(payload));
 }
 
-MQTTClient::MQTTClient(const char * _hostname, int _port, cb _callback, Client& _client) {
+MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->network.setClient(&_client);
   this->client = new MQTT::Client<Network, Timer>(this->network);
   this->hostname = _hostname;
   this->port = _port;
-  globalCallback = _callback;
 }
 
 boolean MQTTClient::connect(const char * clientId) {
