@@ -8,7 +8,7 @@
 
 ## Example
 
-```cplusplus
+```c++
 #include <Bridge.h>
 #include <YunClient.h>
 #include <MQTTClient.h>
