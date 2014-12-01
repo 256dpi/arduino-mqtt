@@ -1,6 +1,6 @@
 # arduino-mqtt
 
-**paho mqtt library wrapper for processing**
+**paho mqtt library wrapper for arduino**
 
 ## Download
 
