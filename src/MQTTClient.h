@@ -1,6 +1,7 @@
 #ifndef MQTTClient_h
 #define MQTTClient_h
 
+#define MQTTCLIENT_QOS1 0
 #define MQTTCLIENT_QOS2 0
 
 #include <Arduino.h>
