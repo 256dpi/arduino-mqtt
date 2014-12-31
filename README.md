@@ -4,7 +4,7 @@
 
 ## Download
 
-[Download version 0.1 of the library.](https://github.com/256dpi/arduino-mqtt/archive/master.zip)
+[Download version 1.0 of the library.](https://github.com/256dpi/arduino-mqtt/archive/master.zip)
 
 ## Example
 
