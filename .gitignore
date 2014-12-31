@@ -1,1 +1,4 @@
 .DS_Store
+build/
+node_modules/
+mqtt.zip

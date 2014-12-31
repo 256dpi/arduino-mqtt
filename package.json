@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "devDependencies": {
+    "del": "^1.1.1",
+    "gulp": "^3.8.10",
+    "gulp-rimraf": "^0.1.1",
+    "gulp-zip": "^2.0.2"
+  }
+}
