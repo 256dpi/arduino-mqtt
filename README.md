@@ -16,15 +16,16 @@
 YunClient net;
 MQTTClient client("connect.shiftr.io", 1883, net);
 
+unsigned long lastMillis = 0;
+
 void setup() {
   Bridge.begin();
   Serial.begin(9600);
   Serial.println("connecting...");
   if (client.connect("arduino", "demo", "demo")) {
     Serial.println("connected!");
-    client.publish("/topic", "Hello world!");
     client.subscribe("/another/topic");
-    // client.unsubscribe("/hello");
+    // client.unsubscribe("/another/topic");
   } else {
     Serial.println("not connected!");
   }
@@ -32,6 +33,11 @@ void setup() {
 
 void loop() {
   client.loop();
+  // publish message roughly every second
+  if(millis() - lastMillis > 1000) {
+    lastMillis = millis();
+    client.publish("/topic", "Hello world!");
+  }
 }
 
 void messageReceived(String topic, char * payload, unsigned int length) {
