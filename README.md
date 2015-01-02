@@ -2,7 +2,7 @@
 
 **paho mqtt library wrapper for arduino**
 
-This library bundles the [Embedded MQTT C/C++ Client library of the eclipse paho project](https://eclipse.org/paho/clients/c/embedded/) and adds a thin wrapper to get an Arduino like API.
+This library bundles the [Embedded MQTT C/C++ Client](https://eclipse.org/paho/clients/c/embedded/) library of the eclipse paho project and adds a thin wrapper to get an Arduino like API.
 
 The first release of the library only supports QoS0 and the basic features to get going. In the next releases more of the features will be available.
 
