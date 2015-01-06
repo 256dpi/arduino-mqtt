@@ -13,23 +13,8 @@ int Network::connect(char* hostname, int port) {
 }
 
 int Network::read(unsigned char* buffer, int len, int timeout) {
-  int interval = 10;  // all times are in milliseconds
-	int total = 0;
-
-	if (timeout < 30) {
-	  interval = 2;
-	}
-    
-	while (client->available() < len && total < timeout) {
-		delay(interval);
-		total += interval;
-	}
-    
-	if (client->available() >= len) {
-		return client->readBytes((char*)buffer, len);
-	}
-			
-	return -1;
+	this->client->setTimeout(timeout);
+	return this->client->readBytes(buffer, len);
 }
     
 int Network::write(unsigned char* buffer, int len, int timeout) {
