@@ -10,7 +10,7 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 ## Download
 
-[Download version 1.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.0/mqtt.zip)
+[Download version 1.1 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.1/mqtt.zip)
 
 ## Example
 
