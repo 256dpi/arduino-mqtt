@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include "Timer.h"
 
-Timer::Timer() {  
+Timer::Timer() {
   this->interval_end_ms = 0L;
 }
 
 Timer::Timer(int ms) {
-  countdown_ms(ms);   
+  countdown_ms(ms);
 }
 
 bool Timer::expired() {

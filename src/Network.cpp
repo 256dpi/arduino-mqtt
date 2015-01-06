@@ -1,6 +1,3 @@
-#ifndef NETWORK_H
-#define NETWORK_H
-
 #include <Arduino.h>
 #include "Network.h"
 
@@ -13,12 +10,11 @@ int Network::connect(char* hostname, int port) {
 }
 
 int Network::read(unsigned char* buffer, int len, int timeout) {
-	// immediately return if there is nothing to read
 	if(this->client->available() > 0) {
 		this->client->setTimeout(timeout);
 		return this->client->readBytes(buffer, len);
 	} else {
-		return 0;
+		return 0; // immediately return if there is nothing to read
 	}
 }
     
@@ -31,5 +27,3 @@ int Network::disconnect() {
   client->stop();
   return 0;
 }
-
-#endif
