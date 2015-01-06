@@ -12,6 +12,10 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 [Download version 1.1 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.1/mqtt.zip)
 
+## Compatibility
+
+This library has been only tested on the **Arduino Yùn** yet. Other boards and shields should work if they properly extend the Client API.
+
 ## Example
 
 ```c++
