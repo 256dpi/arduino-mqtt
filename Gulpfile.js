@@ -16,12 +16,13 @@ gulp.task('thin', ['copy'], function(cb){
     './build/update.sh',
     './build/Gulpfile.js',
     './build/package.json',
-    './build/node_modules'
+    './build/node_modules',
+    './build/mqtt.zip'
   ], cb);
 })
 
 gulp.task('compress', ['thin'], function () {
-  return gulp.src('build/*')
+  return gulp.src('build/**/*')
     .pipe(zip('mqtt.zip'))
     .pipe(gulp.dest('./'));
 });
