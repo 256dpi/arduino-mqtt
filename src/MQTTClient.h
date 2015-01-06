@@ -9,7 +9,7 @@
 #include <Arduino.h>
 #include <Client.h>
 #include <Stream.h>
-#include <lib/MQTTClient.h>
+#include "lib/MQTTClient.h"
 #include "Network.h"
 #include "Timer.h"
 
