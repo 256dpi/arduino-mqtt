@@ -13,8 +13,13 @@ int Network::connect(char* hostname, int port) {
 }
 
 int Network::read(unsigned char* buffer, int len, int timeout) {
-	this->client->setTimeout(timeout);
-	return this->client->readBytes(buffer, len);
+	// immediately return if there is nothing to read
+	if(this->client->available() > 0) {
+		this->client->setTimeout(timeout);
+		return this->client->readBytes(buffer, len);
+	} else {
+		return 0;
+	}
 }
     
 int Network::write(unsigned char* buffer, int len, int timeout) {

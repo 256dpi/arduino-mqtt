@@ -70,7 +70,7 @@ boolean MQTTClient::unsubscribe(const char * topic) {
 }
   
 boolean MQTTClient::loop() {
-  this->client->yield(10);
+  this->client->yield() == 0;
 }
 
 boolean MQTTClient::connected() {
