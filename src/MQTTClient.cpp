@@ -10,8 +10,9 @@ void messageArrived(MQTT::MessageData& messageData) {
 }
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
-  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 1>(this->network);
+  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
+  this->client->setDefaultMessageHandler(messageArrived);
   this->hostname = _hostname;
   this->port = _port;
 }
@@ -62,7 +63,7 @@ boolean MQTTClient::subscribe(String topic) {
 }
 
 boolean MQTTClient::subscribe(const char * topic) {
-  return client->subscribe(topic, MQTT::QOS0, messageArrived) == 0;
+  return client->subscribe(topic, MQTT::QOS0, NULL) == 0;
 }
 
 boolean MQTTClient::unsubscribe(String topic) {

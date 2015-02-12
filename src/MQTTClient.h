@@ -20,7 +20,7 @@ void messageReceived(String topic, char * payload, unsigned int length);
 class MQTTClient {
 private:
   Network network;
-  MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 1> * client;
+  MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0> * client;
   const char * hostname;
   int port;
 public:
