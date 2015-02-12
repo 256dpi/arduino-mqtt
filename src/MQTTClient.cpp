@@ -35,6 +35,10 @@ boolean MQTTClient::connect(const char * clientId, const char * username, const 
   return this->client->connect(data) == 0;
 }
 
+boolean MQTTClient::publish(String topic) {
+  return this->publish(topic.c_str(), "");
+}
+
 boolean MQTTClient::publish(String topic, String payload) {
   return this->publish(topic.c_str(), payload.c_str());
 }
