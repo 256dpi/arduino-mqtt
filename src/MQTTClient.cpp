@@ -4,13 +4,13 @@ void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
   int len = messageData.topicName.lenstring.len; 
   char topic[len+1];
-  memcpy(topic, messageData.topicName.lenstring.data, len);
+  memcpy(topic, messageData.topicName.lenstring.data, (size_t)len);
   topic[len] = '\0';
-  messageReceived(String(topic), (char*)message.payload, message.payloadlen);
+  messageReceived(String(topic), (char*)message.payload, (unsigned int)message.payloadlen);
 }
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
-  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE>(this->network);
+  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 1>(this->network);
   this->network.setClient(&_client);
   this->hostname = _hostname;
   this->port = _port;
@@ -70,7 +70,7 @@ boolean MQTTClient::unsubscribe(const char * topic) {
 }
   
 boolean MQTTClient::loop() {
-  this->client->yield() == 0;
+  return this->client->yield() == 0;
 }
 
 boolean MQTTClient::connected() {

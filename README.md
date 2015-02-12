@@ -56,3 +56,10 @@ void messageReceived(String topic, char * payload, unsigned int length) {
   Serial.println();
 }
 ```
+
+## Configuration
+
+```c++
+// this buffer gets allocated two times to hold the outgoing and incomming message
+#define MQTT_BUFFER_SIZE 64 // default 128
+```
