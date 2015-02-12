@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corp.
+ * Copyright (c) 2014, 2015 IBM Corp.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@
  *
  * Contributors:
  *    Ian Craggs - initial API and implementation and/or initial documentation
+ *    Ian Craggs - fix for bug 458512 - QoS 2 messages
  *******************************************************************************/
 
 #if !defined(MQTTCLIENT_H)
@@ -88,7 +89,7 @@ private:
  * @param Network a network class which supports send, receive
  * @param Timer a timer class with the methods:
  */
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE = 50, int MAX_MESSAGE_HANDLERS = 5>
+template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE = 100, int MAX_MESSAGE_HANDLERS = 5>
 class Client
 {
 
@@ -239,6 +240,7 @@ private:
     unsigned short incomingQoS2messages[MAX_INCOMING_QOS2_MESSAGES];
     bool isQoS2msgidFree(unsigned short id);
     bool useQoS2msgid(unsigned short id);
+	void freeQoS2msgid(unsigned short id);
 #endif
 
 };
@@ -295,6 +297,20 @@ bool MQTT::Client<Network, Timer, a, b>::useQoS2msgid(unsigned short id)
         }
     }
     return false;
+}
+
+
+template<class Network, class Timer, int a, int b>
+void MQTT::Client<Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
+{
+    for (int i = 0; i < MAX_INCOMING_QOS2_MESSAGES; ++i)
+    {
+        if (incomingQoS2messages[i] == id)
+        {
+            incomingQoS2messages[i] = 0;
+            return;
+        }
+    }
 }
 #endif
 
@@ -554,17 +570,22 @@ int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::cycle(Timer& timer)
 		}
 #if MQTTCLIENT_QOS2
         case PUBREC:
+		case PUBREL:
             unsigned short mypacketid;
             unsigned char dup, type;
             if (MQTTDeserialize_ack(&type, &dup, &mypacketid, readbuf, MAX_MQTT_PACKET_SIZE) != 1)
                 rc = FAILURE;
-            else if ((len = MQTTSerialize_ack(sendbuf, MAX_MQTT_PACKET_SIZE, PUBREL, 0, mypacketid)) <= 0)
+            else if ((len = MQTTSerialize_ack(sendbuf, MAX_MQTT_PACKET_SIZE, 
+						(packet_type == PUBREC) ? PUBREL : PUBCOMP, 0, mypacketid)) <= 0)
                 rc = FAILURE;
             else if ((rc = sendPacket(len, timer)) != SUCCESS) // send the PUBREL packet
                 rc = FAILURE; // there was a problem
             if (rc == FAILURE)
                 goto exit; // there was a problem
+			if (packet_type == PUBREL)
+				freeQoS2msgid(mypacketid);
             break;
+			
         case PUBCOMP:
             break;
 #endif
