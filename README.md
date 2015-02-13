@@ -48,11 +48,11 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, char * payload, unsigned int length) {
+void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
   Serial.print("incomming: ");
   Serial.print(topic);
   Serial.print(" - ");
-  Serial.write(payload, length);
+  Serial.print(payload);
   Serial.println();
 }
 ```

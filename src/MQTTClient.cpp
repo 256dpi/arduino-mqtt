@@ -2,11 +2,17 @@
 
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
+
+  // null terminate topic to create String object
   int len = messageData.topicName.lenstring.len; 
   char topic[len+1];
   memcpy(topic, messageData.topicName.lenstring.data, (size_t)len);
   topic[len] = '\0';
-  messageReceived(String(topic), (char*)message.payload, (unsigned int)message.payloadlen);
+
+  // null terminate payload
+  char * payload = (char *)message.payload;
+  payload[message.payloadlen] = '\0';
+  messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 }
 
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
