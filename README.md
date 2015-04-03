@@ -8,7 +8,7 @@ The first release of the library only supports QoS0 and the basic features to ge
 
 This library is an alternative to the [pubsubclient](https://github.com/knolleary/pubsubclient) library by [knolleary](https://github.com/knolleary) which only supports QoS0 and uses a custom protocol implementation.
 
-[Download version 1.3 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.3/mqtt.zip)
+[Download version 1.3.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.3.0/mqtt.zip)
 
 ## Compatibility
 
