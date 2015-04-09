@@ -30,7 +30,7 @@ void YunMQTTInstall() {
   sendCommand("Install python SSL support", "opkg install python-openssl");
   sendCommand("Install 'pip'", "easy_install pip");
   sendCommand("Install 'paho-mqtt'", "pip install paho-mqtt");
-  sendCommand("Download script", "wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-client/yun/client.py --no-check-certificate -o /usr/client.py");
+  sendCommand("Download script", "wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-client/yun/client.py --no-check-certificate -O /usr/client.py");
 
   Serial.println("Installation finished!");
 }
