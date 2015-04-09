@@ -1,45 +1,40 @@
 #include "YunMQTTClient.h"
 
-//void messageArrived(MQTT::MessageData& messageData) {
-//  MQTT::Message &message = messageData.message;
-//
-//  // null terminate topic to create String object
-//  int len = messageData.topicName.lenstring.len;
-//  char topic[len+1];
-//  memcpy(topic, messageData.topicName.lenstring.data, (size_t)len);
-//  topic[len] = '\0';
-//
-//  // null terminate payload
-//  char * payload = (char *)message.payload;
-//  payload[message.payloadlen] = '\0';
-//  messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
-//}
-
 YunMQTTClient::YunMQTTClient(const char * _hostname, int _port) {
-//  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
-//  this->network.setClient(&_client);
-//  this->client->setDefaultMessageHandler(messageArrived);
-//  this->hostname = _hostname;
-//  this->port = _port;
+  this->hostname = _hostname;
+  this->port = _port;
 }
 
 boolean YunMQTTClient::connect(const char * clientId) {
-//  return this->connect(clientId, "", "");
+  return this->connect(clientId, "", "");
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
-//  if(!this->network.connect((char*)this->hostname, this->port)) {
-//    return false;
-//  }
-//
-//  MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-//  data.clientID.cstring = (char*)clientId;
-//  if(username && password) {
-//    data.username.cstring = (char*)username;
-//    data.password.cstring = (char*)password;
-//  }
-//
-//  return this->client->connect(data) == 0;
+  this->process.begin("python");
+  this->process.addParameter("-u");
+  this->process.addParameter("/usr/client.py");
+  this->process.runAsynchronously();
+  this->process.setTimeout(10000);
+
+  // wait for script to launch
+  this->process.readStringUntil('\n');
+
+  // send connect request
+  this->process.print("c:");
+  this->process.print(this->hostname);
+  this->process.print(':');
+  this->process.print(this->port);
+  if(strlen(username) > 0 && strlen(password) > 0) {
+    this->process.print(':');
+    this->process.print(username);
+    this->process.print(':');
+    this->process.print(password);
+  }
+  this->process.print('\n');
+
+  // wait for answer
+  String ret = this->process.readStringUntil('\n');
+  return ret.equals("ca");
 }
 
 void YunMQTTClient::publish(String topic) {
@@ -51,17 +46,16 @@ void YunMQTTClient::publish(String topic, String payload) {
 }
 
 void YunMQTTClient::publish(const char * topic, String payload) {
-//  this->publish(topic, payload.c_str());
+  this->publish(topic, payload.c_str());
 }
 
 void YunMQTTClient::publish(const char * topic, const char * payload) {
-//  MQTT::Message message;
-//  message.qos = MQTT::QOS0;
-//  message.retained = false;
-//  message.dup = false;
-//  message.payload = (char*)payload;
-//  message.payloadlen = strlen(payload);
-//  client->publish(topic, message);
+  // send publish request
+  this->process.print("p:");
+  this->process.print(topic);
+  this->process.print(':');
+  this->process.print(payload);
+  this->process.print('\n');
 }
 
 void YunMQTTClient::subscribe(String topic) {
@@ -69,7 +63,10 @@ void YunMQTTClient::subscribe(String topic) {
 }
 
 void YunMQTTClient::subscribe(const char * topic) {
-//  client->subscribe(topic, MQTT::QOS0, NULL);
+  // send subscribe request
+  this->process.print("s:");
+  this->process.print(topic);
+  this->process.print('\n');
 }
 
 void YunMQTTClient::unsubscribe(String topic) {
@@ -77,17 +74,34 @@ void YunMQTTClient::unsubscribe(String topic) {
 }
 
 void YunMQTTClient::unsubscribe(const char * topic) {
-//  client->unsubscribe(topic);
+  // send unsubscribe request
+  this->process.print("u:");
+  this->process.print(topic);
+  this->process.print('\n');
 }
 
 void YunMQTTClient::loop() {
-//  this->client->yield();
+  int av = this->process.available();
+  if(av > 0) {
+    String ret = process.readStringUntil('\n');
+
+    if(ret.charAt(0) == 'm') {
+      int startTopic = 2;
+      int endTopic = ret.indexOf(':', startTopic + 1);
+      int startPayload = endTopic + 1;
+      int endPayload = ret.indexOf(':', startPayload + 1);
+      String topic = ret.substring(startTopic, endTopic);
+      String payload = ret.substring(startPayload, endPayload);
+      messageReceived(topic, payload, (char*)payload.c_str(), payload.length());
+    }
+  }
 }
 
 boolean YunMQTTClient::connected() {
-//  return this->client->isConnected();
+  //TODO: fix!
+  return true;
 }
 
 void YunMQTTClient::disconnect() {
-//  this->client->disconnect();
+  //TODO: implement!
 }

@@ -9,10 +9,11 @@ Command | Description | Format
 ← | connection denied | `cd`
 → | subscribe | `s:(topic)`
 → | unsubscribe | `u:(topic)`
-→ | publish | `s:(topic):(data)`
+→ | publish | `p:(topic):(data)`
 ← | message | `m:(topic):(data)`
 → | disconnect | `d`
 
 Todo:
 
 - length prefix data (may contain `:`)
+- add client id

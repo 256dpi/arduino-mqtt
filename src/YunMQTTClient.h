@@ -2,12 +2,15 @@
 #define YUN_MQTT_CLIENT_H
 
 #include <Arduino.h>
-#include <Brdige.h>
 #include <Process.h>
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length);
 
 class YunMQTTClient {
+private:
+  Process process;
+  const char * hostname;
+  int port;
 public:
   YunMQTTClient(const char * hostname, int port);
   boolean connect(const char * clientId);
