@@ -44,8 +44,12 @@ class Client:
             self.client.on_message = self.on_message
             if len(args) >= 5:
                 self.client.username_pw_set(args[3], args[4])
-            self.client.connect(args[0], int(args[1]))
-            self.client.loop_start()
+            try:
+                self.client.connect(args[0], int(args[1]))
+                self.client.loop_start()
+            except:
+                self.send_command("cd")
+
     def do_subscribe(self, args):
         if self.client and len(args) >= 1:
             self.client.subscribe(args[0])
@@ -61,13 +65,9 @@ class Client:
 
     # Main
     def run(self):
-        c.send_command("ok")
+        self.send_command("ok")
         while True:
             self.parse_command(sys.stdin.readline()[0:-1])
 
 # Main Loop
-
-c = Client()
-c.run()
-
-# TODO: better error handling
+Client().run()
