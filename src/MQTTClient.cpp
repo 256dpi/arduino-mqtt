@@ -42,46 +42,46 @@ boolean MQTTClient::connect(const char * clientId, const char * username, const 
   return this->client->connect(data) == 0;
 }
 
-boolean MQTTClient::publish(String topic) {
-  return this->publish(topic.c_str(), "");
+void MQTTClient::publish(String topic) {
+  this->publish(topic.c_str(), "");
 }
 
-boolean MQTTClient::publish(String topic, String payload) {
-  return this->publish(topic.c_str(), payload.c_str());
+void MQTTClient::publish(String topic, String payload) {
+  this->publish(topic.c_str(), payload.c_str());
 }
 
-boolean MQTTClient::publish(const char * topic, String payload) {
-  return this->publish(topic, payload.c_str());
+void MQTTClient::publish(const char * topic, String payload) {
+  this->publish(topic, payload.c_str());
 }
 
-boolean MQTTClient::publish(const char * topic, const char * payload) {
+void MQTTClient::publish(const char * topic, const char * payload) {
   MQTT::Message message;
   message.qos = MQTT::QOS0;
   message.retained = false;
   message.dup = false;
   message.payload = (char*)payload;
   message.payloadlen = strlen(payload);
-  return client->publish(topic, message) == 0;
+  client->publish(topic, message);
 }
 
-boolean MQTTClient::subscribe(String topic) {
-  return this->subscribe(topic.c_str());
+void MQTTClient::subscribe(String topic) {
+  this->subscribe(topic.c_str());
 }
 
-boolean MQTTClient::subscribe(const char * topic) {
-  return client->subscribe(topic, MQTT::QOS0, NULL) == 0;
+void MQTTClient::subscribe(const char * topic) {
+  client->subscribe(topic, MQTT::QOS0, NULL);
 }
 
-boolean MQTTClient::unsubscribe(String topic) {
-  return this->unsubscribe(topic.c_str());
+void MQTTClient::unsubscribe(String topic) {
+  this->unsubscribe(topic.c_str());
 }
 
-boolean MQTTClient::unsubscribe(const char * topic) {
-  return client->unsubscribe(topic) == 0;
+void MQTTClient::unsubscribe(const char * topic) {
+  client->unsubscribe(topic);
 }
   
-boolean MQTTClient::loop() {
-  return this->client->yield() == 0;
+void MQTTClient::loop() {
+  this->client->yield();
 }
 
 boolean MQTTClient::connected() {
