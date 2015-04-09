@@ -7,11 +7,12 @@ Command | Description | Format
 → | connect | `c:(host):(port):(user):(pass)`
 ← | connection approved | `ca`
 ← | connection denied | `cd`
-→ | connected? | `c?`
-← | is connected | `c+`
-← | not connected | `c-`
 → | subscribe | `s:(topic)`
 → | unsubscribe | `u:(topic)`
 → | publish | `s:(topic):(data)`
-← | message | `m`
+← | message | `m:(topic):(data)`
 → | disconnect | `d`
+
+Todo:
+
+- length prefix data (may contain `:`)

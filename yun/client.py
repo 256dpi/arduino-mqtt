@@ -1,24 +1,67 @@
 import sys
 import paho.mqtt.client as mqtt
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    client.subscribe("$SYS/#")
+# Client Callbacks
 
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+def on_connect(_, __, ___, rc):
+    if rc == 0:
+        send_command("ca")
+    else:
+        send_command("cd")
 
-client = mqtt.Client()
+def on_message(_, __, msg):
+    send_command("m:" + msg.topic + ":" + str(msg.payload))
 
-client.on_connect = on_connect
-client.on_message = on_message
+# Command Helpers
 
-client.username_pw_set("demo", "demo")
-client.connect("connect.shiftr.io", 1883, 60)
+def parse_command(client, line):
+    segments = line.split(":")
+    cmd = segments[0]
+    remaining = segments[1:]
+    if cmd == 'c':
+        do_connect(client, remaining)
+    elif cmd == 's':
+        do_subscribe(client, remaining)
+    elif cmd == 'u':
+        do_unsubscribe(client, remaining)
+    elif cmd == 'p':
+        do_publish(client, remaining)
+    elif cmd == 'd':
+        do_disconnect(client)
 
-client.loop_start()
+def send_command(line):
+    sys.stdout.write(line + "\n")
 
-line = True
-while line:
-    line = sys.stdin.readline()
-    sys.stdout.write(line)
+# Command Handlers
+
+def do_connect(client, args):
+    if len(args) >= 4:
+        client.username_pw_set(args[2], args[3])
+    if len(args) >= 2:
+        client.connect(args[0], int(args[1]))
+        client.loop_start()
+
+def do_subscribe(client, args):
+    if len(args) >= 1:
+        client.subscribe(args[0])
+
+def do_unsubscribe(client, args):
+    if len(args) >= 1:
+        client.unsubscribe(args[0])
+
+def do_publish(client, args):
+    if len(args) >= 2:
+        client.publish(args[0], args[1])
+
+def do_disconnect(client):
+    client.disconnect()
+    client.loop_stop()
+
+# Main Loop
+
+c = mqtt.Client()
+c.on_connect = on_connect
+c.on_message = on_message
+
+while True:
+    parse_command(c, sys.stdin.readline()[0:-1])
