@@ -34,7 +34,9 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 
   // wait for answer
   String ret = this->process.readStringUntil('\n');
-  return ret.equals("ca");
+  this->alive = ret.equals("ca");
+
+  return this->connected();
 }
 
 void YunMQTTClient::publish(String topic) {
@@ -98,8 +100,7 @@ void YunMQTTClient::loop() {
 }
 
 boolean YunMQTTClient::connected() {
-  //TODO: fix!
-  return true;
+  return this->alive;
 }
 
 void YunMQTTClient::disconnect() {

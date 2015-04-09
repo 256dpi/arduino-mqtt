@@ -67,3 +67,5 @@ send_command("ok")
 
 while True:
     parse_command(c, sys.stdin.readline()[0:-1])
+
+# TODO: better error handling

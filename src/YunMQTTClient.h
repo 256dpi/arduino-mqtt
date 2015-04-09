@@ -11,6 +11,7 @@ private:
   Process process;
   const char * hostname;
   int port;
+  boolean alive = false;
 public:
   YunMQTTClient(const char * hostname, int port);
   boolean connect(const char * clientId);
