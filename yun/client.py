@@ -63,5 +63,7 @@ c = mqtt.Client()
 c.on_connect = on_connect
 c.on_message = on_message
 
+send_command("ok")
+
 while True:
     parse_command(c, sys.stdin.readline()[0:-1])
