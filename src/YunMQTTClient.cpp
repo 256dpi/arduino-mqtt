@@ -15,7 +15,7 @@
 //  messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 //}
 
-YunMQTTClient::YunMQTTClient(const char * _hostname, int _port, Client& _client) {
+YunMQTTClient::YunMQTTClient(const char * _hostname, int _port) {
 //  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
 //  this->network.setClient(&_client);
 //  this->client->setDefaultMessageHandler(messageArrived);
@@ -42,46 +42,46 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 //  return this->client->connect(data) == 0;
 }
 
-boolean YunMQTTClient::publish(String topic) {
-  return this->publish(topic.c_str(), "");
+void YunMQTTClient::publish(String topic) {
+  this->publish(topic.c_str(), "");
 }
 
-boolean YunMQTTClient::publish(String topic, String payload) {
-  return this->publish(topic.c_str(), payload.c_str());
+void YunMQTTClient::publish(String topic, String payload) {
+  this->publish(topic.c_str(), payload.c_str());
 }
 
-boolean YunMQTTClient::publish(const char * topic, String payload) {
-//  return this->publish(topic, payload.c_str());
+void YunMQTTClient::publish(const char * topic, String payload) {
+//  this->publish(topic, payload.c_str());
 }
 
-boolean YunMQTTClient::publish(const char * topic, const char * payload) {
+void YunMQTTClient::publish(const char * topic, const char * payload) {
 //  MQTT::Message message;
 //  message.qos = MQTT::QOS0;
 //  message.retained = false;
 //  message.dup = false;
 //  message.payload = (char*)payload;
 //  message.payloadlen = strlen(payload);
-//  return client->publish(topic, message) == 0;
+//  client->publish(topic, message);
 }
 
-boolean YunMQTTClient::subscribe(String topic) {
-  return this->subscribe(topic.c_str());
+void YunMQTTClient::subscribe(String topic) {
+  this->subscribe(topic.c_str());
 }
 
-boolean YunMQTTClient::subscribe(const char * topic) {
-//  return client->subscribe(topic, MQTT::QOS0, NULL) == 0;
+void YunMQTTClient::subscribe(const char * topic) {
+//  client->subscribe(topic, MQTT::QOS0, NULL);
 }
 
-boolean YunMQTTClient::unsubscribe(String topic) {
-  return this->unsubscribe(topic.c_str());
+void YunMQTTClient::unsubscribe(String topic) {
+  this->unsubscribe(topic.c_str());
 }
 
-boolean YunMQTTClient::unsubscribe(const char * topic) {
-//  return client->unsubscribe(topic) == 0;
+void YunMQTTClient::unsubscribe(const char * topic) {
+//  client->unsubscribe(topic);
 }
 
-boolean YunMQTTClient::loop() {
-//  return this->client->yield() == 0;
+void YunMQTTClient::loop() {
+//  this->client->yield();
 }
 
 boolean YunMQTTClient::connected() {

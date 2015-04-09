@@ -2,24 +2,25 @@
 #define YUN_MQTT_CLIENT_H
 
 #include <Arduino.h>
-#include <Client.h>
+#include <Brdige.h>
+#include <Process.h>
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length);
 
 class YunMQTTClient {
 public:
-  YunMQTTClient(const char * hostname, int port, Client& client);
+  YunMQTTClient(const char * hostname, int port);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
-  boolean publish(String topic);
-  boolean publish(String topic, String payload);
-  boolean publish(const char * topic, String payload);
-  boolean publish(const char * topic, const char * payload);
-  boolean subscribe(String topic);
-  boolean subscribe(const char * topic);
-  boolean unsubscribe(String topic);
-  boolean unsubscribe(const char * topic);
-  boolean loop();
+  void publish(String topic);
+  void publish(String topic, String payload);
+  void publish(const char * topic, String payload);
+  void publish(const char * topic, const char * payload);
+  void subscribe(String topic);
+  void subscribe(const char * topic);
+  void unsubscribe(String topic);
+  void unsubscribe(const char * topic);
+  void loop();
   boolean connected();
   void disconnect();
 };
