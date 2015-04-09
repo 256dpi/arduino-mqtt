@@ -12,6 +12,7 @@ Command | Description | Format
 → | publish | `p:(topic):(data)`
 ← | message | `m:(topic):(data)`
 → | disconnect | `d`
+← | closed | `e`
 
 Todo:
 

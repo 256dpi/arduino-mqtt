@@ -14,6 +14,9 @@ class Client:
             self.send_command("cd")
     def on_message(self, _, __, msg):
         self.send_command("m:" + msg.topic + ":" + str(msg.payload))
+    def on_disconnect(self):
+        self.client.loop_stop()
+        self.send_command("e")
 
     # Command Helpers
     def parse_command(self, line):
@@ -44,17 +47,17 @@ class Client:
             self.client.connect(args[0], int(args[1]))
             self.client.loop_start()
     def do_subscribe(self, args):
-        if len(args) >= 1:
+        if self.client and len(args) >= 1:
             self.client.subscribe(args[0])
     def do_unsubscribe(self, args):
-        if len(args) >= 1:
+        if self.client and len(args) >= 1:
             self.client.unsubscribe(args[0])
     def do_publish(self, args):
-        if len(args) >= 2:
+        if self.client and len(args) >= 2:
             self.client.publish(args[0], args[1])
     def do_disconnect(self):
-        self.client.disconnect()
-        self.client.loop_stop()
+        if self.client:
+            self.client.disconnect()
 
     # Main
     def run(self):

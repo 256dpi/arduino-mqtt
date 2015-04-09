@@ -89,7 +89,7 @@ void YunMQTTClient::loop() {
   if(av > 0) {
     String ret = process.readStringUntil('\n');
 
-    if(ret.charAt(0) == 'm') {
+    if(ret.startsWith("m")) {
       int startTopic = 2;
       int endTopic = ret.indexOf(':', startTopic + 1);
       int startPayload = endTopic + 1;
@@ -97,6 +97,8 @@ void YunMQTTClient::loop() {
       String topic = ret.substring(startTopic, endTopic);
       String payload = ret.substring(startPayload, endPayload);
       messageReceived(topic, payload, (char*)payload.c_str(), payload.length());
+    } else if(ret.startsWith("e")) {
+      this->alive = false;
     }
   }
 }
@@ -106,5 +108,6 @@ boolean YunMQTTClient::connected() {
 }
 
 void YunMQTTClient::disconnect() {
-  //TODO: implement!
+  // send disconnect request
+  this->process.print("d\n");
 }
