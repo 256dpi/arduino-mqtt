@@ -1,19 +1,18 @@
-# YUN ABI
+# Yun ABI
 
 **Optimized MQTT library for the Arduino Yun that uses a client process on the linux processor.**
 
-Command | Description | Format
----|---|---
-→ | connect | `c:(host):(port):(id):(user):(pass)`
-← | connection approved | `ca`
-← | connection denied | `cd`
-→ | subscribe | `s:(topic)`
+  | Command     | Format
+--|-------------|-----------------------------------------
+→ | connect     | `c:(host):(port):(id):(user):(pass)`
+← | approved    | `ca`
+← | denied      | `cd`
+→ | subscribe   | `s:(topic)`
 → | unsubscribe | `u:(topic)`
-→ | publish | `p:(topic):(data)`
-← | message | `m:(topic):(data)`
-→ | disconnect | `d`
-← | closed | `e`
+→ | publish     | `p:(topic):(data)`
+← | message     | `m:(topic):(data)`
+→ | disconnect  | `d`
+← | closed      | `e`
 
-Todo:
-
+ToDo:
 - length prefix data (may contain `:`)
