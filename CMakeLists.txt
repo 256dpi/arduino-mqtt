@@ -34,6 +34,8 @@ set(SOURCE_FILES
     src/YunMQTTClient.cpp
     src/YunMQTTClient.h
     src/YunMQTTInstall.cpp
-    src/YunMQTTInstall.h)
+    src/YunMQTTInstall.h
+    examples/PublishSubscribe/PublishSubscribe.ino
+    examples/YunClientInstall/YunClientInstall.ino)
 
 add_executable(arduino_mqtt ${SOURCE_FILES})
