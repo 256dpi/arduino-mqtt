@@ -4,7 +4,7 @@
 
 Command | Description | Format
 ---|---|---
-→ | connect | `c:(host):(port):(user):(pass)`
+→ | connect | `c:(host):(port):(id):(user):(pass)`
 ← | connection approved | `ca`
 ← | connection denied | `cd`
 → | subscribe | `s:(topic)`
@@ -16,4 +16,3 @@ Command | Description | Format
 Todo:
 
 - length prefix data (may contain `:`)
-- add client id

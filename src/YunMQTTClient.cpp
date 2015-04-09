@@ -24,6 +24,8 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
   this->process.print(this->hostname);
   this->process.print(':');
   this->process.print(this->port);
+  this->process.print(':');
+  this->process.print(clientId);
   if(strlen(username) > 0 && strlen(password) > 0) {
     this->process.print(':');
     this->process.print(username);
