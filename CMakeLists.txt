@@ -30,6 +30,8 @@ set(SOURCE_FILES
     src/Network.cpp
     src/Network.h
     src/Timer.cpp
-    src/Timer.h)
+    src/Timer.h
+    src/YunMQTTClient.cpp
+    src/YunMQTTClient.h)
 
 add_executable(arduino_mqtt ${SOURCE_FILES})
