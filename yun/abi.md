@@ -13,6 +13,3 @@
 ← | message     | `m:(topic):(data)`
 → | disconnect  | `d`
 ← | closed      | `e`
-
-ToDo:
-- length prefix data (may contain `:`)
