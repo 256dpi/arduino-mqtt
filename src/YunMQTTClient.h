@@ -1,30 +1,19 @@
-#ifndef MQTT_CLIENT_H
-#define MQTT_CLIENT_H
-
-#ifndef MQTT_BUFFER_SIZE
-#define MQTT_BUFFER_SIZE 128
-#endif
-
-#define MQTTCLIENT_QOS1 0
-#define MQTTCLIENT_QOS2 0
+#ifndef YUN_MQTT_CLIENT_H
+#define YUN_MQTT_CLIENT_H
 
 #include <Arduino.h>
-#include <Client.h>
-#include <Stream.h>
-#include "lib/MQTTClient.h"
-#include "Network.h"
-#include "Timer.h"
+#include <Process.h>
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length);
 
-class MQTTClient {
+class YunMQTTClient {
 private:
-  Network network;
-  MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0> * client;
+  Process process;
   const char * hostname;
   int port;
+  boolean alive = false;
 public:
-  MQTTClient(const char * hostname, int port, Client& client);
+  YunMQTTClient(const char * hostname, int port);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);
@@ -40,4 +29,4 @@ public:
   void disconnect();
 };
 
-#endif
+#endif //YUN_MQTT_CLIENT_H

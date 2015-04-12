@@ -3,7 +3,8 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(arduino_mqtt)
 
-include_directories(/Applications/Arduino.app/Contents/Resources/Java/hardware/arduino/avr/cores/arduino)
+include_directories(/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/)
+include_directories(/Applications/Arduino.app/Contents/Java/libraries/Bridge/src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -30,6 +31,12 @@ set(SOURCE_FILES
     src/Network.cpp
     src/Network.h
     src/Timer.cpp
-    src/Timer.h)
+    src/Timer.h
+    src/YunMQTTClient.cpp
+    src/YunMQTTClient.h
+    src/YunMQTTInstall.cpp
+    src/YunMQTTInstall.h
+    examples/MQTTClient/MQTTClient.ino
+    examples/YunClientInstall/YunClientInstall.ino)
 
 add_executable(arduino_mqtt ${SOURCE_FILES})
