@@ -10,7 +10,7 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 [Download version 1.3.2 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.3.2/mqtt.zip)
 
-*Or even better use the newly available Library Manager in Arduino.*
+*Or even better use the newly available Library Manager in the Arduino IDE.*
 
 ## Compatibility
 
