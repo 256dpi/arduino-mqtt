@@ -1,5 +1,4 @@
 #include <Bridge.h>
-#include <Process.h>
 
 void setup() {
   Bridge.begin();
@@ -10,12 +9,9 @@ void setup() {
 
   Serial.println("Starting Installation!\n");
 
-  run("Update", "opkg update");
-  run("Install 'easy_install'", "opkg install distribute");
-  run("Install python SSL support", "opkg install python-openssl");
-  run("Install 'pip'", "easy_install pip");
-  run("Install 'paho-mqtt'", "pip install paho-mqtt");
-  run("Download script", "wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-client/yun/client.py --no-check-certificate -O /usr/client.py");
+  run("Create directory", "mkdir -p /usr/mqtt");
+  run("Download script", "wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-bridge/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
+  run("Download script", "wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-bridge/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
 
   Serial.println("Installation finished!");
 }
@@ -35,7 +31,7 @@ void run(const char *name, const char * cmd) {
   p.runShellCommand(cmd);
 
   while (p.available() > 0) {
-    char c = p.read();
+    char c = (char)p.read();
     Serial.print(c);
   }
 
