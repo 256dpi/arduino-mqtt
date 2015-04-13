@@ -20,8 +20,10 @@ boolean YunMQTTClient::installBridge(boolean force) {
   Process p;
 
   int r1 = p.runShellCommand("mkdir -p /usr/mqtt");
-  int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
-  int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
+  // shortened: https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-bridge/yun/mqtt.py
+  int r2 = p.runShellCommand("wget http://bit.ly/1aX4HVu --no-check-certificate -O /usr/mqtt/mqtt.py");
+  // shortened: https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun-bridge/yun/bridge.py
+  int r3 = p.runShellCommand("wget http://bit.ly/1IXBeFe --no-check-certificate -O /usr/mqtt/bridge.py");
 
   return r1 == 0 && r2 == 0 && r3 == 0;
 }
