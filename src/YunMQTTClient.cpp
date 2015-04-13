@@ -1,8 +1,29 @@
 #include "YunMQTTClient.h"
 
+#include <FileIO.h>
+
 YunMQTTClient::YunMQTTClient(const char * _hostname, int _port) {
   this->hostname = _hostname;
   this->port = _port;
+}
+
+boolean YunMQTTClient::installBridge(boolean force) {
+  if(!force) {
+    boolean f1 = FileSystem.exists("/usr/mqtt/mqtt.py");
+    boolean f2 = FileSystem.exists("/usr/mqtt/bridge.py");
+
+    if(f1 && f2) {
+      return true;
+    }
+  }
+
+  Process p;
+
+  int r1 = p.runShellCommand("mkdir -p /usr/mqtt");
+  int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
+  int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
+
+  return r1 == 0 && r2 == 0 && r3 == 0;
 }
 
 boolean YunMQTTClient::connect(const char * clientId) {
@@ -12,7 +33,7 @@ boolean YunMQTTClient::connect(const char * clientId) {
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
   this->process.begin("python");
   this->process.addParameter("-u");
-  this->process.addParameter("/usr/client.py");
+  this->process.addParameter("/usr/mqtt/bridge.py");
   this->process.runAsynchronously();
   this->process.setTimeout(10000);
 
