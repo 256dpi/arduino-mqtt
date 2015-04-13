@@ -2,7 +2,7 @@
 #define YUN_MQTT_CLIENT_H
 
 #include <Arduino.h>
-#include <Process.h>
+#include <Bridge.h>
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length);
 
@@ -14,6 +14,7 @@ private:
   boolean alive = false;
 public:
   YunMQTTClient(const char * hostname, int port);
+  boolean installBridge(boolean force);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);
