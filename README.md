@@ -20,4 +20,3 @@ This library has been only tested on the **Arduino Yùn** yet. Other boards and 
 
 - [Example using the standard MQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/MQTTClient/MQTTClient.ino).
 - [Example using the alternative YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/YunMQTTClient/YunMQTTClient.ino).
-- [Sketch to install the YunMQTTClient python client script](https://github.com/256dpi/arduino-mqtt/tree/master/examples/YunMQTTInstall/YunMQTTInstall.ino).
