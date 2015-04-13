@@ -1,12 +1,12 @@
 import sys
-import paho.mqtt.client as mqtt
+import mqtt
 
-class Client:
+class Bridge:
     # Constructor
     def __init__(self):
         self.client = None
 
-    # Client Callbacks
+    # Bridge Callbacks
     def on_connect(self, _, __, ___, rc):
         if rc == 0:
             self.send_command("ca")
@@ -70,4 +70,4 @@ class Client:
             self.parse_command(sys.stdin.readline()[0:-1])
 
 # Main Loop
-Client().run()
+Bridge().run()
