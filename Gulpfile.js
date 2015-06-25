@@ -18,7 +18,8 @@ gulp.task('thin', ['copy'], function(cb){
     './build/package.json',
     './build/node_modules',
     './build/mqtt.zip',
-    './build/CMakeLists.txt'
+    './build/CMakeLists.txt',
+    './build/yun'
   ], cb);
 })
 
