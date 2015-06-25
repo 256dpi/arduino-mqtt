@@ -14,7 +14,7 @@ void setup() {
   client.installBridge(false);
 
   Serial.println("connecting...");
-  if (client.connect("arduino", "demo", "demo")) {
+  if (client.connect("arduino", "shiftr-io", "try")) {
     Serial.println("connected!");
     client.subscribe("/another/topic");
     // client.unsubscribe("/another/topic");

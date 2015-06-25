@@ -11,7 +11,7 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
   Serial.println("connecting...");
-  if (client.connect("arduino", "demo", "demo")) {
+  if (client.connect("arduino", "shiftr-io", "try")) {
     Serial.println("connected!");
     client.subscribe("/another/topic");
     // client.unsubscribe("/another/topic");

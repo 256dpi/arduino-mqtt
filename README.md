@@ -6,9 +6,9 @@ This library bundles the [Embedded MQTT C/C++ Client](https://eclipse.org/paho/c
 
 The first release of the library only supports QoS0 and the basic features to get going. In the next releases more of the features will be available.
 
-This library is an alternative to the [pubsubclient](https://github.com/knolleary/pubsubclient) library by [knolleary](https://github.com/knolleary) which only supports QoS0 and uses a custom protocol implementation.
+This library is an alternative to the [pubsubclient](https://github.com/knolleary/pubsubclient) library by [knolleary](https://github.com/knolleary) which uses a custom protocol implementation.
 
-[Download version 1.5.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.5.0/mqtt.zip)
+[Download version 1.5.1 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.5.1/mqtt.zip)
 
 *Or even better use the newly available Library Manager in the Arduino IDE.*
 
