@@ -318,12 +318,17 @@ void MQTT::Client<Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
 template<class Network, class Timer, int a, int b>
 int MQTT::Client<Network, Timer, a, b>::sendPacket(int length, Timer& timer)
 {
+
+    int MAX_WRITE_SIZE = 90; //Did not investigate the reason.
+    int writeSize = 0;
+
     int rc = FAILURE,
         sent = 0;
 
     while (sent < length && !timer.expired())
     {
-        rc = ipstack.write(&sendbuf[sent], length, timer.left_ms());
+        writeSize = (length - sent)>MAX_WRITE_SIZE?MAX_WRITE_SIZE:(length-sent);
+        rc = ipstack.write(&sendbuf[sent], writeSize, timer.left_ms());
         if (rc < 0)  // there was an error writing the data
             break;
         sent += rc;
