@@ -12,6 +12,10 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 *Or even better use the newly available Library Manager in the Arduino IDE.*
 
+## Important
+
+- The maximum size for packets being published and received is set by default to 128 bytes. To change that value, you need to download the library manually and change the value in the following file: https://github.com/256dpi/arduino-mqtt/blob/master/src/MQTTClient.h#L5.
+
 ## Compatibility
 
 This library has been only tested on the **Arduino Yùn** yet. Other boards and shields should work if they properly extend the Client API.
