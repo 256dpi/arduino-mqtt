@@ -1,7 +1,7 @@
 #include <Bridge.h>
 #include <YunMQTTClient.h>
 
-YunMQTTClient client("connect.shiftr.io", 1883);
+YunMQTTClient client("broker.shiftr.io", 1883);
 
 unsigned long lastMillis = 0;
 
@@ -14,7 +14,7 @@ void setup() {
   client.installBridge(false);
 
   Serial.println("connecting...");
-  if (client.connect("arduino", "shiftr-io", "try")) {
+  if (client.connect("arduino", "try", "try")) {
     Serial.println("connected!");
     client.subscribe("/another/topic");
     // client.unsubscribe("/another/topic");
