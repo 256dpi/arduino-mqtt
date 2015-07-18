@@ -25,6 +25,7 @@ private:
   int port;
 public:
   MQTTClient(const char * hostname, int port, Client& client);
+  MQTTClient(const char * hostname, Client& client) : MQTTClient(hostname, 1883, client){};
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);
