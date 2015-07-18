@@ -9,7 +9,7 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
 
-  // this will install the required python files (pass true to force download)
+  // this will install the required python files (pass true to force update)
   // can also be commented out to save program space
   client.installBridge(false);
 
