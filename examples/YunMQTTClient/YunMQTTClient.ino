@@ -1,7 +1,7 @@
 #include <Bridge.h>
 #include <YunMQTTClient.h>
 
-YunMQTTClient client("broker.shiftr.io", 1883);
+YunMQTTClient client("broker.shiftr.io");
 
 unsigned long lastMillis = 0;
 

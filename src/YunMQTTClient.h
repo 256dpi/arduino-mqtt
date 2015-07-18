@@ -14,6 +14,7 @@ private:
   boolean alive = false;
 public:
   YunMQTTClient(const char * hostname, int port);
+  YunMQTTClient(const char * hostname) : YunMQTTClient(hostname, 1883){};
   boolean installBridge(boolean force);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);

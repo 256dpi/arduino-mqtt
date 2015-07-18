@@ -3,7 +3,7 @@
 #include <MQTTClient.h>
 
 YunClient net;
-MQTTClient client("broker.shiftr.io", 1883, net);
+MQTTClient client("broker.shiftr.io", net);
 
 unsigned long lastMillis = 0;
 
