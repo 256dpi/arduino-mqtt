@@ -13,8 +13,8 @@ void setup() {
   Serial.println("connecting...");
   if (client.connect("arduino", "try", "try")) {
     Serial.println("connected!");
-    client.subscribe("/another/topic");
-    // client.unsubscribe("/another/topic");
+    client.subscribe("/example");
+    // client.unsubscribe("/example");
   } else {
     Serial.println("not connected!");
   }
@@ -25,7 +25,7 @@ void loop() {
   // publish message roughly every second
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
-    client.publish("/topic", "Hello world!");
+    client.publish("/hello", "world");
   }
 }
 
