@@ -64,3 +64,53 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
   Serial.println();
 }
 ```
+
+## API
+
+- **`MQTTClient(const char * hostname, Client& client)`**
+- **`MQTTClient(const char * hostname, int port, Client& client)`**
+
+Constructor for the `MQTTClient` object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport.
+
+- **`YunMQTTClient(const char * hostname)`**
+- **`YunMQTTClient(const char * hostname, int port)`**
+
+Constructor for the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`).
+
+- **`boolean installBridge(boolean force)`**
+
+Installs the python bridge on the linux processor. Pass `true` to force an update if the code already exists. This function only works in conjunction with the `YunMQTTClient` object.
+
+- **`boolean connect(const char * clientId)`**
+- **`boolean connect(const char * clientId, const char* username, const char* password)`**
+
+Connects to broker using the supplied client id and an optional username and password. This functions returns if the connection has been established successfully.
+
+- **`void publish(String topic)`**
+- **`void publish(String topic, String payload)`**
+- **`void publish(const char * topic, String payload)`**
+- **`void publish(const char * topic, const char * payload)`**
+
+Publishes a messages to the broker with an optional payload. 
+
+- **`void subscribe(String topic)`**
+- **`void subscribe(const char * topic)`**
+
+Subscribes to a topic.
+
+- **`void unsubscribe(String topic)`**
+- **`void unsubscribe(const char * topic)`**
+
+Unsubscribes from a topic.
+
+- **`void loop()`**
+
+Sends and receives packets. This function should be called as often as possible.
+
+- **`boolean connected()`**
+
+Returns if the client is currently connected.
+
+- **`void disconnect()`**
+
+Disconnects from the broker.
