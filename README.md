@@ -84,7 +84,7 @@ Installs the python bridge on the linux processor. Pass `true` to force an updat
 - **`boolean connect(const char * clientId)`**
 - **`boolean connect(const char * clientId, const char* username, const char* password)`**
 
-Connects to broker using the supplied client id and an optional username and password. This functions returns if the connection has been established successfully.
+Connects to broker using the supplied client id and an optional username and password. This functions return value indicates if the connection has been established successfully.
 
 - **`void publish(String topic)`**
 - **`void publish(String topic, String payload)`**
