@@ -91,7 +91,7 @@ Connects to broker using the supplied client id and an optional username and pas
 - **`void publish(const char * topic, String payload)`**
 - **`void publish(const char * topic, const char * payload)`**
 
-Publishes a messages to the broker with an optional payload. 
+Publishes a message to the broker with an optional payload. 
 
 - **`void subscribe(String topic)`**
 - **`void subscribe(const char * topic)`**
@@ -109,7 +109,7 @@ Sends and receives packets. This function should be called as often as possible.
 
 - **`boolean connected()`**
 
-Returns if the client is currently connected.
+Checks if the client is currently connected.
 
 - **`void disconnect()`**
 
