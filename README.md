@@ -18,7 +18,7 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 ## Compatibility
 
-This library has been only tested on the **Arduino Yùn** yet. Other boards and shields should work if they properly extend the Client API.
+This library has been officially tested on the **Arduino Yùn**. Other boards and shields should work, but may need custom initialization of the Client class.
 
 ## Example
 
