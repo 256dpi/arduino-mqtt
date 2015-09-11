@@ -77,9 +77,9 @@ Constructor for the `MQTTClient` object using the hostname of the broker, the br
 
 Constructor for the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`).
 
-- **`boolean installBridge(boolean force)`**
+- **`int installBridge(boolean force)`**
 
-Installs the python bridge on the linux processor. Pass `true` to force an update if the code already exists. This function only works in conjunction with the `YunMQTTClient` object.
+Installs the python bridge on the linux processor. Pass `true` to force an update if the code already exists. This function only works in conjunction with the `YunMQTTClient` object. A return value of 0 means that there was an error while installing, 1 means that the bridge is already installed and 2 means that there was an update.
 
 - **`void setWill(const char * topic)`**
 - **`void setWill(const char * topic, const char * payload)`**

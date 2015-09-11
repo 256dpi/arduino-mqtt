@@ -9,8 +9,9 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
 
-  // this will install the required python files (pass true to force update)
-  // can also be commented out to save program space
+  // This will install the required python files (pass true to force update).
+  // Line can also be commented out to save program space.
+  // If you update the library you also need to update the bridge!
   switch(client.installBridge(false)) {
     case 0: Serial.println("error while installing bridge!"); break;
     case 1: Serial.println("bridge already installed!"); break;
@@ -29,7 +30,7 @@ void setup() {
 
 void loop() {
   client.loop();
-  // publish message roughly every second
+  // Publish a message roughly every second.
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
