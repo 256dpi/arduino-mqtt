@@ -7,13 +7,13 @@ YunMQTTClient::YunMQTTClient(const char * _hostname, int _port) {
   this->port = _port;
 }
 
-boolean YunMQTTClient::installBridge(boolean force) {
+int YunMQTTClient::installBridge(boolean force) {
   if(!force) {
     boolean f1 = FileSystem.exists("/usr/mqtt/mqtt.py");
     boolean f2 = FileSystem.exists("/usr/mqtt/bridge.py");
 
     if(f1 && f2) {
-      return true;
+      return 1;
     }
   }
 
@@ -23,7 +23,13 @@ boolean YunMQTTClient::installBridge(boolean force) {
   int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
   int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
 
-  return r1 == 0 && r2 == 0 && r3 == 0;
+  boolean success = r1 == 0 && r2 == 0 && r3 == 0;
+
+  if(success) {
+    return 2;
+  } else {
+    return 0;
+  }
 }
 
 void YunMQTTClient::setWill(const char * topic) {

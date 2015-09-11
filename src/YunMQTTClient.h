@@ -17,7 +17,7 @@ private:
 public:
   YunMQTTClient(const char * hostname, int port);
   YunMQTTClient(const char * hostname) : YunMQTTClient(hostname, 1883){};
-  boolean installBridge(boolean force);
+  int installBridge(boolean force);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);

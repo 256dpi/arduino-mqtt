@@ -11,7 +11,11 @@ void setup() {
 
   // this will install the required python files (pass true to force update)
   // can also be commented out to save program space
-  client.installBridge(false);
+  switch(client.installBridge(false)) {
+    case 0: Serial.println("error while installing bridge!"); break;
+    case 1: Serial.println("bridge already installed!"); break;
+    case 2: Serial.println("bridge updated!"); break;
+  }
 
   Serial.println("connecting...");
   if (client.connect("arduino", "try", "try")) {
