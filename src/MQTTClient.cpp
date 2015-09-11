@@ -1,4 +1,6 @@
 #include "MQTTClient.h"
+#include "lib/MQTTConnect.h"
+#include "lib/MQTTPacket.h"
 
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
@@ -21,6 +23,17 @@ MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->client->setDefaultMessageHandler(messageArrived);
   this->hostname = _hostname;
   this->port = _port;
+  this->options = MQTTPacket_connectData_initializer;
+}
+
+void MQTTClient::setWill(const char * topic) {
+  this->setWill(topic, "");
+}
+
+void MQTTClient::setWill(const char * topic, const char * payload) {
+  this->options.willFlag = 0x1;
+  this->options.will.topicName.cstring = (char*)topic;
+  this->options.will.message.cstring = (char*)payload;
 }
 
 boolean MQTTClient::connect(const char * clientId) {
@@ -31,15 +44,14 @@ boolean MQTTClient::connect(const char * clientId, const char * username, const 
   if(!this->network.connect((char*)this->hostname, this->port)) {
     return false;
   }
-  
-  MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-  data.clientID.cstring = (char*)clientId;
+
+  this->options.clientID.cstring = (char*)clientId;
   if(username && password) {
-    data.username.cstring = (char*)username;
-    data.password.cstring = (char*)password;
+    this->options.username.cstring = (char*)username;
+    this->options.password.cstring = (char*)password;
   }
   
-  return this->client->connect(data) == 0;
+  return this->client->connect(this->options) == 0;
 }
 
 void MQTTClient::publish(String topic) {

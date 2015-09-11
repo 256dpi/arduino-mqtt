@@ -26,6 +26,15 @@ boolean YunMQTTClient::installBridge(boolean force) {
   return r1 == 0 && r2 == 0 && r3 == 0;
 }
 
+void YunMQTTClient::setWill(const char * topic) {
+  this->setWill(topic, "");
+}
+
+void YunMQTTClient::setWill(const char * topic, const char * payload) {
+  this->willTopic = topic;
+  this->willPayload = payload;
+}
+
 boolean YunMQTTClient::connect(const char * clientId) {
   return this->connect(clientId, "", "");
 }
@@ -39,6 +48,17 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 
   // wait for script to launch
   this->process.readStringUntil('\n');
+
+  // set will if available
+  if(this->willTopic != NULL) {
+    this->process.print("w:");
+    this->process.print(this->willTopic);
+    if(this->willPayload != NULL) {
+      this->process.print(':');
+      this->process.print(this->willPayload);
+    }
+    this->process.print('\n');
+  }
 
   // send connect request
   this->process.print("c:");
