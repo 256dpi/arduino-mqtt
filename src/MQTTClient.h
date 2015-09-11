@@ -21,11 +21,13 @@ class MQTTClient {
 private:
   Network network;
   MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0> * client;
+  MQTTPacket_connectData options;
   const char * hostname;
   int port;
 public:
   MQTTClient(const char * hostname, int port, Client& client);
   MQTTClient(const char * hostname, Client& client) : MQTTClient(hostname, 1883, client){};
+  void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);

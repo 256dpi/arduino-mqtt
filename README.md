@@ -81,6 +81,10 @@ Constructor for the `YunMQTTClient` object using the hostname of the broker and 
 
 Installs the python bridge on the linux processor. Pass `true` to force an update if the code already exists. This function only works in conjunction with the `YunMQTTClient` object.
 
+- **`void setWill(const char * topic, const char * payload)`**
+
+Sets the will message that gets registered on a connect.
+
 - **`boolean connect(const char * clientId)`**
 - **`boolean connect(const char * clientId, const char* username, const char* password)`**
 

@@ -11,11 +11,14 @@ private:
   Process process;
   const char * hostname;
   int port;
+  const char * willTopic;
+  const char * willPayload;
   boolean alive = false;
 public:
   YunMQTTClient(const char * hostname, int port);
   YunMQTTClient(const char * hostname) : YunMQTTClient(hostname, 1883){};
   boolean installBridge(boolean force);
+  void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);

@@ -23,7 +23,9 @@ class Bridge:
         segments = line.split(":")
         cmd = segments[0]
         remaining = segments[1:]
-        if cmd == 'c':
+        if cmd == 'w':
+            self.do_will(remaining)
+        elif cmd == 'c':
             self.do_connect(remaining)
         elif cmd == 's':
             self.do_subscribe(remaining)
@@ -37,6 +39,11 @@ class Bridge:
         sys.stdout.write(line + "\n")
 
     # Command Handlers
+    def do_will(self, args):
+        self.will_topic = args[0]
+        if len(args) >= 2:
+            self.will_payload = args[1]
+
     def do_connect(self, args):
         if len(args) >= 3:
             self.client = mqtt.Client(args[2])
@@ -44,6 +51,11 @@ class Bridge:
             self.client.on_message = self.on_message
             if len(args) >= 5:
                 self.client.username_pw_set(args[3], args[4])
+            if len(self.willTopic) > 0
+                if len(sef.will_payload) > 0
+                    self.client.will_set(self.will_topic, self.will_payload)
+                else
+                    self.client.will_set(self.will_topic)
             try:
                 self.client.connect(args[0], int(args[1]))
                 self.client.loop_start()
