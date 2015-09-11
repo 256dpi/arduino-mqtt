@@ -6,8 +6,8 @@
 ---|-------------|-----------------------------------------
 -> | will        | `w:topic:(payload)`
 -> | connect     | `c:host:port:id:(user):(pass)`
-<- | approved    | `ca`
-<- | denied      | `cd`
+<- | approved    | `a`
+<- | rejected    | `r`
 -> | subscribe   | `s:(topic)`
 -> | unsubscribe | `u:(topic)`
 -> | publish     | `p:(topic):(data)`

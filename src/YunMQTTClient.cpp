@@ -77,7 +77,7 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 
   // wait for answer
   String ret = this->process.readStringUntil('\n');
-  this->alive = ret.equals("ca");
+  this->alive = ret.equals("a");
 
   if(!this->alive) {
     this->process.close();

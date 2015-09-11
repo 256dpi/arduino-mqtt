@@ -11,9 +11,9 @@ class Bridge:
     # Bridge Callbacks
     def on_connect(self, _, __, ___, rc):
         if rc == 0:
-            self.send_command("ca")
+            self.send_command("a")
         else:
-            self.send_command("cd")
+            self.send_command("r")
     def on_message(self, _, __, msg):
         self.send_command("m:" + msg.topic + ":" + str(msg.payload))
     def on_disconnect(self):
@@ -62,7 +62,7 @@ class Bridge:
                 self.client.connect(args[0], int(args[1]))
                 self.client.loop_start()
             except:
-                self.send_command("cd")
+                self.send_command("r")
 
     def do_subscribe(self, args):
         if self.client and len(args) >= 1:
