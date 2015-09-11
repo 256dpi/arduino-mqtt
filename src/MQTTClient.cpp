@@ -26,6 +26,10 @@ MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->options = MQTTPacket_connectData_initializer;
 }
 
+void MQTTClient::setWill(const char * topic) {
+  this->setWill(topic, "");
+}
+
 void MQTTClient::setWill(const char * topic, const char * payload) {
   this->options.willFlag = 0x1;
   this->options.will.topicName.cstring = (char*)topic;

@@ -5,6 +5,8 @@ class Bridge:
     # Constructor
     def __init__(self):
         self.client = None
+        self.will_topic = ""
+        self.will_payload = ""
 
     # Bridge Callbacks
     def on_connect(self, _, __, ___, rc):
@@ -51,10 +53,10 @@ class Bridge:
             self.client.on_message = self.on_message
             if len(args) >= 5:
                 self.client.username_pw_set(args[3], args[4])
-            if len(self.willTopic) > 0
-                if len(sef.will_payload) > 0
+            if len(self.will_topic) > 0:
+                if len(self.will_payload) > 0:
                     self.client.will_set(self.will_topic, self.will_payload)
-                else
+                else:
                     self.client.will_set(self.will_topic)
             try:
                 self.client.connect(args[0], int(args[1]))

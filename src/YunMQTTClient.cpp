@@ -20,10 +20,14 @@ boolean YunMQTTClient::installBridge(boolean force) {
   Process p;
 
   int r1 = p.runShellCommand("mkdir -p /usr/mqtt");
-  int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
-  int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
+  int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/will-support/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
+  int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/will-support/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
 
   return r1 == 0 && r2 == 0 && r3 == 0;
+}
+
+void YunMQTTClient::setWill(const char * topic) {
+  this->setWill(topic, "");
 }
 
 void YunMQTTClient::setWill(const char * topic, const char * payload) {
@@ -46,10 +50,10 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
   this->process.readStringUntil('\n');
 
   // set will if available
-  if(strlen(this->willTopic) > 0) {
+  if(this->willTopic != NULL && strlen(this->willTopic) > 0) {
     this->process.print("w:");
     this->process.print(this->willTopic);
-    if(strlen(this->willPayload) > 0) {
+    if(this->willPayload != NULL && strlen(this->willPayload) > 0) {
       this->process.print(':');
       this->process.print(this->willPayload);
     }
