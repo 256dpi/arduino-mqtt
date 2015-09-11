@@ -50,10 +50,10 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
   this->process.readStringUntil('\n');
 
   // set will if available
-  if(this->willTopic != NULL && strlen(this->willTopic) > 0) {
+  if(this->willTopic != NULL) {
     this->process.print("w:");
     this->process.print(this->willTopic);
-    if(this->willPayload != NULL && strlen(this->willPayload) > 0) {
+    if(this->willPayload != NULL) {
       this->process.print(':');
       this->process.print(this->willPayload);
     }
