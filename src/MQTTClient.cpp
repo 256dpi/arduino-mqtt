@@ -1,6 +1,4 @@
 #include "MQTTClient.h"
-#include "lib/MQTTConnect.h"
-#include "lib/MQTTPacket.h"
 
 void messageArrived(MQTT::MessageData& messageData) {
   MQTT::Message &message = messageData.message;
