@@ -15,10 +15,17 @@ void messageArrived(MQTT::MessageData& messageData) {
   messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 }
 
-// if you use this constructor
 MQTTClient::MQTTClient() {}
 
-MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
+MQTTClient::MQTTClient(const char * hostname, int port, Client& client) {
+  this->begin(hostname, port, client);
+}
+
+void MQTTClient::begin(const char * hostname, Client& client) {
+  this->begin(hostname, 1883, client);
+}
+
+void MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
   this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
   this->client->setDefaultMessageHandler(messageArrived);
