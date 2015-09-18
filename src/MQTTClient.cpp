@@ -15,6 +15,9 @@ void messageArrived(MQTT::MessageData& messageData) {
   messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 }
 
+// if you use this constructor
+MQTTClient::MQTTClient() {}
+
 MQTTClient::MQTTClient(const char * _hostname, int _port, Client& _client) {
   this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);

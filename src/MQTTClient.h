@@ -25,6 +25,7 @@ private:
   const char * hostname;
   int port;
 public:
+  MQTTClient();
   MQTTClient(const char * hostname, int port, Client& client);
   MQTTClient(const char * hostname, Client& client) : MQTTClient(hostname, 1883, client){};
   void setWill(const char * topic);
