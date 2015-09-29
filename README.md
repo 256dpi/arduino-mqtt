@@ -76,8 +76,10 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
 Initialize the `MQTTClient` object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
-- **`void MQTTClient::begin(const char * hostname, Client& client)`**
-- **`void MQTTClient::begin(const char * hostname, int port, Client& client)`**
+```c++
+void MQTTClient::begin(const char * hostname, Client& client)
+void MQTTClient::begin(const char * hostname, int port, Client& client)
+```
 
 Initialize the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`):
 
