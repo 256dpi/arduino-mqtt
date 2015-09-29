@@ -15,7 +15,7 @@ void YunMQTTClient::begin(const char * hostname, int port) {
   this->port = port;
 }
 
-int YunMQTTClient::installBridge() {
+int YunMQTTClient::updateBridge() {
   Process p;
 
   int r1 = p.runShellCommand("mkdir -p /usr/arduino-mqtt");
@@ -45,7 +45,7 @@ boolean YunMQTTClient::connect(const char * clientId) {
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
-  if(this->installBridge() == 0) {
+  if(this->updateBridge() == 0) {
     return false;
   }
 

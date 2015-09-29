@@ -16,7 +16,7 @@ private:
   const char * willTopic = NULL;
   const char * willPayload = NULL;
   boolean alive = false;
-  int installBridge();
+  int updateBridge();
 public:
   YunMQTTClient();
   void begin(const char * hostname);
