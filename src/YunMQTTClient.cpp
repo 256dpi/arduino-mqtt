@@ -1,3 +1,5 @@
+#ifdef ARDUINO_AVR_YUN
+
 #include "YunMQTTClient.h"
 
 #include <FileIO.h>
@@ -163,3 +165,5 @@ void YunMQTTClient::disconnect() {
   // send disconnect request
   this->process.print("d\n");
 }
+
+#endif //ARDUINO_AVR_YUN
