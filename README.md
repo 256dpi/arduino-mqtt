@@ -20,6 +20,11 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 This library has been officially tested on the **Arduino Yùn**. Other boards and shields should work, but may need custom initialization of the Client class.
 
+Here is a list of platforms that are supported:
+
+- [Arduino Yùn](https://www.arduino.cc/en/Main/ArduinoBoardYun)
+- [ESP8266](https://github.com/esp8266/Arduino)
+
 ## Example
 
 - [Example using the alternative YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/YunMQTTClient/YunMQTTClient.ino).
