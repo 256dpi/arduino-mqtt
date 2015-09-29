@@ -10,5 +10,8 @@ rm -rf ./src/lib/linux
 rm -rf ./src/lib/mbed
 rm ./src/lib/*Server.c
 rm ./src/lib/MQTTFormat.*
+rm ./src/lib/MQTTLogging.h
+
+sed -i '' '/#include "MQTTLogging.h"/d' ./src/lib/MQTTClient.h
 
 rm -rf ./lib
