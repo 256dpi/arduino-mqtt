@@ -74,19 +74,14 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
 ## API
 
-Initialize the `MQTTClient` object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
+Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
-void MQTTClient::begin(const char * hostname, Client& client);
-void MQTTClient::begin(const char * hostname, int port, Client& client);
+void begin(const char * hostname, Client& client);
+void begin(const char * hostname, int port, Client& client);
 ```
 
-Initialize the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`):
-
-```c++
-void YunMQTTClient::begin(const char * hostname);
-void YunMQTTClient::begin(const char * hostname, int port);
-```
+_The special`YunMQTTClient` does not need the `client` parameter.
 
 Set the will message that gets registered on a connect:
 
