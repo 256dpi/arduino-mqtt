@@ -14,8 +14,6 @@ set(SOURCE_FILES
     src/lib/MQTTConnect.h
     src/lib/MQTTConnectClient.c
     src/lib/MQTTDeserializePublish.c
-    src/lib/MQTTFormat.c
-    src/lib/MQTTFormat.h
     src/lib/MQTTLogging.h
     src/lib/MQTTPacket.c
     src/lib/MQTTPacket.h

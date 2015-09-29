@@ -9,5 +9,6 @@ rm -rf ./src/lib/arduino
 rm -rf ./src/lib/linux
 rm -rf ./src/lib/mbed
 rm ./src/lib/*Server.c
+rm ./src/lib/MQTTFormat.*
 
 rm -rf ./lib
