@@ -16,10 +16,11 @@ private:
   const char * willTopic = NULL;
   const char * willPayload = NULL;
   boolean alive = false;
+  int updateBridge();
 public:
-  YunMQTTClient(const char * hostname, int port);
-  YunMQTTClient(const char * hostname) : YunMQTTClient(hostname, 1883){};
-  int installBridge(boolean force);
+  YunMQTTClient();
+  void begin(const char * hostname);
+  void begin(const char * hostname, int port);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);

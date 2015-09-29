@@ -8,7 +8,7 @@ The first release of the library only supports QoS0 and the basic features to ge
 
 This library is an alternative to the [pubsubclient](https://github.com/knolleary/pubsubclient) library by [knolleary](https://github.com/knolleary) which uses a custom protocol implementation.
 
-[Download version 1.7.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.7.0/mqtt.zip)
+[Download version 1.8.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.8.0/mqtt.zip)
 
 *Or even better use the newly available Library Manager in the Arduino IDE.*
 
@@ -35,13 +35,15 @@ Here is a list of platforms that are supported:
 #include <MQTTClient.h>
 
 YunClient net;
-MQTTClient client("broker.shiftr.io", net);
+MQTTClient client;
 
 unsigned long lastMillis = 0;
 
 void setup() {
   Bridge.begin();
   Serial.begin(9600);
+  client.begin("broker.shiftr.io", net);
+  
   Serial.println("connecting...");
   if (client.connect("arduino", "try", "try")) {
     Serial.println("connected!");
@@ -54,7 +56,7 @@ void setup() {
 
 void loop() {
   client.loop();
-  // publish message roughly every second
+  // publish a message roughly every second.
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
@@ -72,55 +74,70 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
 ## API
 
-- **`MQTTClient(const char * hostname, Client& client)`**
-- **`MQTTClient(const char * hostname, int port, Client& client)`**
+Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
-Constructor for the `MQTTClient` object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport.
+```c++
+void begin(const char * hostname, Client& client);
+void begin(const char * hostname, int port, Client& client);
+```
 
-- **`YunMQTTClient(const char * hostname)`**
-- **`YunMQTTClient(const char * hostname, int port)`**
+_The special`YunMQTTClient` does not need the `client` parameter._
 
-Constructor for the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`).
+Set the will message that gets registered on a connect:
 
-- **`int installBridge(boolean force)`**
+```c++
+void setWill(const char * topic);
+void setWill(const char * topic, const char * payload);
+```
 
-Installs the python bridge on the linux processor. Pass `true` to force an update if the code already exists. This function only works in conjunction with the `YunMQTTClient` object. A return value of 0 means that there was an error while installing, 1 means that the bridge is already installed and 2 means that there was an update.
+Connect to broker using the supplied client id and an optional username and password:
 
-- **`void setWill(const char * topic)`**
-- **`void setWill(const char * topic, const char * payload)`**
+```c++
+boolean connect(const char * clientId);
+boolean connect(const char * clientId, const char * username, const char * password);
+```
 
-Sets the will message that gets registered on a connect.
+_This functions returns a value that indicates if the connection has been established successfully._
 
-- **`boolean connect(const char * clientId)`**
-- **`boolean connect(const char * clientId, const char* username, const char* password)`**
+Publishes a message to the broker with an optional payload:
 
-Connects to broker using the supplied client id and an optional username and password. This functions return value indicates if the connection has been established successfully.
+```c++
+void publish(String topic);
+void publish(String topic, String payload);
+void publish(const char * topic, String payload);
+void publish(const char * topic, const char * payload);
+```
 
-- **`void publish(String topic)`**
-- **`void publish(String topic, String payload)`**
-- **`void publish(const char * topic, String payload)`**
-- **`void publish(const char * topic, const char * payload)`**
+Subscribe to a topic: 
 
-Publishes a message to the broker with an optional payload. 
+```c++
+void subscribe(String topic);
+void subscribe(const char * topic);
+```
 
-- **`void subscribe(String topic)`**
-- **`void subscribe(const char * topic)`**
+Unsubscribe from a topic:
 
-Subscribes to a topic.
+```c++
+void unsubscribe(String topic);
+void unsubscribe(const char * topic);
+```
 
-- **`void unsubscribe(String topic)`**
-- **`void unsubscribe(const char * topic)`**
+Sends and receives packets: 
 
-Unsubscribes from a topic.
+```c++
+void loop();
+```
 
-- **`void loop()`**
+_This function should be called in every `loop`._
 
-Sends and receives packets. This function should be called as often as possible.
+Check if the client is currently connected:
 
-- **`boolean connected()`**
+```c++
+boolean connected();
+```
 
-Checks if the client is currently connected.
+Disconnects from the broker:
 
-- **`void disconnect()`**
-
-Disconnects from the broker.
+```c++
+void disconnect();
+```
