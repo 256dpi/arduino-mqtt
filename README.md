@@ -81,7 +81,7 @@ void begin(const char * hostname, Client& client);
 void begin(const char * hostname, int port, Client& client);
 ```
 
-_The special`YunMQTTClient` does not need the `client` parameter.
+_The special`YunMQTTClient` does not need the `client` parameter._
 
 Set the will message that gets registered on a connect:
 
