@@ -56,7 +56,7 @@ void setup() {
 
 void loop() {
   client.loop();
-  // publish message roughly every second
+  // publish a message roughly every second.
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
