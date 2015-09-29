@@ -16,18 +16,11 @@ void YunMQTTClient::begin(const char * hostname, int port) {
 }
 
 int YunMQTTClient::installBridge() {
-  boolean f1 = FileSystem.exists("/usr/mqtt/mqtt.py");
-  boolean f2 = FileSystem.exists("/usr/mqtt/bridge.py");
-
-  if(f1 && f2) {
-      return 1;
-  }
-
   Process p;
 
-  int r1 = p.runShellCommand("mkdir -p /usr/mqtt");
-  int r2 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/mqtt.py --no-check-certificate -O /usr/mqtt/mqtt.py");
-  int r3 = p.runShellCommand("wget https://raw.githubusercontent.com/256dpi/arduino-mqtt/master/yun/bridge.py --no-check-certificate -O /usr/mqtt/bridge.py");
+  int r1 = p.runShellCommand("mkdir -p /usr/arduino-mqtt");
+  int r2 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.7.0/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt");
+  int r3 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.7.0/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt");
 
   boolean success = r1 == 0 && r2 == 0 && r3 == 0;
 
