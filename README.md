@@ -77,54 +77,72 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 Initialize the `MQTTClient` object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
-void MQTTClient::begin(const char * hostname, Client& client)
-void MQTTClient::begin(const char * hostname, int port, Client& client)
+void MQTTClient::begin(const char * hostname, Client& client);
+void MQTTClient::begin(const char * hostname, int port, Client& client);
 ```
 
 Initialize the `YunMQTTClient` object using the hostname of the broker and the brokers port (default: `1883`):
 
-- **`void YunMQTTClient::begin(const char * hostname)`**
-- **`void YunMQTTClient::begin(const char * hostname, int port)`**
+```c++
+void YunMQTTClient::begin(const char * hostname);
+void YunMQTTClient::begin(const char * hostname, int port);
+```
 
 Set the will message that gets registered on a connect:
 
-- **`void setWill(const char * topic)`**
-- **`void setWill(const char * topic, const char * payload)`**
+```c++
+void setWill(const char * topic);
+void setWill(const char * topic, const char * payload);
+```
 
 Connect to broker using the supplied client id and an optional username and password:
 
-- **`boolean connect(const char * clientId)`**
-- **`boolean connect(const char * clientId, const char* username, const char* password)`**
+```c++
+boolean connect(const char * clientId);
+boolean connect(const char * clientId, const char* username, const char* password);
+```
 
 _This functions returns a value that indicates if the connection has been established successfully._
 
 Publishes a message to the broker with an optional payload:
 
-- **`void publish(String topic)`**
-- **`void publish(String topic, String payload)`**
-- **`void publish(const char * topic, String payload)`**
-- **`void publish(const char * topic, const char * payload)`**
+```c++
+void publish(String topic);
+void publish(String topic, String payload);
+void publish(const char * topic, String payload);
+void publish(const char * topic, const char * payload);
+```
 
 Subscribe to a topic: 
 
-- **`void subscribe(String topic)`**
-- **`void subscribe(const char * topic)`**
+```c++
+void subscribe(String topic);
+void subscribe(const char * topic);
+```
 
 Unsubscribe from a topic:
 
-- **`void unsubscribe(String topic)`**
-- **`void unsubscribe(const char * topic)`**
+```c++
+void unsubscribe(String topic);
+void unsubscribe(const char * topic);
+```
 
 Sends and receives packets: 
 
-- **`void loop()`**
+```c++
+void loop();
+```
 
 _This function should be called in every `loop`._
 
 Check if the client is currently connected:
 
-- **`boolean connected()`**
+```c++
+boolean connected();
+```
 
 Disconnects from the broker:
 
-- **`void disconnect()`**
+```c++
+void disconnect();
+```
