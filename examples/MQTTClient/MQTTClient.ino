@@ -3,13 +3,15 @@
 #include <MQTTClient.h>
 
 YunClient net;
-MQTTClient client("broker.shiftr.io", net);
+MQTTClient client;
 
 unsigned long lastMillis = 0;
 
 void setup() {
   Bridge.begin();
   Serial.begin(9600);
+  client.begin("broker.shiftr.io", net);
+
   Serial.println("connecting...");
   if (client.connect("arduino", "try", "try")) {
     Serial.println("connected!");

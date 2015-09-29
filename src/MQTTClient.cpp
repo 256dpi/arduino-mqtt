@@ -17,10 +17,6 @@ void messageArrived(MQTT::MessageData& messageData) {
 
 MQTTClient::MQTTClient() {}
 
-MQTTClient::MQTTClient(const char * hostname, int port, Client& client) {
-  this->begin(hostname, port, client);
-}
-
 void MQTTClient::begin(const char * hostname, Client& client) {
   this->begin(hostname, 1883, client);
 }

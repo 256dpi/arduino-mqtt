@@ -4,19 +4,23 @@
 
 #include <FileIO.h>
 
-YunMQTTClient::YunMQTTClient(const char * _hostname, int _port) {
-  this->hostname = _hostname;
-  this->port = _port;
+YunMQTTClient::YunMQTTClient() {}
+
+void YunMQTTClient::begin(const char * hostname) {
+  this->begin(hostname, 1883);
 }
 
-int YunMQTTClient::installBridge(boolean force) {
-  if(!force) {
-    boolean f1 = FileSystem.exists("/usr/mqtt/mqtt.py");
-    boolean f2 = FileSystem.exists("/usr/mqtt/bridge.py");
+void YunMQTTClient::begin(const char * hostname, int port) {
+  this->hostname = hostname;
+  this->port = port;
+}
 
-    if(f1 && f2) {
+int YunMQTTClient::installBridge() {
+  boolean f1 = FileSystem.exists("/usr/mqtt/mqtt.py");
+  boolean f2 = FileSystem.exists("/usr/mqtt/bridge.py");
+
+  if(f1 && f2) {
       return 1;
-    }
   }
 
   Process p;
@@ -48,6 +52,10 @@ boolean YunMQTTClient::connect(const char * clientId) {
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
+  if(this->installBridge() == 0) {
+    return false;
+  }
+
   this->process.begin("python");
   this->process.addParameter("-u");
   this->process.addParameter("/usr/mqtt/bridge.py");
