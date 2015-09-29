@@ -94,7 +94,7 @@ Connect to broker using the supplied client id and an optional username and pass
 - **`boolean connect(const char * clientId)`**
 - **`boolean connect(const char * clientId, const char* username, const char* password)`**
 
-- This functions returns a value that indicates if the connection has been established successfully.
+_This functions returns a value that indicates if the connection has been established successfully._
 
 Publishes a message to the broker with an optional payload:
 
@@ -117,7 +117,7 @@ Sends and receives packets:
 
 - **`void loop()`**
 
-- This function should be called in every `loop`.
+_This function should be called in every `loop`._
 
 Check if the client is currently connected:
 
