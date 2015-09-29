@@ -16,7 +16,6 @@
  *******************************************************************************/
 
 #include "MQTTPacket.h"
-#include "StackTrace.h"
 
 #include <string.h>
 
@@ -60,7 +59,6 @@ int MQTTSerialize_publish(unsigned char* buf, int buflen, unsigned char dup, int
 	int rem_len = 0;
 	int rc = 0;
 
-	FUNC_ENTRY;
 	if (MQTTPacket_len(rem_len = MQTTSerialize_publishLength(qos, topicName, payloadlen)) > buflen)
 	{
 		rc = MQTTPACKET_BUFFER_TOO_SHORT;
@@ -86,7 +84,6 @@ int MQTTSerialize_publish(unsigned char* buf, int buflen, unsigned char dup, int
 	rc = ptr - buf;
 
 exit:
-	FUNC_EXIT_RC(rc);
 	return rc;
 }
 
@@ -107,7 +104,6 @@ int MQTTSerialize_ack(unsigned char* buf, int buflen, unsigned char packettype, 
 	int rc = 0;
 	unsigned char *ptr = buf;
 
-	FUNC_ENTRY;
 	if (buflen < 4)
 	{
 		rc = MQTTPACKET_BUFFER_TOO_SHORT;
@@ -122,7 +118,6 @@ int MQTTSerialize_ack(unsigned char* buf, int buflen, unsigned char packettype, 
 	writeInt(&ptr, packetid);
 	rc = ptr - buf;
 exit:
-	FUNC_EXIT_RC(rc);
 	return rc;
 }
 

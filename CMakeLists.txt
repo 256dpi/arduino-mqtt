@@ -14,7 +14,6 @@ set(SOURCE_FILES
     src/lib/MQTTConnect.h
     src/lib/MQTTConnectClient.c
     src/lib/MQTTDeserializePublish.c
-    src/lib/MQTTLogging.h
     src/lib/MQTTPacket.c
     src/lib/MQTTPacket.h
     src/lib/MQTTPublish.h
@@ -23,7 +22,6 @@ set(SOURCE_FILES
     src/lib/MQTTSubscribeClient.c
     src/lib/MQTTUnsubscribe.h
     src/lib/MQTTUnsubscribeClient.c
-    src/lib/StackTrace.h
     src/MQTTClient.cpp
     src/MQTTClient.h
     src/Network.cpp
