@@ -51,7 +51,7 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 
   this->process.begin("python");
   this->process.addParameter("-u");
-  this->process.addParameter("/usr/mqtt/bridge.py");
+  this->process.addParameter("/usr/arduino-mqtt/bridge.py");
   this->process.runAsynchronously();
   this->process.setTimeout(10000);
 
