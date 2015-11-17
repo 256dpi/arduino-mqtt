@@ -10,6 +10,10 @@ void setup() {
   Serial.begin(9600);
   client.begin("broker.shiftr.io");
 
+  connect();
+}
+
+void connect() {
   Serial.print("connecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
@@ -23,6 +27,10 @@ void setup() {
 
 void loop() {
   client.loop();
+
+  if(!client.connected()) {
+    connect();
+  }
 
   // publish a message roughly every second.
   if(millis() - lastMillis > 1000) {
