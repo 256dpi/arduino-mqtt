@@ -10,19 +10,21 @@ void setup() {
   Serial.begin(9600);
   client.begin("broker.shiftr.io");
 
-  Serial.println("connecting...");
-  if (client.connect("arduino", "try", "try")) {
-    Serial.println("connected!");
-    client.subscribe("/example");
-    // client.unsubscribe("/example");
-  } else {
-    Serial.println("not connected!");
+  Serial.print("connecting...");
+  while (!client.connect("arduino", "try", "try")) {
+    Serial.print(".");
   }
+
+  Serial.println("\nconnected!");
+
+  client.subscribe("/example");
+  // client.unsubscribe("/example");
 }
 
 void loop() {
   client.loop();
-  // Publish a message roughly every second.
+
+  // publish a message roughly every second.
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
