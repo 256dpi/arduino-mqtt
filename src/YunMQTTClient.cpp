@@ -148,12 +148,13 @@ void YunMQTTClient::loop() {
       messageReceived(topic, payload, (char*)payload.c_str(), payload.length());
     } else if(ret.startsWith("e")) {
       this->alive = false;
+      this->process.close();
     }
   }
 }
 
 boolean YunMQTTClient::connected() {
-  return this->alive;
+  return this->process.running() && this->alive;
 }
 
 void YunMQTTClient::disconnect() {
