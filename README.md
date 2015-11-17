@@ -87,8 +87,8 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
-void begin(const char * hostname, Client& client);
-void begin(const char * hostname, int port, Client& client);
+boolean begin(const char * hostname, Client& client);
+boolean begin(const char * hostname, int port, Client& client);
 ```
 
 _The special`YunMQTTClient` does not need the `client` parameter._

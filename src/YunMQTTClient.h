@@ -19,8 +19,8 @@ private:
   boolean updateBridge();
 public:
   YunMQTTClient();
-  void begin(const char * hostname);
-  void begin(const char * hostname, int port);
+  boolean begin(const char * hostname);
+  boolean begin(const char * hostname, int port);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);

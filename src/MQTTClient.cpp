@@ -17,17 +17,19 @@ void messageArrived(MQTT::MessageData& messageData) {
 
 MQTTClient::MQTTClient() {}
 
-void MQTTClient::begin(const char * hostname, Client& client) {
-  this->begin(hostname, 1883, client);
+boolean MQTTClient::begin(const char * hostname, Client& client) {
+  return this->begin(hostname, 1883, client);
 }
 
-void MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
+boolean MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
   this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
   this->client->setDefaultMessageHandler(messageArrived);
   this->hostname = _hostname;
   this->port = _port;
   this->options = MQTTPacket_connectData_initializer;
+
+  return true;
 }
 
 void MQTTClient::setWill(const char * topic) {

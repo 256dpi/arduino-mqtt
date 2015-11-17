@@ -6,13 +6,15 @@
 
 YunMQTTClient::YunMQTTClient() {}
 
-void YunMQTTClient::begin(const char * hostname) {
-  this->begin(hostname, 1883);
+boolean YunMQTTClient::begin(const char * hostname) {
+  return this->begin(hostname, 1883);
 }
 
-void YunMQTTClient::begin(const char * hostname, int port) {
+boolean YunMQTTClient::begin(const char * hostname, int port) {
   this->hostname = hostname;
   this->port = port;
+
+  return this->updateBridge();
 }
 
 boolean YunMQTTClient::updateBridge() {
@@ -39,10 +41,6 @@ boolean YunMQTTClient::connect(const char * clientId) {
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
-  if(!this->updateBridge()) {
-    return false;
-  }
-
   this->process.begin("python");
   this->process.addParameter("-u");
   this->process.addParameter("/usr/arduino-mqtt/bridge.py");
