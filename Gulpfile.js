@@ -21,7 +21,7 @@ gulp.task('thin', ['copy'], function(cb){
     './build/CMakeLists.txt',
     './build/yun'
   ], cb);
-})
+});
 
 gulp.task('compress', ['thin'], function () {
   return gulp.src('build/**/*')
