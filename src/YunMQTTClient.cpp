@@ -15,20 +15,14 @@ void YunMQTTClient::begin(const char * hostname, int port) {
   this->port = port;
 }
 
-int YunMQTTClient::updateBridge() {
+boolean YunMQTTClient::updateBridge() {
   Process p;
 
   int r1 = p.runShellCommand("mkdir -p /usr/arduino-mqtt");
   int r2 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.8.0/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt");
   int r3 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.8.0/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt");
 
-  boolean success = r1 == 0 && r2 == 0 && r3 == 0;
-
-  if(success) {
-    return 2;
-  } else {
-    return 0;
-  }
+  return r1 == 0 && r2 == 0 && r3 == 0;
 }
 
 void YunMQTTClient::setWill(const char * topic) {
@@ -45,7 +39,7 @@ boolean YunMQTTClient::connect(const char * clientId) {
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
-  if(this->updateBridge() == 0) {
+  if(!this->updateBridge()) {
     return false;
   }
 
@@ -91,9 +85,9 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
   if(!this->alive) {
     this->process.close();
     return false;
-  } else {
-    return true;
   }
+
+  return true;
 }
 
 void YunMQTTClient::publish(String topic) {
