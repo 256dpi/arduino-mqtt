@@ -16,6 +16,8 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 - The maximum size for packets being published and received is set by default to 128 bytes. To change that value, you need to download the library manually and change the value in the following file: https://github.com/256dpi/arduino-mqtt/blob/master/src/MQTTClient.h#L5.
 
+- On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
+
 ## Compatibility
 
 This library has been officially tested on the **Arduino Yùn**. Other boards and shields should work, but may need custom initialization of the Client class.
