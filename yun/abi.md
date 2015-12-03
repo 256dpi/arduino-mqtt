@@ -5,16 +5,17 @@
 The following commands are exchanged between the python script and the arduino library:
 
    | Command     | Format
----|-------------|-----------------------------------------
--> | will        | `w:topic:(payload)`
--> | connect     | `c:host:port:id:(user):(pass)`
-<- | approved    | `a`
-<- | rejected    | `r`
--> | subscribe   | `s:(topic)`
--> | unsubscribe | `u:(topic)`
--> | publish     | `p:(topic):(data)`
-<- | message     | `m:(topic):(data)`
--> | disconnect  | `d`
-<- | closed      | `e`
+---|-------------|------------------------------------
+<- | bootup      | `b;`
+-> | will        | `w:topic:payload_len;(payload)`
+-> | connect     | `c:host:port:id:(user):(pass);`
+<- | approved    | `a;`
+<- | rejected    | `r;`
+-> | subscribe   | `s:topic;`
+-> | unsubscribe | `u:topic;`
+-> | publish     | `p:topic:payload_len;(payload)`
+<- | message     | `m:topic:payload_len;(payload)`
+-> | disconnect  | `d;`
+<- | closed      | `e;`
 
 All commands end with a standard line break `\n`.
