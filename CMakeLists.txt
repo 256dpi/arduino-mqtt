@@ -33,4 +33,6 @@ set(SOURCE_FILES
     examples/MQTTClient/MQTTClient.ino
     examples/YunMQTTClient/YunMQTTClient.ino)
 
+set(ARDUINO_AVR_YUN 1)
+
 add_executable(arduino_mqtt ${SOURCE_FILES})
