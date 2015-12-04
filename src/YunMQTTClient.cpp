@@ -147,8 +147,10 @@ void YunMQTTClient::loop() {
       int endPayloadLength = ret.indexOf(':', startPayloadLength + 1);
       int payloadLength = ret.substring(startPayloadLength, endPayloadLength).toInt();
 
-      char buf[payloadLength];
+      char buf[payloadLength+1];
       process.readBytes(buf, payloadLength);
+      buf[payloadLength] = '\0';
+
       messageReceived(topic, String(buf), buf, payloadLength);
     } else if(ret.startsWith("e")) {
       this->alive = false;
