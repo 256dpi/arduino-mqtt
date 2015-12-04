@@ -6,7 +6,7 @@ The following commands are exchanged between the python script and the arduino l
 
    | Command     | Format
 ---|-------------|------------------------------------
-<- | bootup      | `b;`
+<- | boot        | `b;`
 -> | will        | `w:topic:payload_len;(payload)`
 -> | connect     | `c:host:port:id:(user):(pass);`
 <- | approved    | `a;`
