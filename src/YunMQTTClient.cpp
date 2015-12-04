@@ -74,7 +74,7 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
     this->process.print(':');
     this->process.print(password);
   }
-  this->process.print(';\n');
+  this->process.print(";\n");
 
   // wait for answer
   String ret = this->process.readStringUntil('\n');
