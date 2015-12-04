@@ -11,13 +11,12 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
 
+  // run a very basic automated test
   client.begin("broker.shiftr.io", net);
   test.run(&client);
 }
 
-void loop() {
-  test.loop();
-}
+void loop() {}
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
   test.message(topic, payload);
