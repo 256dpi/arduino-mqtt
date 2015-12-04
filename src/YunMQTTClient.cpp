@@ -141,10 +141,12 @@ void YunMQTTClient::loop() {
     if(ret.startsWith("m")) {
       int startTopic = 2;
       int endTopic = ret.indexOf(':', startTopic + 1);
+      String topic = ret.substring(startTopic, endTopic);
+
       int startPayloadLength = endTopic + 1;
       int endPayloadLength = ret.indexOf(':', startPayloadLength + 1);
-      String topic = ret.substring(startTopic, endTopic);
       int payloadLength = ret.substring(startPayloadLength, endPayloadLength).toInt();
+
       char buf[payloadLength];
       process.readBytes(buf, payloadLength);
       messageReceived(topic, String(buf), buf, payloadLength);
