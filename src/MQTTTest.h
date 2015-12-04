@@ -13,6 +13,7 @@ private:
     boolean passedTest = false;
     String testTopic;
     String testPayload;
+    boolean testConnectivity(boolean test);
 };
 
 /* Methods */
@@ -21,8 +22,10 @@ template <class T>
 void MQTTTest<T>::run(T *client) {
   this->client = client;
 
+  Serial.println("Starting tests...");
+
   Serial.print("[Test 1] Connect: ");
-  this->printResult(this->client->connect("arduino-mqtt-test", "try", "try"));
+  this->printResult(this->client->connect("arduino-mqtt-test", "try", "try") && this->testConnectivity(true));
 
   Serial.print("[Test 2] Subscribe & Publish: ");
   this->client->subscribe("arduino-mqtt-test/topic1");
@@ -39,7 +42,9 @@ void MQTTTest<T>::run(T *client) {
 
   Serial.print("[Test 4] Disconnect: ");
   this->client->disconnect();
-  this->printResult(!this->client->connected());
+  this->printResult(this->testConnectivity(false));
+
+  Serial.println("Tests finished!");
 }
 
 template <class T>
@@ -69,4 +74,13 @@ boolean MQTTTest<T>::testMessage(const char *topic, const char *payload) {
   this->passedTest = false;
 
   return ret;
+}
+
+template <class T>
+boolean MQTTTest<T>::testConnectivity(boolean test) {
+  while(this->client->connected() != test) {
+    this->client->loop();
+  }
+
+  return this->client->connected() == test;
 }
