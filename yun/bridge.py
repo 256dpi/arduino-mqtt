@@ -11,15 +11,16 @@ class Bridge:
         self.client = None
         self.will_topic = ""
         self.will_payload = ""
+        self.stopped = False
 
     # Bridge Callbacks
     def on_connect(self, _, __, ___, rc):
         self.send_command("a;" if rc == 0 else "r;")
     def on_message(self, _, __, msg):
         self.send_command("m:" + msg.topic + ":" + str(len(msg.payload)) + ";" + str(msg.payload))
-    def on_disconnect(self):
-        self.client.loop_stop()
+    def on_disconnect(self, _, __, ___):
         self.send_command("e;")
+        self.stopped = True
 
     # Command Helpers
     def parse_command(self, line):
@@ -51,6 +52,7 @@ class Bridge:
         self.client = mqtt.Client(args[2])
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
+        self.client.on_disconnect = self.on_disconnect
         if len(args) >= 5:
             self.client.username_pw_set(args[3], args[4])
         if len(self.will_topic) > 0:
@@ -68,12 +70,13 @@ class Bridge:
     def do_publish(self, args):
         self.client.publish(args[0], self.read_chunk(int(args[1])))
     def do_disconnect(self):
+        self.client.loop_stop()
         self.client.disconnect()
 
     # Main
     def run(self):
         self.send_command("b;")
-        while True:
+        while not self.stopped:
             self.parse_command(self.read_until(self.PAYLOAD_SEPERATOR))
 
     # Low Level Helpers
