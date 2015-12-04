@@ -13,8 +13,8 @@ private:
   Process process;
   const char * hostname;
   int port;
-  const char * willTopic = NULL;
-  const char * willPayload = NULL;
+  const char * willTopic = "";
+  const char * willPayload = "";
   boolean alive = false;
   boolean updateBridge();
 public:
