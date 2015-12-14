@@ -27,62 +27,12 @@ Here is a list of platforms that are supported:
 - [Arduino Yùn](https://www.arduino.cc/en/Main/ArduinoBoardYun)
 - [ESP8266](https://github.com/esp8266/Arduino)
 
-## Example
+## Examples
 
-- [Example using the alternative YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/YunMQTTClient/YunMQTTClient.ino).
+The examples show how you can use the library with your hardware:
 
-```c++
-#include <Bridge.h>
-#include <YunClient.h>
-#include <MQTTClient.h>
-
-YunClient net;
-MQTTClient client;
-
-unsigned long lastMillis = 0;
-
-void setup() {
-  Bridge.begin();
-  Serial.begin(9600);
-  client.begin("broker.shiftr.io", net);
-
-  connect();
-}
-
-void connect() {
-  Serial.print("connecting...");
-  while (!client.connect("arduino", "try", "try")) {
-    Serial.print(".");
-  }
-
-  Serial.println("\nconnected!");
-
-  client.subscribe("/example");
-  // client.unsubscribe("/example");
-}
-
-void loop() {
-  client.loop();
-
-  if(!client.connected()) {
-    connect();
-  }
-
-  // publish a message roughly every second.
-  if(millis() - lastMillis > 1000) {
-    lastMillis = millis();
-    client.publish("/hello", "world");
-  }
-}
-
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-  Serial.print("incoming: ");
-  Serial.print(topic);
-  Serial.print(" - ");
-  Serial.print(payload);
-  Serial.println();
-}
-```
+- [ArduinoYun_MQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
+- [ArduinoYun_YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
 
 ## API
 

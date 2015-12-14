@@ -1,16 +1,27 @@
-#include <Bridge.h>
-#include <YunClient.h>
-#include <MQTTClient.h>
+// This example uses an Arduino Yun and the
+// YunMQTTClient to connect to shiftr.io.
+//
+// The YunMQTTClient uses a Linux side python
+// script to manage the connection which results
+// in less program space and memory used on the Arduino.
+//
+// You can check on your device after a successful
+// connection here: https://shiftr.io/try.
+//
+// by Joël Gähwiler
+// https://github.com/256dpi/arduino-mqtt
 
-YunClient net;
-MQTTClient client;
+#include <Bridge.h>
+#include <YunMQTTClient.h>
+
+YunMQTTClient client;
 
 unsigned long lastMillis = 0;
 
 void setup() {
   Bridge.begin();
   Serial.begin(9600);
-  client.begin("broker.shiftr.io", net);
+  client.begin("broker.shiftr.io");
 
   connect();
 }
