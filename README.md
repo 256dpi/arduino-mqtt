@@ -31,8 +31,10 @@ Here is a list of platforms that are supported:
 
 The examples show how you can use the library with your hardware:
 
-- [ArduinoYun_MQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
-- [ArduinoYun_YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
+- [Arduino Yun (MQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
+- [Arduino Yun (YunMQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
+- [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)
+- [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
 
 ## API
 

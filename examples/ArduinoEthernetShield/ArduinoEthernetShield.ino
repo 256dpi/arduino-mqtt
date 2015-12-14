@@ -1,30 +1,33 @@
-#include <WiFi.h>
+// This example uses an Arduino Uno together with
+// an Ethernet Shield to connect to shiftr.io.
+//
+// You can check on your device after a successful
+// connection here: https://shiftr.io/try.
+//
+// by Joël Gähwiler
+// https://github.com/256dpi/arduino-mqtt
+
+#include <Ethernet.h>
 #include <MQTTClient.h>
 
-char *ssid = "ssid";
-char *pass = "pass";
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte ip[] = { 192, 168, 1, 177 };
 
-WiFiClient net;
+EthernetClient net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;
 
 void setup() {
   Serial.begin(9600);
-  WiFi.begin(ssid, pass);
+  Ethernet.begin(mac, ip);
   client.begin("broker.shiftr.io", net);
 
   connect();
 }
 
 void connect() {
-  Serial.print("checking wifi...");
-  while (!WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
-
-  Serial.print("\nconnecting...");
+  Serial.print("connecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
   }
