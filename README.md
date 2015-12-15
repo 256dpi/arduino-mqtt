@@ -12,7 +12,7 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 *Or even better use the newly available Library Manager in the Arduino IDE.*
 
-## Examples
+## Compatibility
 
 The following examples show how you can use the library with various Arduino compatible hardware:
 
@@ -29,6 +29,63 @@ Other shields and boards should work if they also provide a [Client](https://www
 - The maximum size for packets being published and received is set by default to 128 bytes. To change that value, you need to download the library manually and change the value in the following file: https://github.com/256dpi/arduino-mqtt/blob/master/src/MQTTClient.h#L5.
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
+
+## Example
+
+The following example uses an Arduino Yun and the MQTTClient to connect to shiftr.io:
+
+```c++
+#include <Bridge.h>
+#include <YunClient.h>
+#include <MQTTClient.h>
+
+YunClient net;
+MQTTClient client;
+
+unsigned long lastMillis = 0;
+
+void setup() {
+  Bridge.begin();
+  Serial.begin(9600);
+  client.begin("broker.shiftr.io", net);
+
+  connect();
+}
+
+void connect() {
+  Serial.print("connecting...");
+  while (!client.connect("arduino", "try", "try")) {
+    Serial.print(".");
+  }
+
+  Serial.println("\nconnected!");
+
+  client.subscribe("/example");
+  // client.unsubscribe("/example");
+}
+
+void loop() {
+  client.loop();
+
+  if(!client.connected()) {
+    connect();
+  }
+
+  // publish a message roughly every second.
+  if(millis() - lastMillis > 1000) {
+    lastMillis = millis();
+    client.publish("/hello", "world");
+  }
+}
+
+void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+  Serial.print("incoming: ");
+  Serial.print(topic);
+  Serial.print(" - ");
+  Serial.print(payload);
+  Serial.println();
+}
+```
 
 ## API
 
