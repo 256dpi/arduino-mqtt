@@ -12,27 +12,23 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 
 *Or even better use the newly available Library Manager in the Arduino IDE.*
 
+## Examples
+
+The following examples show how you can use the library with various Arduino compatible hardware:
+
+- [Arduino Yun (MQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
+- [Arduino Yun (YunMQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
+- [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)
+- [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
+- [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino)
+
+Other shields and boards should work if they also provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.
+
 ## Caveats
 
 - The maximum size for packets being published and received is set by default to 128 bytes. To change that value, you need to download the library manually and change the value in the following file: https://github.com/256dpi/arduino-mqtt/blob/master/src/MQTTClient.h#L5.
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
-
-## Compatibility
-
-This library has been officially tested on the **Arduino Yùn**. Other boards and shields should work, but may need custom initialization of the Client class.
-
-Here is a list of platforms that are supported:
-
-- [Arduino Yùn](https://www.arduino.cc/en/Main/ArduinoBoardYun)
-- [ESP8266](https://github.com/esp8266/Arduino)
-
-## Examples
-
-The examples show how you can use the library with your hardware:
-
-- [ArduinoYun_MQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
-- [ArduinoYun_YunMQTTClient](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
 
 ## API
 
