@@ -32,7 +32,7 @@ Other shields and boards should work if they also provide a [Client](https://www
 
 ## Example
 
-The following example uses an Arduino Yun and the MQTTClient to connect to shiftr.io:
+The following example uses an Arduino Yun and the MQTTClient to connect to shiftr.io. You can check on your device after a successful connection here: <https://shiftr.io/try>.
 
 ```c++
 #include <Bridge.h>
