@@ -121,6 +121,7 @@ void publish(String topic);
 void publish(String topic, String payload);
 void publish(const char * topic, String payload);
 void publish(const char * topic, const char * payload);
+void publish(const char * topic, char * payload, unsigned int length)
 ```
 
 Subscribe to a topic: 

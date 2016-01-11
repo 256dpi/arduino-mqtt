@@ -101,13 +101,21 @@ void YunMQTTClient::publish(const char * topic, String payload) {
 }
 
 void YunMQTTClient::publish(const char * topic, const char * payload) {
+  this->publish(topic, (char*)payload, strlen(payload));
+}
+
+void YunMQTTClient::publish(const char * topic, char * payload, unsigned int length) {
   // send publish request
   this->process.print("p:");
   this->process.print(topic);
   this->process.print(':');
-  this->process.print(strlen(payload));
+  this->process.print(length);
   this->process.print(';');
-  this->process.print(payload);
+
+  for(int i=0; i<length; i++) {
+    this->process.write(payload[i]);
+  }
+
   this->process.print('\n');
 }
 

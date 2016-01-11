@@ -29,6 +29,7 @@ public:
   void publish(String topic, String payload);
   void publish(const char * topic, String payload);
   void publish(const char * topic, const char * payload);
+  void publish(const char * topic, char * payload, unsigned int length);
   void subscribe(String topic);
   void subscribe(const char * topic);
   void unsubscribe(String topic);

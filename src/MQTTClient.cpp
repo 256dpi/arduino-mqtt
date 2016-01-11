@@ -73,12 +73,16 @@ void MQTTClient::publish(const char * topic, String payload) {
 }
 
 void MQTTClient::publish(const char * topic, const char * payload) {
+  this->publish(topic, (char*)payload, (unsigned int)strlen(payload));
+}
+
+void MQTTClient::publish(const char * topic, char * payload, unsigned int length) {
   MQTT::Message message;
   message.qos = MQTT::QOS0;
   message.retained = false;
   message.dup = false;
-  message.payload = (char*)payload;
-  message.payloadlen = strlen(payload);
+  message.payload = payload;
+  message.payloadlen = length;
   client->publish(topic, message);
 }
 
