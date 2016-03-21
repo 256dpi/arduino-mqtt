@@ -10,8 +10,8 @@
 #include <ESP8266WiFi.h>
 #include <MQTTClient.h>
 
-const char *ssid = "TechnoMan";
-const char *pass = "root@n65u";
+const char *ssid = "";
+const char *pass = "";
 
 WiFiClientSecure net;
 MQTTClient client;
@@ -23,7 +23,7 @@ void connect(); // <- predefine connect() for setup()
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
-  client.begin("frezbo.com",8883, net);
+  client.begin("",8883, net);
 
   connect();
 }
@@ -36,7 +36,7 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "admin", "2091zacker")) {
+  while (!client.connect("arduino", "admin", "admin")) {
     Serial.print(".");
   }
 
