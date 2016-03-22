@@ -11,7 +11,7 @@
 #include <MQTTClient.h>
 
 const char *ssid = "ssid";
-const char *pass = "password";
+const char *pass = "pass";
 
 WiFiClientSecure net;
 MQTTClient client;
@@ -21,9 +21,9 @@ unsigned long lastMillis = 0;
 void connect(); // <- predefine connect() for setup()
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   WiFi.begin(ssid, pass);
-  client.begin("domain.com",8883, net); // MQTT broker documents to use port 8883 for SSL, change as necessary
+  client.begin("broker.shiftr.io", 8883, net); // MQTT brokers usually use port 8883 for secure connections
 
   connect();
 }
@@ -36,14 +36,13 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "admin", "admin")) // order: clientid,username,password; change as necessary
-{
+  while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
   }
 
   Serial.println("\nconnected!");
 
-  client.subscribe("/example/+/+");
+  client.subscribe("/example");
   // client.unsubscribe("/example");
 }
 
@@ -59,7 +58,6 @@ void loop() {
   if(millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
-    Serial.println("tets");
   }
 }
 
