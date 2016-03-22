@@ -21,6 +21,8 @@ The following examples show how you can use the library with various Arduino com
 - [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)
 - [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
 - [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino) ([SSL](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266_SSL/AdafruitHuzzahESP8266_SSL.ino))
+- [Arduino/Genuino WiFi101 Shield](https://www.arduino.cc/en/Main/ArduinoWiFiShield101)
+- [Arduino/Genuino MKR100](https://www.arduino.cc/en/Main/ArduinoMKR1000)
 
 Other shields and boards should work if they also provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.
 
@@ -124,7 +126,7 @@ void publish(const char * topic, const char * payload);
 void publish(const char * topic, char * payload, unsigned int length)
 ```
 
-Subscribe to a topic: 
+Subscribe to a topic:
 
 ```c++
 void subscribe(String topic);
@@ -138,7 +140,7 @@ void unsubscribe(String topic);
 void unsubscribe(const char * topic);
 ```
 
-Sends and receives packets: 
+Sends and receives packets:
 
 ```c++
 void loop();
