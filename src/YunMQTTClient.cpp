@@ -21,8 +21,8 @@ boolean YunMQTTClient::updateBridge() {
   Process p;
 
   int r1 = p.runShellCommand("mkdir -p /usr/arduino-mqtt");
-  int r2 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.4/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt");
-  int r3 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.4/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt");
+  int r2 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.5/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt");
+  int r3 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.5/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt");
 
   return r1 == 0 && r2 == 0 && r3 == 0;
 }
