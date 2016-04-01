@@ -43,7 +43,7 @@ void MQTTClient::setWill(const char * topic, const char * payload) {
 }
 
 boolean MQTTClient::connect(const char * clientId) {
-  return this->connect(clientId, "", "");
+  return this->connect(clientId, NULL, NULL);
 }
 
 boolean MQTTClient::connect(const char * clientId, const char * username, const char * password) {
