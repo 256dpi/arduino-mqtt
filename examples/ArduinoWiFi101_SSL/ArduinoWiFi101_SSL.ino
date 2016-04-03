@@ -27,7 +27,7 @@ unsigned long lastMillis = 0;
 void setup() {
   Serial.begin(9600);
   WiFi.begin(ssid, pass);
-  client.begin("broker.shiftr.io", net);
+  client.begin("broker.shiftr.io", 8883, net);
 
   connect();
 }
