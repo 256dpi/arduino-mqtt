@@ -29,9 +29,7 @@ set(SOURCE_FILES
     src/Timer.cpp
     src/Timer.h
     src/YunMQTTClient.cpp
-    src/YunMQTTClient.h
-    examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino
-    examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
+    src/YunMQTTClient.h)
 
 set(ARDUINO_AVR_YUN 1)
 
