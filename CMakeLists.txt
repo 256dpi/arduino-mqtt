@@ -24,6 +24,7 @@ set(SOURCE_FILES
     src/lib/MQTTUnsubscribeClient.c
     src/MQTTClient.cpp
     src/MQTTClient.h
+    src/MQTTTest.h
     src/Network.cpp
     src/Network.h
     src/Timer.cpp
