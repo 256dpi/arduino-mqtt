@@ -3,6 +3,9 @@
 //
 // IMPORTANT: This example uses the new WiFi101 library.
 //
+// IMPORTANT: You need to install/update the SSL certificates first:
+// https://github.com/arduino-libraries/WiFi101-FirmwareUpdater#to-update-ssl-certificates
+
 // You can check on your device after a successful
 // connection here: https://shiftr.io/try.
 //
@@ -10,12 +13,13 @@
 
 #include <SPI.h>
 #include <WiFi101.h>
+#include <WiFiSSLClient.h>
 #include <MQTTClient.h>
 
 char *ssid = "ssid";
 char *pass = "pass";
 
-WiFiClient net;
+WiFiSSLClient net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;
