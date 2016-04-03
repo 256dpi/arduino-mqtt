@@ -99,7 +99,7 @@ boolean begin(const char * hostname, int port, Client& client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
-- The special`YunMQTTClient` does not need the `client` parameter.
+- The `YunMQTTClient` does not need the `client` parameter.
 
 Set the will message that gets registered on a connect:
 
