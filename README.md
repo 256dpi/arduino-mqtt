@@ -98,7 +98,8 @@ boolean begin(const char * hostname, Client& client);
 boolean begin(const char * hostname, int port, Client& client);
 ```
 
-_The special`YunMQTTClient` does not need the `client` parameter._
+- Specify port `8883` when using SSL clients for secure connections.
+- The special`YunMQTTClient` does not need the `client` parameter.
 
 Set the will message that gets registered on a connect:
 
@@ -114,7 +115,7 @@ boolean connect(const char * clientId);
 boolean connect(const char * clientId, const char * username, const char * password);
 ```
 
-_This functions returns a value that indicates if the connection has been established successfully._
+- This functions returns a value that indicates if the connection has been established successfully.
 
 Publishes a message to the broker with an optional payload:
 
@@ -146,7 +147,7 @@ Sends and receives packets:
 void loop();
 ```
 
-_This function should be called in every `loop`._
+- This function should be called in every `loop`.
 
 Check if the client is currently connected:
 
