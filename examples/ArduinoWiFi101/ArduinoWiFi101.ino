@@ -32,7 +32,7 @@ void connect() {
   Serial.print("checking wifi...");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
-    delay(500);
+    delay(1000);
   }
 
   Serial.print("\nconnecting...");
