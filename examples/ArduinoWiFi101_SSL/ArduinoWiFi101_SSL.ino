@@ -5,7 +5,7 @@
 //
 // IMPORTANT: You need to install/update the SSL certificates first:
 // https://github.com/arduino-libraries/WiFi101-FirmwareUpdater#to-update-ssl-certificates
-
+//
 // You can check on your device after a successful
 // connection here: https://shiftr.io/try.
 //
