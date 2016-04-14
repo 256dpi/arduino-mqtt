@@ -103,6 +103,12 @@ void MQTTClient::unsubscribe(const char * topic) {
 }
   
 void MQTTClient::loop() {
+  if(!this->network.connected() && this->client->isConnected()) {
+    // the following call will not send a packet but reset the instance
+    // to allow proper reconnection
+    this->client->disconnect();
+  }
+
   this->client->yield();
 }
 
