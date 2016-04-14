@@ -38,6 +38,7 @@ void connect() {
   Serial.print("\nconnecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
+    delay(1000);
   }
 
   Serial.println("\nconnected!");
