@@ -1,0 +1,52 @@
+language: generic
+env:
+  global:
+    - IDE_VERSION=1.6.8
+  matrix:
+    - BOARD="arduino:avr:uno"
+    - BOARD="arduino:avr:leonardo"
+    - BOARD="arduino:avr:mega:cpu=atmega2560"
+    - BOARD="arduino:sam:arduino_due_x_dbg"
+    - BOARD="arduino:samd:arduino_zero_edbg"
+    - BOARD="arduino:samd:mkr1000"
+    - BOARD="Intel:arc32:arduino_101"
+    - BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
+matrix:
+  allow_failures:
+    - env: BOARD="arduino:avr:leonardo"
+    - env: BOARD="arduino:sam:arduino_due_x_dbg"
+    - env: BOARD="Intel:arc32:arduino_101"
+before_install:
+  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$IDE_VERSION-linux64.tar.xz
+  - mv arduino-$IDE_VERSION $HOME/arduino-ide
+  - export PATH=$PATH:$HOME/arduino-ide
+  - if [[ "$BOARD" =~ "arduino:sam:" ]]; then
+      arduino --install-boards arduino:sam;
+    fi
+  - if [[ "$BOARD" =~ "arduino:samd:" ]]; then
+      arduino --install-boards arduino:samd;
+    fi
+  - if [[ "$BOARD" =~ "Intel:arc32" ]]; then
+      arduino --install-boards Intel:arc32;
+    fi
+  - if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
+      arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards esp8266:esp8266;
+      arduino --pref "boardsmanager.additional.urls=" --save-prefs;
+    fi
+  - buildExampleSketch() { arduino --verbose-build --verify --board $BOARD $PWD/examples/$1/$1.ino; }
+install:
+  - mkdir -p $HOME/Arduino/libraries
+  - ln -s $PWD $HOME/Arduino/libraries/.
+script:
+  - buildExampleSketch AdafruitHuzzahESP8266
+  - buildExampleSketch AdafruitHuzzahESP8266_SSL
+  - buildExampleSketch ArduinoEthernetShiel
+  - buildExampleSketch ArduinoWiFi101
+  - buildExampleSketch ArduinoWiFi101_SSL
+  - buildExampleSketch ArduinoWiFiShield
+  - buildExampleSketch ArduinoYun_MQTTClient
+  - buildExampleSketch ArduinoYun_YunMQTTClient
