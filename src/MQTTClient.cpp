@@ -1,6 +1,6 @@
 #include "MQTTClient.h"
 
-void messageArrived(MQTT::MessageData& messageData) {
+void MQTTClient_messageHandler(MQTT::MessageData &messageData) {
   MQTT::Message &message = messageData.message;
 
   // null terminate topic to create String object
@@ -24,7 +24,7 @@ boolean MQTTClient::begin(const char * hostname, Client& client) {
 boolean MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
   this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
-  this->client->setDefaultMessageHandler(messageArrived);
+  this->client->setDefaultMessageHandler(MQTTClient_messageHandler);
   this->hostname = _hostname;
   this->port = _port;
   this->options = MQTTPacket_connectData_initializer;
