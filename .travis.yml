@@ -3,8 +3,14 @@ env:
   global:
     - IDE_VERSION=1.6.8
   matrix:
+    # - EXAMPLE="AdafruitHuzzahESP8266"
+    # - EXAMPLE="AdafruitHuzzahESP8266_SSL"
     - EXAMPLE="ArduinoEthernetShield" BOARD="arduino:avr:uno"
+    # - EXAMPLE="ArduinoWiFi101
+    # - EXAMPLE="ArduinoWiFi101_SSL
     - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
+    # - EXAMPLE="ArduinoYun_MQTTClient"
+    # - EXAMPLE="ArduinoYun_YunMQTTClient"
 before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
   - sleep 3
