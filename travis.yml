@@ -50,3 +50,4 @@ script:
   - buildExampleSketch ArduinoWiFiShield
   - buildExampleSketch ArduinoYun_MQTTClient
   - buildExampleSketch ArduinoYun_YunMQTTClient
+  - buildExampleSketch tests
