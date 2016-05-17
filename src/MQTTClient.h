@@ -15,6 +15,13 @@
 #include "Network.h"
 #include "Timer.h"
 
+typedef struct {
+    char * topic;
+    char * payload;
+    unsigned int length;
+    boolean retained;
+} MQTTMessage;
+
 void messageReceived(String topic, String payload, char * bytes, unsigned int length);
 
 class MQTTClient {
@@ -37,6 +44,7 @@ public:
   boolean publish(const char * topic, String payload);
   boolean publish(const char * topic, const char * payload);
   boolean publish(const char * topic, char * payload, unsigned int length);
+  boolean publish(MQTTMessage * message);
   boolean subscribe(String topic);
   boolean subscribe(const char * topic);
   boolean unsubscribe(String topic);

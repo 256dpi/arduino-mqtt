@@ -127,7 +127,10 @@ boolean publish(String topic, String payload);
 boolean publish(const char * topic, String payload);
 boolean publish(const char * topic, const char * payload);
 boolean publish(const char * topic, char * payload, unsigned int length);
+boolean publish(MQTTMessage * message)
 ```
+
+- The last function can be used to publish messages with more low level attributes like `retained`.
 
 Subscribe to a topic:
 

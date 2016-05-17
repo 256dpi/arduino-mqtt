@@ -87,6 +87,17 @@ boolean MQTTClient::publish(const char * topic, char * payload, unsigned int len
   return client->publish(topic, message) == MQTT::SUCCESS;
 }
 
+boolean MQTTClient::publish(MQTTMessage * message) {
+  MQTT::Message _message;
+  _message.qos = MQTT::QOS0;
+  _message.retained = message->retained;
+  _message.dup = false;
+  _message.payload = message->payload;
+  _message.payloadlen = message->length;
+
+  return client->publish(message->topic, _message) == MQTT::SUCCESS;
+}
+
 boolean MQTTClient::subscribe(String topic) {
   return this->subscribe(topic.c_str());
 }
