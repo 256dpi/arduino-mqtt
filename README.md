@@ -122,25 +122,25 @@ boolean connect(const char * clientId, const char * username, const char * passw
 Publishes a message to the broker with an optional payload:
 
 ```c++
-void publish(String topic);
-void publish(String topic, String payload);
-void publish(const char * topic, String payload);
-void publish(const char * topic, const char * payload);
-void publish(const char * topic, char * payload, unsigned int length)
+boolean publish(String topic);
+boolean publish(String topic, String payload);
+boolean publish(const char * topic, String payload);
+boolean publish(const char * topic, const char * payload);
+boolean publish(const char * topic, char * payload, unsigned int length);
 ```
 
 Subscribe to a topic:
 
 ```c++
-void subscribe(String topic);
-void subscribe(const char * topic);
+boolean subscribe(String topic);
+boolean subscribe(const char * topic);
 ```
 
 Unsubscribe from a topic:
 
 ```c++
-void unsubscribe(String topic);
-void unsubscribe(const char * topic);
+boolean unsubscribe(String topic);
+boolean unsubscribe(const char * topic);
 ```
 
 Sends and receives packets:
@@ -160,5 +160,5 @@ boolean connected();
 Disconnects from the broker:
 
 ```c++
-void disconnect();
+boolean disconnect();
 ```
