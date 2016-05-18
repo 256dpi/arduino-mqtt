@@ -7,6 +7,7 @@
 // connection here: https://shiftr.io/try.
 //
 // by Gilberto Conti
+// https://github.com/256dpi/arduino-mqtt
 
 #include <SPI.h>
 #include <WiFi101.h>
