@@ -1,6 +1,6 @@
-#ifdef ARDUINO_AVR_YUN
-
 #include "YunMQTTClient.h"
+
+#ifdef YUN_MQTT_CLIENT_ENABLED
 
 #include <FileIO.h>
 
@@ -178,4 +178,4 @@ void YunMQTTClient::disconnect() {
   this->process.print("d;\n");
 }
 
-#endif //ARDUINO_AVR_YUN
+#endif //YUN_MQTT_CLIENT_ENABLED

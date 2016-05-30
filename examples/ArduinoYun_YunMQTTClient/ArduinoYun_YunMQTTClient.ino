@@ -20,20 +20,20 @@ unsigned long lastMillis = 0;
 
 void setup() {
   Bridge.begin();
-  Serial.begin(9600);
+  SerialUSB.begin(9600);
   client.begin("broker.shiftr.io");
 
   connect();
 }
 
 void connect() {
-  Serial.print("connecting...");
+  SerialUSB.print("connecting...");
   while (!client.connect("arduino", "try", "try")) {
-    Serial.print(".");
+    SerialUSB.print(".");
     delay(1000);
   }
 
-  Serial.println("\nconnected!");
+  SerialUSB.println("\nconnected!");
 
   client.subscribe("/example");
   // client.unsubscribe("/example");
@@ -54,9 +54,9 @@ void loop() {
 }
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-  Serial.print("incoming: ");
-  Serial.print(topic);
-  Serial.print(" - ");
-  Serial.print(payload);
-  Serial.println();
+  SerialUSB.print("incoming: ");
+  SerialUSB.print(topic);
+  SerialUSB.print(" - ");
+  SerialUSB.print(payload);
+  SerialUSB.println();
 }

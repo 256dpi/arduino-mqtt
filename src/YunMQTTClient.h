@@ -1,7 +1,14 @@
 #ifndef YUN_MQTT_CLIENT_H
 #define YUN_MQTT_CLIENT_H
 
-#ifdef ARDUINO_AVR_YUN
+
+#if defined(SERIAL_PORT_LINUXBRIDGE) || defined(SERIAL_PORT_HARDWARE) || \
+    defined(SERIAL_PORT_HARDWARE_OPEN) || defined(__AVR_ATmega32U4__) || \
+    defined(ARDUINO_AVR_YUN)
+#define YUN_MQTT_CLIENT_ENABLED 1
+#endif
+
+#ifdef YUN_MQTT_CLIENT_ENABLED
 
 #include <Arduino.h>
 #include <Bridge.h>
@@ -39,5 +46,5 @@ public:
   void disconnect();
 };
 
-#endif //ARDUINO_AVR_YUN
+#endif //YUN_MQTT_CLIENT_ENABLED
 #endif //YUN_MQTT_CLIENT_H
