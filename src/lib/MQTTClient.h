@@ -78,7 +78,6 @@ private:
     int next;
 };
 
-
 /**
  * @class Client
  * @brief blocking, non-threaded MQTT client API
@@ -88,13 +87,14 @@ private:
  * @param Network a network class which supports send, receive
  * @param Timer a timer class with the methods:
  */
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE = 100, int MAX_MESSAGE_HANDLERS = 5>
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE = 100, int MAX_MESSAGE_HANDLERS = 5>
 class Client
 {
 
 public:
 
     typedef void (*messageHandler)(MessageData&);
+    FP<Obj, MessageData&> defaultMessageHandler;
 
     /** Construct the client
      *  @param network - pointer to an instance of the Network class - must be connected to the endpoint
@@ -108,7 +108,7 @@ public:
      */
     void setDefaultMessageHandler(messageHandler mh)
     {
-        defaultMessageHandler.attach(mh);
+        // defaultMessageHandler.attach(mh);
     }
 
     /** MQTT Connect - send an MQTT connect packet down the network and wait for a Connack
@@ -117,7 +117,7 @@ public:
      *  @return success code -
      */
     int connect();
-    
+
         /** MQTT Connect - send an MQTT connect packet down the network and wait for a Connack
      *  The nework object must be connected to the network endpoint before calling this
      *  @param options - connect options
@@ -131,7 +131,7 @@ public:
      *  @return success code -
      */
     int publish(const char* topicName, Message& message);
-    
+
     /** MQTT Publish - send an MQTT publish packet and wait for all acks to complete for all QoSs
      *  @param topic - the topic to publish to
      *  @param payload - the data to send
@@ -141,12 +141,12 @@ public:
      *  @return success code -
      */
     int publish(const char* topicName, void* payload, size_t payloadlen, enum QoS qos = QOS0, bool retained = false);
-    
+
     /** MQTT Publish - send an MQTT publish packet and wait for all acks to complete for all QoSs
      *  @param topic - the topic to publish to
      *  @param payload - the data to send
      *  @param payloadlen - the length of the data
-     *  @param id - the packet id used - returned 
+     *  @param id - the packet id used - returned
      *  @param qos - the QoS to send the publish at
      *  @param retained - whether the message should be retained
      *  @return success code -
@@ -220,7 +220,6 @@ private:
         FP<void, MessageData&> fp;
     } messageHandlers[MAX_MESSAGE_HANDLERS];      // Message handlers are indexed by subscription topic
 
-    FP<void, MessageData&> defaultMessageHandler;
 
     bool isconnected;
 
@@ -247,8 +246,8 @@ private:
 }
 
 
-template<class Network, class Timer, int a, int MAX_MESSAGE_HANDLERS>
-MQTT::Client<Network, Timer, a, MAX_MESSAGE_HANDLERS>::Client(Network& network, unsigned int command_timeout_ms)  : ipstack(network), packetid()
+template<class Obj, class Network, class Timer, int a, int MAX_MESSAGE_HANDLERS>
+MQTT::Client<Obj, Network, Timer, a, MAX_MESSAGE_HANDLERS>::Client(Network& network, unsigned int command_timeout_ms)  : ipstack(network), packetid()
 {
     last_sent = Timer();
     last_received = Timer();
@@ -272,8 +271,8 @@ MQTT::Client<Network, Timer, a, MAX_MESSAGE_HANDLERS>::Client(Network& network, 
 }
 
 #if MQTTCLIENT_QOS2
-template<class Network, class Timer, int a, int b>
-bool MQTT::Client<Network, Timer, a, b>::isQoS2msgidFree(unsigned short id)
+template<class Obj, class Network, class Timer, int a, int b>
+bool MQTT::Client<Obj, Network, Timer, a, b>::isQoS2msgidFree(unsigned short id)
 {
     for (int i = 0; i < MAX_INCOMING_QOS2_MESSAGES; ++i)
     {
@@ -284,8 +283,8 @@ bool MQTT::Client<Network, Timer, a, b>::isQoS2msgidFree(unsigned short id)
 }
 
 
-template<class Network, class Timer, int a, int b>
-bool MQTT::Client<Network, Timer, a, b>::useQoS2msgid(unsigned short id)
+template<class Obj, class Network, class Timer, int a, int b>
+bool MQTT::Client<Obj, Network, Timer, a, b>::useQoS2msgid(unsigned short id)
 {
     for (int i = 0; i < MAX_INCOMING_QOS2_MESSAGES; ++i)
     {
@@ -299,8 +298,8 @@ bool MQTT::Client<Network, Timer, a, b>::useQoS2msgid(unsigned short id)
 }
 
 
-template<class Network, class Timer, int a, int b>
-void MQTT::Client<Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
+template<class Obj, class Network, class Timer, int a, int b>
+void MQTT::Client<Obj, Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
 {
     for (int i = 0; i < MAX_INCOMING_QOS2_MESSAGES; ++i)
     {
@@ -314,8 +313,8 @@ void MQTT::Client<Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
 #endif
 
 
-template<class Network, class Timer, int a, int b>
-int MQTT::Client<Network, Timer, a, b>::sendPacket(int length, Timer& timer)
+template<class Obj, class Network, class Timer, int a, int b>
+int MQTT::Client<Obj, Network, Timer, a, b>::sendPacket(int length, Timer& timer)
 {
     int rc = FAILURE,
         sent = 0;
@@ -335,7 +334,7 @@ int MQTT::Client<Network, Timer, a, b>::sendPacket(int length, Timer& timer)
     }
     else
         rc = FAILURE;
-        
+
 #if defined(MQTT_DEBUG)
     char printbuf[150];
     DEBUG("Rc %d from sending packet %s\n", rc, MQTTFormat_toServerString(printbuf, sizeof(printbuf), sendbuf, length));
@@ -344,8 +343,8 @@ int MQTT::Client<Network, Timer, a, b>::sendPacket(int length, Timer& timer)
 }
 
 
-template<class Network, class Timer, int a, int b>
-int MQTT::Client<Network, Timer, a, b>::decodePacket(int* value, int timeout)
+template<class Obj, class Network, class Timer, int a, int b>
+int MQTT::Client<Obj, Network, Timer, a, b>::decodePacket(int* value, int timeout)
 {
     unsigned char c;
     int multiplier = 1;
@@ -379,8 +378,8 @@ exit:
  * @param timeout the max time to wait for the packet read to complete, in milliseconds
  * @return the MQTT packet type, or -1 if none
  */
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::readPacket(Timer& timer)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::readPacket(Timer& timer)
 {
     int rc = FAILURE;
     MQTTHeader header = {0};
@@ -412,7 +411,7 @@ int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::readPacket(Timer& tim
     if (this->keepAliveInterval > 0)
         last_received.countdown(this->keepAliveInterval); // record the fact that we have successfully received a packet
 exit:
-        
+
 #if defined(MQTT_DEBUG)
 	if (rc >= 0)
 	{
@@ -427,8 +426,8 @@ exit:
 // assume topic filter and name is in correct format
 // # can only be at end
 // + and # can only be next to separator
-template<class Network, class Timer, int a, int b>
-bool MQTT::Client<Network, Timer, a, b>::isTopicMatched(char* topicFilter, MQTTString& topicName)
+template<class Obj, class Network, class Timer, int a, int b>
+bool MQTT::Client<Obj, Network, Timer, a, b>::isTopicMatched(char* topicFilter, MQTTString& topicName)
 {
     char* curf = topicFilter;
     char* curn = topicName.lenstring.data;
@@ -457,8 +456,8 @@ bool MQTT::Client<Network, Timer, a, b>::isTopicMatched(char* topicFilter, MQTTS
 
 
 
-template<class Network, class Timer, int a, int MAX_MESSAGE_HANDLERS>
-int MQTT::Client<Network, Timer, a, MAX_MESSAGE_HANDLERS>::deliverMessage(MQTTString& topicName, Message& message)
+template<class Obj, class Network, class Timer, int a, int MAX_MESSAGE_HANDLERS>
+int MQTT::Client<Obj, Network, Timer, a, MAX_MESSAGE_HANDLERS>::deliverMessage(MQTTString& topicName, Message& message)
 {
     int rc = FAILURE;
 
@@ -489,8 +488,8 @@ int MQTT::Client<Network, Timer, a, MAX_MESSAGE_HANDLERS>::deliverMessage(MQTTSt
 
 
 
-template<class Network, class Timer, int a, int b>
-int MQTT::Client<Network, Timer, a, b>::yield(unsigned long timeout_ms)
+template<class Obj, class Network, class Timer, int a, int b>
+int MQTT::Client<Obj, Network, Timer, a, b>::yield(unsigned long timeout_ms)
 {
     int rc = SUCCESS;
     Timer timer = Timer();
@@ -509,8 +508,8 @@ int MQTT::Client<Network, Timer, a, b>::yield(unsigned long timeout_ms)
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::cycle(Timer& timer)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::cycle(Timer& timer)
 {
     /* get one piece of work off the wire and one pass through */
 
@@ -574,7 +573,7 @@ int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::cycle(Timer& timer)
             unsigned char dup, type;
             if (MQTTDeserialize_ack(&type, &dup, &mypacketid, readbuf, MAX_MQTT_PACKET_SIZE) != 1)
                 rc = FAILURE;
-            else if ((len = MQTTSerialize_ack(sendbuf, MAX_MQTT_PACKET_SIZE, 
+            else if ((len = MQTTSerialize_ack(sendbuf, MAX_MQTT_PACKET_SIZE,
 						(packet_type == PUBREC) ? PUBREL : PUBCOMP, 0, mypacketid)) <= 0)
                 rc = FAILURE;
             else if ((rc = sendPacket(len, timer)) != SUCCESS) // send the PUBREL packet
@@ -584,7 +583,7 @@ int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::cycle(Timer& timer)
 			if (packet_type == PUBREL)
 				freeQoS2msgid(mypacketid);
             break;
-			
+
         case PUBCOMP:
             break;
 #endif
@@ -600,8 +599,8 @@ exit:
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::keepalive()
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::keepalive()
 {
     int rc = FAILURE;
 
@@ -628,8 +627,8 @@ exit:
 
 
 // only used in single-threaded mode where one command at a time is in process
-template<class Network, class Timer, int a, int b>
-int MQTT::Client<Network, Timer, a, b>::waitfor(int packet_type, Timer& timer)
+template<class Obj, class Network, class Timer, int a, int b>
+int MQTT::Client<Obj, Network, Timer, a, b>::waitfor(int packet_type, Timer& timer)
 {
     int rc = FAILURE;
 
@@ -644,8 +643,8 @@ int MQTT::Client<Network, Timer, a, b>::waitfor(int packet_type, Timer& timer)
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::connect(MQTTPacket_connectData& options)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::connect(MQTTPacket_connectData& options)
 {
     Timer connect_timer = Timer(command_timeout_ms);
     int rc = FAILURE;
@@ -702,16 +701,16 @@ exit:
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::connect()
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::connect()
 {
     MQTTPacket_connectData default_options = MQTTPacket_connectData_initializer;
     return connect(default_options);
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int MAX_MESSAGE_HANDLERS>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, MAX_MESSAGE_HANDLERS>::subscribe(const char* topicFilter, enum QoS qos, messageHandler messageHandler)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int MAX_MESSAGE_HANDLERS>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, MAX_MESSAGE_HANDLERS>::subscribe(const char* topicFilter, enum QoS qos, messageHandler messageHandler)
 {
     int rc = FAILURE;
     Timer timer = Timer(command_timeout_ms);
@@ -757,8 +756,8 @@ exit:
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int MAX_MESSAGE_HANDLERS>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, MAX_MESSAGE_HANDLERS>::unsubscribe(const char* topicFilter)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int MAX_MESSAGE_HANDLERS>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, MAX_MESSAGE_HANDLERS>::unsubscribe(const char* topicFilter)
 {
     int rc = FAILURE;
     Timer timer = Timer(command_timeout_ms);
@@ -789,8 +788,8 @@ exit:
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(int len, Timer& timer, enum QoS qos)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(int len, Timer& timer, enum QoS qos)
 {
     int rc;
 
@@ -837,8 +836,8 @@ exit:
 
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, void* payload, size_t payloadlen, unsigned short& id, enum QoS qos, bool retained)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, void* payload, size_t payloadlen, unsigned short& id, enum QoS qos, bool retained)
 {
     int rc = FAILURE;
     Timer timer = Timer(command_timeout_ms);
@@ -879,23 +878,23 @@ exit:
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, void* payload, size_t payloadlen, enum QoS qos, bool retained)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, void* payload, size_t payloadlen, enum QoS qos, bool retained)
 {
     unsigned short id = 0;  // dummy - not used for anything
     return publish(topicName, payload, payloadlen, id, qos, retained);
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, Message& message)
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::publish(const char* topicName, Message& message)
 {
     return publish(topicName, message.payload, message.payloadlen, message.qos, message.retained);
 }
 
 
-template<class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
-int MQTT::Client<Network, Timer, MAX_MQTT_PACKET_SIZE, b>::disconnect()
+template<class Obj, class Network, class Timer, int MAX_MQTT_PACKET_SIZE, int b>
+int MQTT::Client<Obj, Network, Timer, MAX_MQTT_PACKET_SIZE, b>::disconnect()
 {
     int rc = FAILURE;
     Timer timer = Timer(command_timeout_ms);     // we might wait for incomplete incoming publishes to complete

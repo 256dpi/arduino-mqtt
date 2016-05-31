@@ -27,7 +27,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 class MQTTClient {
 private:
   Network network;
-  MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0> * client;
+  MQTT::Client<MQTTClient, Network, Timer, MQTT_BUFFER_SIZE, 0> * client;
   MQTTPacket_connectData options;
   const char * hostname;
   int port;
@@ -35,6 +35,7 @@ public:
   MQTTClient();
   boolean begin(const char * hostname, Client& client);
   boolean begin(const char * hostname, int port, Client& client);
+  MQTTClient callback(MQTT::MessageData& messageData);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);

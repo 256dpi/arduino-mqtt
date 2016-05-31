@@ -1,5 +1,7 @@
 #include "MQTTClient.h"
 
+<<<<<<< HEAD
+=======
 void MQTTClient_messageHandler(MQTT::MessageData &messageData) {
   MQTT::Message &message = messageData.message;
 
@@ -19,6 +21,7 @@ void MQTTClient_messageHandler(MQTT::MessageData &messageData) {
 
   messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 }
+>>>>>>> upstream/master
 
 MQTTClient::MQTTClient() {}
 
@@ -27,14 +30,32 @@ boolean MQTTClient::begin(const char * hostname, Client& client) {
 }
 
 boolean MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
-  this->client = new MQTT::Client<Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
+  this->client = new MQTT::Client<MQTTClient, Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
+<<<<<<< HEAD
+  this->client->defaultMessageHandler.attach<MQTTClient>(this, &MQTTClient::callback);
+=======
   this->client->setDefaultMessageHandler(MQTTClient_messageHandler);
+>>>>>>> upstream/master
   this->hostname = _hostname;
   this->port = _port;
   this->options = MQTTPacket_connectData_initializer;
 
   return true;
+}
+
+MQTTClient MQTTClient::callback(MQTT::MessageData& messageData) {
+    MQTT::Message &message = messageData.message;
+    // null terminate topic to create String object
+    int len = messageData.topicName.lenstring.len;
+    char topic[len+1];
+    memcpy(topic, messageData.topicName.lenstring.data, (size_t)len);
+    topic[len] = '\0';
+
+    // null terminate payload
+    char * payload = (char *)message.payload;
+    payload[message.payloadlen] = '\0';
+    messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
 }
 
 void MQTTClient::setWill(const char * topic) {
@@ -61,8 +82,13 @@ boolean MQTTClient::connect(const char * clientId, const char * username, const 
     this->options.username.cstring = (char*)username;
     this->options.password.cstring = (char*)password;
   }
+<<<<<<< HEAD
+
+  return this->client->connect(this->options) == 0;
+=======
   
   return this->client->connect(this->options) == MQTT::SUCCESS;
+>>>>>>> upstream/master
 }
 
 boolean MQTTClient::publish(String topic) {
@@ -118,7 +144,7 @@ boolean MQTTClient::unsubscribe(String topic) {
 boolean MQTTClient::unsubscribe(const char * topic) {
   return client->unsubscribe(topic) == MQTT::SUCCESS;
 }
-  
+
 void MQTTClient::loop() {
   if(!this->network.connected() && this->client->isConnected()) {
     // the following call will not send a packet but reset the instance

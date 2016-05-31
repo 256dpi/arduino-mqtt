@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 
+ * Copyright (c) 2013, 2014
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -169,7 +169,7 @@ public:
         if( 0 != c_callback ) {
             return obj_callback ? (obj_callback->*method_callback)(arg) : (*c_callback)(arg);
         }
-        return (retT)0;
+        // return (retT)0;
     }
 
     /** Determine if an callback is currently hooked
