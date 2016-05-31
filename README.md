@@ -1,5 +1,7 @@
 # arduino-mqtt
 
+[![Build Status](https://travis-ci.org/256dpi/arduino-mqtt.svg?branch=master)](https://travis-ci.org/256dpi/arduino-mqtt)
+
 **MQTT library for Arduino based on the Eclipse Paho projects**
 
 This library bundles the [Embedded MQTT C/C++ Client](https://eclipse.org/paho/clients/c/embedded/) library of the Eclipse Paho project and adds a thin wrapper to get an Arduino like API. Additionally there is an drop-in alternative for the Arduino Yùn that uses a python based client on the linux processor and a binary interface to lower program space usage on the Arduino side.
@@ -8,7 +10,7 @@ The first release of the library only supports QoS0 and the basic features to ge
 
 This library is an alternative to the [pubsubclient](https://github.com/knolleary/pubsubclient) library by [knolleary](https://github.com/knolleary) which uses a custom protocol implementation.
 
-[Download version 1.9.6 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.9.6/mqtt.zip)
+[Download version 1.10.0 of the library.](https://github.com/256dpi/arduino-mqtt/releases/download/v1.10.0/mqtt.zip)
 
 *Or even better use the Library Manager in the Arduino IDE.*
 
@@ -17,7 +19,7 @@ This library is an alternative to the [pubsubclient](https://github.com/knollear
 The following examples show how you can use the library with various Arduino compatible hardware:
 
 - [Arduino Yun (MQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino)
-- [Arduino Yun (YunMQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino)
+- [Arduino Yun (YunMQTTClient)](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient/ArduinoYun_YunMQTTClient.ino) ([SSL](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun_YunMQTTClient_SSL/ArduinoYun_YunMQTTClient_SSL.ino))
 - [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)
 - [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
 - [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino) ([SSL](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266_SSL/AdafruitHuzzahESP8266_SSL.ino))
@@ -120,25 +122,28 @@ boolean connect(const char * clientId, const char * username, const char * passw
 Publishes a message to the broker with an optional payload:
 
 ```c++
-void publish(String topic);
-void publish(String topic, String payload);
-void publish(const char * topic, String payload);
-void publish(const char * topic, const char * payload);
-void publish(const char * topic, char * payload, unsigned int length)
+boolean publish(String topic);
+boolean publish(String topic, String payload);
+boolean publish(const char * topic, String payload);
+boolean publish(const char * topic, const char * payload);
+boolean publish(const char * topic, char * payload, unsigned int length);
+boolean publish(MQTTMessage * message)
 ```
+
+- The last function can be used to publish messages with more low level attributes like `retained`.
 
 Subscribe to a topic:
 
 ```c++
-void subscribe(String topic);
-void subscribe(const char * topic);
+boolean subscribe(String topic);
+boolean subscribe(const char * topic);
 ```
 
 Unsubscribe from a topic:
 
 ```c++
-void unsubscribe(String topic);
-void unsubscribe(const char * topic);
+boolean unsubscribe(String topic);
+boolean unsubscribe(const char * topic);
 ```
 
 Sends and receives packets:
@@ -158,5 +163,5 @@ boolean connected();
 Disconnects from the broker:
 
 ```c++
-void disconnect();
+boolean disconnect();
 ```

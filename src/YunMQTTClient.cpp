@@ -20,9 +20,9 @@ boolean YunMQTTClient::begin(const char * hostname, int port) {
 boolean YunMQTTClient::updateBridge() {
   Process p;
 
-  int r1 = p.runShellCommand("mkdir -p /usr/arduino-mqtt");
-  int r2 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.6/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt");
-  int r3 = p.runShellCommand("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.9.6/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt");
+  int r1 = p.runShellCommand(F("mkdir -p /usr/arduino-mqtt"));
+  int r2 = p.runShellCommand(F("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.10.0/yun/mqtt.py --no-check-certificate -P /usr/arduino-mqtt"));
+  int r3 = p.runShellCommand(F("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.10.0/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt"));
 
   return r1 == 0 && r2 == 0 && r3 == 0;
 }
@@ -36,14 +36,18 @@ void YunMQTTClient::setWill(const char * topic, const char * payload) {
   this->willPayload = payload;
 }
 
+void YunMQTTClient::setTls(const char * caCerts) {
+  this->tlsCaCerts = caCerts;
+}
+
 boolean YunMQTTClient::connect(const char * clientId) {
   return this->connect(clientId, "", "");
 }
 
 boolean YunMQTTClient::connect(const char * clientId, const char * username, const char * password) {
-  this->process.begin("python");
-  this->process.addParameter("-u");
-  this->process.addParameter("/usr/arduino-mqtt/bridge.py");
+  this->process.begin(F("python"));
+  this->process.addParameter(F("-u"));
+  this->process.addParameter(F("/usr/arduino-mqtt/bridge.py"));
   this->process.runAsynchronously();
   this->process.setTimeout(10000);
 
@@ -52,33 +56,40 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
 
   // set will if available
   if(strlen(this->willTopic) > 0) {
-    this->process.print("w:");
+    this->process.print(F("w:"));
     this->process.print(this->willTopic);
-    this->process.print(':');
+    this->process.print(F(":"));
     this->process.print(strlen(this->willPayload));
-    this->process.print(';');
+    this->process.print(F(";"));
     this->process.print(this->willPayload);
-    this->process.print('\n');
+    this->process.print(F("\n"));
+  }
+
+  // set TLS if available
+  if(strlen(this->tlsCaCerts) > 0) {
+    this->process.print("t:");
+    this->process.print(this->tlsCaCerts);
+    this->process.print(";\n");
   }
 
   // send connect request
-  this->process.print("c:");
+  this->process.print(F("c:"));
   this->process.print(this->hostname);
-  this->process.print(':');
+  this->process.print(F(":"));
   this->process.print(this->port);
-  this->process.print(':');
+  this->process.print(F(":"));
   this->process.print(clientId);
   if(strlen(username) > 0 && strlen(password) > 0) {
-    this->process.print(':');
+    this->process.print(F(":"));
     this->process.print(username);
-    this->process.print(':');
+    this->process.print(F(":"));
     this->process.print(password);
   }
-  this->process.print(";\n");
+  this->process.print(F(";\n"));
 
   // wait for answer
   String ret = this->process.readStringUntil('\n');
-  this->alive = ret.equals("a;");
+  this->alive = ret.equals(F("a;"));
 
   if(!this->alive) {
     this->process.close();
@@ -106,17 +117,17 @@ void YunMQTTClient::publish(const char * topic, const char * payload) {
 
 void YunMQTTClient::publish(const char * topic, char * payload, unsigned int length) {
   // send publish request
-  this->process.print("p:");
+  this->process.print(F("p:"));
   this->process.print(topic);
-  this->process.print(':');
+  this->process.print(F(":"));
   this->process.print(length);
-  this->process.print(';');
+  this->process.print(F("l"));
 
   for(int i=0; i<length; i++) {
     this->process.write(payload[i]);
   }
 
-  this->process.print('\n');
+  this->process.print(F("\n"));
 }
 
 void YunMQTTClient::subscribe(String topic) {
@@ -125,9 +136,9 @@ void YunMQTTClient::subscribe(String topic) {
 
 void YunMQTTClient::subscribe(const char * topic) {
   // send subscribe request
-  this->process.print("s:");
+  this->process.print(F("s:"));
   this->process.print(topic);
-  this->process.print(";\n");
+  this->process.print(F(";\n"));
 }
 
 void YunMQTTClient::unsubscribe(String topic) {
@@ -136,9 +147,9 @@ void YunMQTTClient::unsubscribe(String topic) {
 
 void YunMQTTClient::unsubscribe(const char * topic) {
   // send unsubscribe request
-  this->process.print("u:");
+  this->process.print(F("u:"));
   this->process.print(topic);
-  this->process.print(";\n");
+  this->process.print(F(";\n"));
 }
 
 void YunMQTTClient::loop() {
@@ -175,7 +186,7 @@ boolean YunMQTTClient::connected() {
 
 void YunMQTTClient::disconnect() {
   // send disconnect request
-  this->process.print("d;\n");
+  this->process.print(F("d;\n"));
 }
 
 #endif //ARDUINO_AVR_YUN

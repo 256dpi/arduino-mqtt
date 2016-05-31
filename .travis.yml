@@ -1,0 +1,31 @@
+language: generic
+env:
+  global:
+    - IDE_VERSION=1.6.8
+  matrix:
+    - EXAMPLE="AdafruitHuzzahESP8266" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
+    - EXAMPLE="AdafruitHuzzahESP8266_SSL" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
+    - EXAMPLE="ArduinoEthernetShield" BOARD="arduino:avr:uno"
+    - EXAMPLE="ArduinoWiFi101" BOARD="arduino:avr:uno"
+    - EXAMPLE="ArduinoWiFi101_SSL" BOARD="arduino:avr:uno"
+    - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
+    - EXAMPLE="ArduinoYun_MQTTClient" BOARD="arduino:avr:yun"
+    - EXAMPLE="ArduinoYun_YunMQTTClient" BOARD="arduino:avr:yun"
+before_install:
+  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$IDE_VERSION-linux64.tar.xz
+  - mv arduino-$IDE_VERSION $HOME/arduino-ide
+  - export PATH=$PATH:$HOME/arduino-ide
+  - if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
+      arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards esp8266:esp8266;
+      arduino --pref "boardsmanager.additional.urls=" --save-prefs;
+    fi
+  - arduino --install-library WiFi101;
+install:
+  - mkdir -p $HOME/Arduino/libraries
+  - ln -s $PWD $HOME/Arduino/libraries/.
+script:
+  - arduino --verbose-build --verify --board $BOARD $PWD/examples/$EXAMPLE/$EXAMPLE.ino;

@@ -1,46 +1,34 @@
-// This example uses an Arduino/Genuino Zero together with
-// a WiFi101 Shield or a MKR1000 to connect to shiftr.io.
+// This example uses an Arduino Yun and the
+// YunMQTTClient to connect to shiftr.io.
 //
-// IMPORTANT: This example uses the new WiFi101 library.
-//
-// IMPORTANT: You need to install/update the SSL certificates first:
-// https://github.com/arduino-libraries/WiFi101-FirmwareUpdater#to-update-ssl-certificates
+// The YunMQTTClient uses a Linux side python
+// script to manage the connection which results
+// in less program space and memory used on the Arduino.
 //
 // You can check on your device after a successful
 // connection here: https://shiftr.io/try.
 //
-// by Gilberto Conti
+// by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
 
-#include <SPI.h>
-#include <WiFi101.h>
-#include <WiFiSSLClient.h>
-#include <MQTTClient.h>
+#include <Bridge.h>
+#include <YunMQTTClient.h>
 
-char *ssid = "ssid";
-char *pass = "pass";
-
-WiFiSSLClient net;
-MQTTClient client;
+YunMQTTClient client;
 
 unsigned long lastMillis = 0;
 
 void setup() {
+  Bridge.begin();
   Serial.begin(9600);
-  WiFi.begin(ssid, pass);
-  client.begin("broker.shiftr.io", 8883, net);
+  client.begin("broker.shiftr.io", 8883); // MQTT brokers usually use port 8883 for secure connections
+  client.setTls("/etc/ssl/certs/AddTrust_External_Root.crt"); // select the CA for the broker
 
   connect();
 }
 
 void connect() {
-  Serial.print("checking wifi...");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(1000);
-  }
-
-  Serial.print("\nconnecting...");
+  Serial.print("connecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
     delay(1000);

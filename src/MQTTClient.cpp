@@ -1,5 +1,27 @@
 #include "MQTTClient.h"
 
+<<<<<<< HEAD
+=======
+void MQTTClient_messageHandler(MQTT::MessageData &messageData) {
+  MQTT::Message &message = messageData.message;
+
+  // null terminate topic to create String object
+  int len = messageData.topicName.lenstring.len; 
+  char topic[len+1];
+  memcpy(topic, messageData.topicName.lenstring.data, (size_t)len);
+  topic[len] = '\0';
+
+  // get payload
+  char * payload = (char *)message.payload;
+
+  // null terminate payload if enough space is available
+  if(message.payloadlen < MQTT_BUFFER_SIZE) {
+    payload[message.payloadlen] = '\0';
+  }
+
+  messageReceived(String(topic), String(payload), (char*)message.payload, (unsigned int)message.payloadlen);
+}
+>>>>>>> upstream/master
 
 MQTTClient::MQTTClient() {}
 
@@ -10,7 +32,11 @@ boolean MQTTClient::begin(const char * hostname, Client& client) {
 boolean MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
   this->client = new MQTT::Client<MQTTClient, Network, Timer, MQTT_BUFFER_SIZE, 0>(this->network);
   this->network.setClient(&_client);
+<<<<<<< HEAD
   this->client->defaultMessageHandler.attach<MQTTClient>(this, &MQTTClient::callback);
+=======
+  this->client->setDefaultMessageHandler(MQTTClient_messageHandler);
+>>>>>>> upstream/master
   this->hostname = _hostname;
   this->port = _port;
   this->options = MQTTPacket_connectData_initializer;
@@ -56,50 +82,67 @@ boolean MQTTClient::connect(const char * clientId, const char * username, const 
     this->options.username.cstring = (char*)username;
     this->options.password.cstring = (char*)password;
   }
+<<<<<<< HEAD
 
   return this->client->connect(this->options) == 0;
+=======
+  
+  return this->client->connect(this->options) == MQTT::SUCCESS;
+>>>>>>> upstream/master
 }
 
-void MQTTClient::publish(String topic) {
-  this->publish(topic.c_str(), "");
+boolean MQTTClient::publish(String topic) {
+  return this->publish(topic.c_str(), "");
 }
 
-void MQTTClient::publish(String topic, String payload) {
-  this->publish(topic.c_str(), payload.c_str());
+boolean MQTTClient::publish(String topic, String payload) {
+  return this->publish(topic.c_str(), payload.c_str());
 }
 
-void MQTTClient::publish(const char * topic, String payload) {
-  this->publish(topic, payload.c_str());
+boolean MQTTClient::publish(const char * topic, String payload) {
+  return this->publish(topic, payload.c_str());
 }
 
-void MQTTClient::publish(const char * topic, const char * payload) {
-  this->publish(topic, (char*)payload, (unsigned int)strlen(payload));
+boolean MQTTClient::publish(const char * topic, const char * payload) {
+  return this->publish(topic, (char*)payload, (unsigned int)strlen(payload));
 }
 
-void MQTTClient::publish(const char * topic, char * payload, unsigned int length) {
+boolean MQTTClient::publish(const char * topic, char * payload, unsigned int length) {
   MQTT::Message message;
   message.qos = MQTT::QOS0;
   message.retained = false;
   message.dup = false;
   message.payload = payload;
   message.payloadlen = length;
-  client->publish(topic, message);
+
+  return client->publish(topic, message) == MQTT::SUCCESS;
 }
 
-void MQTTClient::subscribe(String topic) {
-  this->subscribe(topic.c_str());
+boolean MQTTClient::publish(MQTTMessage * message) {
+  MQTT::Message _message;
+  _message.qos = MQTT::QOS0;
+  _message.retained = message->retained;
+  _message.dup = false;
+  _message.payload = message->payload;
+  _message.payloadlen = message->length;
+
+  return client->publish(message->topic, _message) == MQTT::SUCCESS;
 }
 
-void MQTTClient::subscribe(const char * topic) {
-  client->subscribe(topic, MQTT::QOS0, NULL);
+boolean MQTTClient::subscribe(String topic) {
+  return this->subscribe(topic.c_str());
 }
 
-void MQTTClient::unsubscribe(String topic) {
-  this->unsubscribe(topic.c_str());
+boolean MQTTClient::subscribe(const char * topic) {
+  return client->subscribe(topic, MQTT::QOS0, NULL) == MQTT::SUCCESS;
 }
 
-void MQTTClient::unsubscribe(const char * topic) {
-  client->unsubscribe(topic);
+boolean MQTTClient::unsubscribe(String topic) {
+  return this->unsubscribe(topic.c_str());
+}
+
+boolean MQTTClient::unsubscribe(const char * topic) {
+  return client->unsubscribe(topic) == MQTT::SUCCESS;
 }
 
 void MQTTClient::loop() {
@@ -116,6 +159,6 @@ boolean MQTTClient::connected() {
   return this->client->isConnected();
 }
 
-void MQTTClient::disconnect() {
-  this->client->disconnect();
+boolean MQTTClient::disconnect() {
+  return this->client->disconnect() == MQTT::SUCCESS;
 }
