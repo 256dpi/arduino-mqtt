@@ -1,5 +1,5 @@
-// This example uses an Arduino Yun and the
-// YunMQTTClient to connect to shiftr.io.
+// This example uses an Arduino Yun or a Yun-Shield
+// and the YunMQTTClient to connect to shiftr.io.
 //
 // The YunMQTTClient uses a Linux side python
 // script to manage the connection which results
