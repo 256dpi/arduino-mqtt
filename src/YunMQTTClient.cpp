@@ -36,6 +36,10 @@ void YunMQTTClient::setWill(const char * topic, const char * payload) {
   this->willPayload = payload;
 }
 
+void YunMQTTClient::setTls(const char * caCerts) {
+  this->tlsCaCerts = caCerts;
+}
+
 boolean YunMQTTClient::connect(const char * clientId) {
   return this->connect(clientId, "", "");
 }
@@ -59,6 +63,13 @@ boolean YunMQTTClient::connect(const char * clientId, const char * username, con
     this->process.print(F(";"));
     this->process.print(this->willPayload);
     this->process.print(F("\n"));
+  }
+
+  // set TLS if available
+  if(strlen(this->tlsCaCerts) > 0) {
+    this->process.print("t:");
+    this->process.print(this->tlsCaCerts);
+    this->process.print(";\n");
   }
 
   // send connect request

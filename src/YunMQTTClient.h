@@ -15,6 +15,7 @@ private:
   int port;
   const char * willTopic = "";
   const char * willPayload = "";
+  const char * tlsCaCerts = "";
   boolean alive = false;
   boolean updateBridge();
 public:
@@ -23,6 +24,7 @@ public:
   boolean begin(const char * hostname, int port);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
+  void setTls(const char * caCerts);
   boolean connect(const char * clientId);
   boolean connect(const char * clientId, const char* username, const char* password);
   void publish(String topic);

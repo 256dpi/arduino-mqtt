@@ -8,6 +8,7 @@ The following commands are exchanged between the python script and the arduino l
 ---|-------------|------------------------------------
 <- | boot        | `b;`
 -> | will        | `w:topic:payload_len;(payload)`
+-> | tls         | `t:ca_certs;`
 -> | connect     | `c:host:port:id:(user):(pass);`
 <- | approved    | `a;`
 <- | rejected    | `r;`

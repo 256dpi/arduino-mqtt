@@ -11,6 +11,7 @@ class Bridge:
         self.client = None
         self.will_topic = ""
         self.will_payload = ""
+        self.tls_ca_certs = ""
         self.stopped = False
 
     # Bridge Callbacks
@@ -29,6 +30,8 @@ class Bridge:
         remaining = segments[1:]
         if cmd == 'w':
             self.do_will(remaining)
+        elif cmd == 't':
+            self.do_tls(remaining)
         elif cmd == 'c':
             self.do_connect(remaining)
         elif cmd == 's':
@@ -48,6 +51,9 @@ class Bridge:
         self.will_topic = args[0]
         self.will_payload = self.read_chunk(int(args[1]))
 
+    def do_tls(self, args):
+        self.tls_ca_certs = args[0]
+
     def do_connect(self, args):
         self.client = mqtt.Client(args[2])
         self.client.on_connect = self.on_connect
@@ -58,6 +64,8 @@ class Bridge:
         if len(self.will_topic) > 0:
             self.client.will_set(self.will_topic, self.will_payload)
         try:
+            if len(self.tls_ca_certs) > 0:
+                self.client.tls_set(self.tls_ca_certs)
             self.client.connect(args[0], int(args[1]))
             self.client.loop_start()
         except:
