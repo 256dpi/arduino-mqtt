@@ -1,6 +1,10 @@
 // This example uses an Arduino Yun or a Yun-Shield
 // and the YunMQTTClient to connect to shiftr.io.
 //
+// Note: You need to upgrade the Arduino Yun to the
+// latest firmware version to have the certificates
+// present.
+//
 // The YunMQTTClient uses a Linux side python
 // script to manage the connection which results
 // in less program space and memory used on the Arduino.
