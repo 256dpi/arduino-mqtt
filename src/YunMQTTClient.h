@@ -1,8 +1,6 @@
 #ifndef YUN_MQTT_CLIENT_H
 #define YUN_MQTT_CLIENT_H
 
-#ifdef ARDUINO_AVR_YUN
-
 #include <Arduino.h>
 #include <Bridge.h>
 
@@ -41,5 +39,4 @@ public:
   void disconnect();
 };
 
-#endif //ARDUINO_AVR_YUN
 #endif //YUN_MQTT_CLIENT_H
