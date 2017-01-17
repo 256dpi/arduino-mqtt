@@ -3,3 +3,4 @@ build/
 node_modules/
 mqtt.zip
 yun/.idea
+cmake-build-debug/
