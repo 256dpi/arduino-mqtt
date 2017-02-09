@@ -28,6 +28,9 @@
 #if !defined(MQTTCLIENT_QOS2)
     #define MQTTCLIENT_QOS2 0
 #endif
+#if !defined(MAX_IPSTACK_WRITE_SIZE)
+    #define MAX_IPSTACK_WRITE_SIZE 90
+#endif
 
 namespace MQTT
 {
@@ -317,12 +320,15 @@ void MQTT::Client<Network, Timer, a, b>::freeQoS2msgid(unsigned short id)
 template<class Network, class Timer, int a, int b>
 int MQTT::Client<Network, Timer, a, b>::sendPacket(int length, Timer& timer)
 {
+    int writeSize = 0;
+
     int rc = FAILURE,
         sent = 0;
 
     while (sent < length && !timer.expired())
     {
-        rc = ipstack.write(&sendbuf[sent], length, timer.left_ms());
+        writeSize = (length - sent)>MAX_IPSTACK_WRITE_SIZE?MAX_IPSTACK_WRITE_SIZE:(length-sent);
+        rc = ipstack.write(&sendbuf[sent], writeSize, timer.left_ms());
         if (rc < 0)  // there was an error writing the data
             break;
         sent += rc;
