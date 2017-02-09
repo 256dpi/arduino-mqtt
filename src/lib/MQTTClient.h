@@ -173,12 +173,12 @@ public:
     int disconnect();
 
     /** A call to this API must be made within the keepAlive interval to keep the MQTT connection alive
-     *  yield can be called if no other MQTT operation is needed.  This will also allow messages to be
+     *  mqtt_yield can be called if no other MQTT operation is needed.  This will also allow messages to be
      *  received.
      *  @param timeout_ms the time to wait, in milliseconds
      *  @return success code - on failure, this means the client has disconnected
      */
-    int yield(unsigned long timeout_ms = 1000L);
+    int mqtt_yield(unsigned long timeout_ms = 1000L);
 
     /** Is the client connected?
      *  @return flag - is the client connected or not?
@@ -490,7 +490,7 @@ int MQTT::Client<Network, Timer, a, MAX_MESSAGE_HANDLERS>::deliverMessage(MQTTSt
 
 
 template<class Network, class Timer, int a, int b>
-int MQTT::Client<Network, Timer, a, b>::yield(unsigned long timeout_ms)
+int MQTT::Client<Network, Timer, a, b>::mqtt_yield(unsigned long timeout_ms)
 {
     int rc = SUCCESS;
     Timer timer = Timer();
