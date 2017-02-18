@@ -19,7 +19,7 @@ MQTTClient client;
 unsigned long lastMillis = 0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Ethernet.begin(mac, ip);
   client.begin("broker.shiftr.io", net);
 

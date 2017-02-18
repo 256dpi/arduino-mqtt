@@ -24,7 +24,7 @@ unsigned long lastMillis = 0;
 
 void setup() {
   Bridge.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
   client.begin("broker.shiftr.io", 8883); // MQTT brokers usually use port 8883 for secure connections
   client.setTls("/etc/ssl/certs/AddTrust_External_Root.crt"); // select the CA for the broker
 

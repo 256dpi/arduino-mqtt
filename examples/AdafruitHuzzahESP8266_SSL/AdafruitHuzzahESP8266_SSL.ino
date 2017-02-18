@@ -21,7 +21,7 @@ unsigned long lastMillis = 0;
 void connect(); // <- predefine connect() for setup()
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   WiFi.begin(ssid, pass);
   client.begin("broker.shiftr.io", 8883, net); // MQTT brokers usually use port 8883 for secure connections
 

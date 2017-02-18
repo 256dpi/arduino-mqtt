@@ -22,7 +22,7 @@ MQTTClient client;
 unsigned long lastMillis = 0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   WiFi.begin(ssid, pass);
   client.begin("broker.shiftr.io", net);
 

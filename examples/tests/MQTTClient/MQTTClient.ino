@@ -9,7 +9,7 @@ MQTTTest<MQTTClient> test;
 
 void setup() {
   Bridge.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // run a very basic automated test
   client.begin("broker.shiftr.io", net);
