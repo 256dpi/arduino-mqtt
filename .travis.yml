@@ -11,6 +11,7 @@ env:
     - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoYun_MQTTClient" BOARD="arduino:avr:yun"
     - EXAMPLE="ArduinoYun_YunMQTTClient" BOARD="arduino:avr:yun"
+    - EXAMPLE="ArduinoYun_YunMQTTClient_SSL" BOARD="arduino:avr:yun"
 before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
   - sleep 3
