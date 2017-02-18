@@ -14,6 +14,9 @@ env:
     - EXAMPLE="ArduinoYun_YunMQTTClient_SSL" BOARD="arduino:avr:yun"
     - EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32"
     - EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32"
+    allow_failures:
+      - env: EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32"
+      - env: EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32"
 before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
   - sleep 3
@@ -27,13 +30,13 @@ before_install:
       arduino --pref "boardsmanager.additional.urls=" --save-prefs;
     fi
   - if [[ "$BOARD" =~ "espressif:esp32:" ]]; then
-      mkdir -p $HOME/Arduino/hardware/espressif;
-      cd $HOME/Arduino/hardware/espressif;
-      git clone https://github.com/espressif/arduino-esp32.git esp32;
-      cd esp32/tools/;
-      python get.py;
+      mkdir -p $HOME/Arduino/hardware/espressif &&
+      cd $HOME/Arduino/hardware/espressif &&
+      git clone https://github.com/espressif/arduino-esp32.git esp32 &&
+      cd esp32/tools/ &&
+      python get.py
     fi
-  - arduino --install-library WiFi101;
+  - arduino --install-library WiFi101
 install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/.
