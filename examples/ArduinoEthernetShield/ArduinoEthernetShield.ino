@@ -10,8 +10,8 @@
 #include <Ethernet.h>
 #include <MQTTClient.h>
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-byte ip[] = { 192, 168, 1, 177 }; // <- change to match your network
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+byte ip[] = {192, 168, 1, 177}; // <- change to match your network
 
 EthernetClient net;
 MQTTClient client;
@@ -42,12 +42,12 @@ void connect() {
 void loop() {
   client.loop();
 
-  if(!client.connected()) {
+  if (!client.connected()) {
     connect();
   }
 
   // publish a message roughly every second.
-  if(millis() - lastMillis > 1000) {
+  if (millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
   }

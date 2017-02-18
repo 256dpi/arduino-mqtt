@@ -42,12 +42,12 @@ void connect() {
 void loop() {
   client.loop();
 
-  if(!client.connected()) {
+  if (!client.connected()) {
     connect();
   }
 
   // publish a message roughly every second.
-  if(millis() - lastMillis > 1000) {
+  if (millis() - lastMillis > 1000) {
     lastMillis = millis();
     client.publish("/hello", "world");
   }
