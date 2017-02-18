@@ -1,5 +1,4 @@
 #include "Network.h"
-#include <Arduino.h>
 
 void Network::setClient(Client *_client) { this->client = _client; }
 

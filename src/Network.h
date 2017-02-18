@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Client.h>
 
 class Network {
