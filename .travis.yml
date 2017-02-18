@@ -14,10 +14,6 @@ env:
     - EXAMPLE="ArduinoYun_YunMQTTClient_SSL" BOARD="arduino:avr:yun"
     - EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32:FlashFreq=80"
     - EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32:FlashFreq=80"
-matrix:
-  allow_failures:
-    - env: EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32:FlashFreq=80"
-    - env: EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32:FlashFreq=80"
 before_install:
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
   - sleep 3
