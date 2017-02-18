@@ -94,12 +94,20 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
+boolean begin(Client& client);
 boolean begin(const char * hostname, Client& client);
 boolean begin(const char * hostname, int port, Client& client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
 - The `YunMQTTClient` does not need the `client` parameter.
+
+The host can also be changed later:
+
+```c++
+void setHost(const char * hostname);
+void setHost(const char * hostname, int port);
+```
 
 Set the will message that gets registered on a connect:
 

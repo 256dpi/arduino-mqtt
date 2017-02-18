@@ -22,6 +22,10 @@ void MQTTClient_messageHandler(MQTT::MessageData &messageData) {
 
 MQTTClient::MQTTClient() {}
 
+boolean MQTTClient::begin(Client &client) {
+  return this->begin("", client);
+}
+
 boolean MQTTClient::begin(const char * hostname, Client& client) {
   return this->begin(hostname, 1883, client);
 }
@@ -35,6 +39,15 @@ boolean MQTTClient::begin(const char * _hostname, int _port, Client& _client) {
   this->options = MQTTPacket_connectData_initializer;
 
   return true;
+}
+
+void MQTTClient::setHost(const char *hostname) {
+  this->setHost(hostname, 1883);
+}
+
+void MQTTClient::setHost(const char *hostname, int port) {
+  this->hostname = hostname;
+  this->port = port;
 }
 
 void MQTTClient::setWill(const char * topic) {

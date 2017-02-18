@@ -33,8 +33,11 @@ private:
   int port;
 public:
   MQTTClient();
+  boolean begin(Client& client);
   boolean begin(const char * hostname, Client& client);
   boolean begin(const char * hostname, int port, Client& client);
+  void setHost(const char * hostname);
+  void setHost(const char * hostname, int port);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   boolean connect(const char * clientId);

@@ -27,8 +27,11 @@ private:
   boolean updateBridge();
 public:
   YunMQTTClient();
+  boolean begin();
   boolean begin(const char * hostname);
   boolean begin(const char * hostname, int port);
+  void setHost(const char * hostname);
+  void setHost(const char * hostname, int port);
   void setWill(const char * topic);
   void setWill(const char * topic, const char * payload);
   void setTls(const char * caCerts);

@@ -6,6 +6,10 @@
 
 YunMQTTClient::YunMQTTClient() {}
 
+boolean YunMQTTClient::begin() {
+  return this->begin("");
+}
+
 boolean YunMQTTClient::begin(const char * hostname) {
   return this->begin(hostname, 1883);
 }
@@ -25,6 +29,15 @@ boolean YunMQTTClient::updateBridge() {
   int r3 = p.runShellCommand(F("wget -N https://raw.githubusercontent.com/256dpi/arduino-mqtt/v1.10.1/yun/bridge.py --no-check-certificate -P /usr/arduino-mqtt"));
 
   return r1 == 0 && r2 == 0 && r3 == 0;
+}
+
+void YunMQTTClient::setHost(const char *hostname) {
+  this->setHost(hostname, 1883);
+}
+
+void YunMQTTClient::setHost(const char *hostname, int port) {
+  this->hostname = hostname;
+  this->port = port;
 }
 
 void YunMQTTClient::setWill(const char * topic) {
