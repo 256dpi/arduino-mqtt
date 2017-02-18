@@ -6,6 +6,8 @@ project(arduino_mqtt)
 include_directories(/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/)
 include_directories(/Applications/Arduino.app/Contents/Java/libraries/Bridge/src)
 
+add_definitions(-DYUN_MQTT_CLIENT_ENABLED)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
@@ -31,7 +33,5 @@ set(SOURCE_FILES
     src/Timer.h
     src/YunMQTTClient.cpp
     src/YunMQTTClient.h)
-
-set(ARDUINO_AVR_YUN 1)
 
 add_executable(arduino_mqtt ${SOURCE_FILES})
