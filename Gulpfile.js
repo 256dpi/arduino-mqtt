@@ -2,8 +2,8 @@ var gulp = require('gulp');
 var del = require('del');
 var zip = require('gulp-zip');
 
-gulp.task('clean', function(cb){
-  del(['./build'], cb);
+gulp.task('clean', function(){
+  return del(['./build']);
 });
 
 gulp.task('copy', ['clean'], function(){
@@ -11,8 +11,8 @@ gulp.task('copy', ['clean'], function(){
     .pipe(gulp.dest('./build'));
 });
 
-gulp.task('thin', ['copy'], function(cb){
-  del([
+gulp.task('thin', ['copy'], function(){
+  return del([
     './build/update.sh',
     './build/Gulpfile.js',
     './build/package.json',
@@ -20,7 +20,7 @@ gulp.task('thin', ['copy'], function(cb){
     './build/mqtt.zip',
     './build/CMakeLists.txt',
     './build/yun'
-  ], cb);
+  ]);
 });
 
 gulp.task('compress', ['thin'], function () {
