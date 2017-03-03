@@ -3,7 +3,7 @@
 void Network::setClient(Client *_client) { this->client = _client; }
 
 int Network::connect(char *hostname, int port) {
-  return this->client->connect(hostname, port);
+  return this->client->connect(hostname, (uint16_t)port);
 }
 
 int Network::read(unsigned char *buffer, int len, int timeout) {
@@ -15,8 +15,8 @@ int Network::read(unsigned char *buffer, int len, int timeout) {
     return 0; // nothing to read
   }
 
-  this->client->setTimeout(timeout);
-  return this->client->readBytes(buffer, len);
+  this->client->setTimeout((unsigned long)timeout);
+  return (int)this->client->readBytes(buffer, (size_t)len);
 }
 
 int Network::write(unsigned char *buffer, int len, int timeout) {
@@ -24,8 +24,8 @@ int Network::write(unsigned char *buffer, int len, int timeout) {
     return -1; // return an error
   }
 
-  client->setTimeout(timeout);
-  return client->write((uint8_t *)buffer, len);
+  client->setTimeout((unsigned long)timeout);
+  return (int)client->write(buffer, (size_t)len);
 }
 
 boolean Network::connected() { return client->connected(); }

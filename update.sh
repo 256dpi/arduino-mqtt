@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone git://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.embedded-c.git ./lib
+git clone https://github.com/eclipse/paho.mqtt.embedded-c.git ./lib
 
 cp -r ./lib/MQTTPacket/src/* ./src/lib
 cp -r ./lib/MQTTClient/src/* ./src/lib
@@ -15,6 +15,7 @@ rm ./src/lib/*Server.c
 
 # remove unneeded format stuff
 rm ./src/lib/MQTTFormat.*
+sed -i '' '/#include "MQTTFormat.h"/d' ./src/lib/MQTTPacket.h
 
 # remove the logging calls
 rm ./src/lib/MQTTLogging.h
