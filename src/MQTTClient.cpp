@@ -139,7 +139,7 @@ void MQTTClient::loop() {
     this->client->disconnect();
   }
 
-  this->client->yield();
+  this->client->mqtt_yield();
 }
 
 boolean MQTTClient::connected() { return this->client->isConnected(); }
