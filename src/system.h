@@ -1,5 +1,5 @@
-#ifndef LWMQTT_UNIX_H
-#define LWMQTT_UNIX_H
+#ifndef LWMQTT_ARDUINO_H
+#define LWMQTT_ARDUINO_H
 
 #include <sys/time.h>
 
@@ -29,4 +29,4 @@ lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uns
 lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, unsigned char *buf, int len, int *sent,
                                           unsigned int timeout);
 
-#endif  // LWMQTT_UNIX_H
+#endif  // LWMQTT_ARDUINO_H
