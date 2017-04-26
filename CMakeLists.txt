@@ -1,32 +1,23 @@
 # Uncompilable CMake File to enable project editing with CLion IDE
 
 cmake_minimum_required(VERSION 2.8.4)
-project(arduino_mqtt)
+project(arduino-mqtt)
 
 include_directories(/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+include_directories(src/lwmqtt)
+
 set(SOURCE_FILES
-    src/lib/FP.h
-    src/lib/MQTTClient.h
-    src/lib/MQTTConnect.h
-    src/lib/MQTTConnectClient.c
-    src/lib/MQTTDeserializePublish.c
-    src/lib/MQTTPacket.c
-    src/lib/MQTTPacket.h
-    src/lib/MQTTPublish.h
-    src/lib/MQTTSerializePublish.c
-    src/lib/MQTTSubscribe.h
-    src/lib/MQTTSubscribeClient.c
-    src/lib/MQTTUnsubscribe.h
-    src/lib/MQTTUnsubscribeClient.c
     src/MQTTClient.cpp
     src/MQTTClient.h
     src/MQTTTest.h
     src/Network.cpp
     src/Network.h
     src/Timer.cpp
-    src/Timer.h)
+    src/Timer.h
+    src/system.c
+    src/system.h)
 
-add_executable(arduino_mqtt ${SOURCE_FILES})
+add_executable(arduino-mqtt ${SOURCE_FILES})
