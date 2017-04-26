@@ -50,11 +50,11 @@ class AdvancedMQTTClient {
  public:
   AdvancedMQTTClient() {}
 
-  boolean begin(Client &client) { return this->begin("", client); }
+  void begin(Client &client) { this->begin("", client); }
 
-  boolean begin(const char *hostname, Client &client) { return this->begin(hostname, 1883, client); }
+  void begin(const char *hostname, Client &client) { this->begin(hostname, 1883, client); }
 
-  boolean begin(const char *hostname, int port, Client &client) {
+  void begin(const char *hostname, int port, Client &client) {
     // set config
     this->hostname = hostname;
     this->port = port;
@@ -71,8 +71,6 @@ class AdvancedMQTTClient {
 
     // set callback
     lwmqtt_set_callback(&this->client, MQTTClient_callback);
-
-    return true;
   }
 
   void setHost(const char *hostname) { this->setHost(hostname, 1883); }
