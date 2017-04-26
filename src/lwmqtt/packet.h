@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include <lwmqtt.h>
+#include "lwmqtt.h"
 
 #include "helpers.h"
 

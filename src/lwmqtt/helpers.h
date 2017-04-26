@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include <lwmqtt.h>
+#include "lwmqtt.h"
 
 /**
  * Reads a string object from the buffer and populates the passed object.

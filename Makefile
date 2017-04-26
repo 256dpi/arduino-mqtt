@@ -11,3 +11,4 @@ update:
 	cp -r ./lwmqtt/src/*.h ./src/lwmqtt/
 	cp -r ./lwmqtt/include/*.h ./src/lwmqtt/
 	rm -rf ./lwmqtt
+	sed -i '' "s/<lwmqtt.h>/\"lwmqtt.h\"/g" ./src/lwmqtt/*

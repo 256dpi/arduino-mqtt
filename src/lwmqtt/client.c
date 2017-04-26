@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include <lwmqtt.h>
+#include "lwmqtt.h"
 
 #include "packet.h"
 
