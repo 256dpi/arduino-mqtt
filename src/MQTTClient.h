@@ -194,8 +194,10 @@ class AdvancedMQTTClient {
 
   boolean subscribe(String topic) { return this->subscribe(topic.c_str()); }
 
-  boolean subscribe(const char *topic) {
-    this->err = lwmqtt_subscribe(&this->client, topic, LWMQTT_QOS0, this->timeout);
+  boolean subscribe(const char *topic) { this->subscribe(topic, 0); }
+
+  boolean subscribe(const char *topic, int qos) {
+    this->err = lwmqtt_subscribe(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
     if (this->err != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
@@ -203,8 +205,6 @@ class AdvancedMQTTClient {
 
     return true;
   }
-
-  // TODO: Add QOS.
 
   boolean unsubscribe(String topic) { return this->unsubscribe(topic.c_str()); }
 
