@@ -18,17 +18,17 @@ void MQTTClient_callback(lwmqtt_client_t *client, lwmqtt_string_t *topic, lwmqtt
   // get payload
   char *payload = (char *)message->payload;
 
-  // TODO: Only do this if enough space is available...
   // null terminate payload
   payload[message->payload_len] = '\0';
 
+  // call the user callback
   messageReceived(String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
 }
 
 template <int BUF_SIZE>
 class AdvancedMQTTClient {
  private:
-  unsigned char readBuf[BUF_SIZE];
+  unsigned char readBuf[BUF_SIZE+1]; // plus one byte to ensure null termination
   unsigned char writeBuf[BUF_SIZE];
 
   unsigned int timeout = 1000;
