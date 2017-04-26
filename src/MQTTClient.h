@@ -58,6 +58,7 @@ class AdvancedMQTTClient {
     // set config
     this->hostname = hostname;
     this->port = port;
+    this->netClient = &client;
 
     // initialize client
     lwmqtt_init(&this->client, this->writeBuf, BUF_SIZE, this->readBuf, BUF_SIZE);
@@ -67,9 +68,6 @@ class AdvancedMQTTClient {
 
     // set network
     lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
-
-    // save net client
-    this->netClient = &client;
 
     // set callback
     lwmqtt_set_callback(&this->client, MQTTClient_callback);
