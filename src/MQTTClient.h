@@ -93,21 +93,18 @@ class AdvancedMQTTClient {
 
   void setWill(const char *topic) { this->setWill(topic, ""); }
 
-  void setWill(const char *topic, const char *payload) {
+  void setWill(const char *topic, const char *payload) { this->setWill(topic, payload, false, 0); }
+
+  void setWill(const char *topic, const char *payload, bool retained, int qos) {
     this->hasWill = true;
     this->will.topic = lwmqtt_str(topic);
     this->will.payload = (void *)payload;
     this->will.payload_len = (int)strlen(payload);
+    this->will.retained = retained;
+    this->will.qos = (lwmqtt_qos_t)qos;
   }
 
-  void clearWill() {
-    this->hasWill = false;
-    this->will.topic = NULL;
-    this->will.payload = NULL;
-    this->will.payload_len = 0;
-  }
-
-  // TODO: Add will QOS.
+  void clearWill() { this->hasWill = false; }
 
   boolean connect(const char *clientId) { return this->connect(clientId, NULL, NULL); }
 

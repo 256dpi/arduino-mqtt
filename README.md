@@ -80,7 +80,7 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+void messageReceived(String topic, String payload, char *bytes, unsigned int length) {
   Serial.print("incoming: ");
   Serial.print(topic);
   Serial.print(" - ");
@@ -95,8 +95,8 @@ Initialize the object using the hostname of the broker, the brokers port (defaul
 
 ```c++
 boolean begin(Client& client);
-boolean begin(const char * hostname, Client& client);
-boolean begin(const char * hostname, int port, Client& client);
+boolean begin(const char *hostname, Client &client);
+boolean begin(const char *hostname, int port, Client &client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
@@ -104,23 +104,24 @@ boolean begin(const char * hostname, int port, Client& client);
 The host can also be changed later:
 
 ```c++
-void setHost(const char * hostname);
-void setHost(const char * hostname, int port);
+void setHost(const char *hostname);
+void setHost(const char *hostname, int port);
 ```
 
 Set the will message that gets registered on a connect:
 
 ```c++
-void setWill(const char * topic);
-void setWill(const char * topic, const char * payload);
+void setWill(const char *topic);
+void setWill(const char *topic, const char *payload);
+void setWill(const char *topic, const char *payload, bool retained, int qos);
 void clearWill();
 ```
 
 Connect to broker using the supplied client id and an optional username and password:
 
 ```c++
-boolean connect(const char * clientId);
-boolean connect(const char * clientId, const char * username, const char * password);
+boolean connect(const char *clientId);
+boolean connect(const char *clientId, const char *username, const char *password);
 ```
 
 - This functions returns a value that indicates if the connection has been established successfully.
@@ -130,10 +131,10 @@ Publishes a message to the broker with an optional payload:
 ```c++
 boolean publish(String topic);
 boolean publish(String topic, String payload);
-boolean publish(const char * topic, String payload);
-boolean publish(const char * topic, const char * payload);
-boolean publish(const char * topic, char * payload, unsigned int length);
-boolean publish(MQTTMessage * message)
+boolean publish(const char *topic, String payload);
+boolean publish(const char *topic, const char *payload);
+boolean publish(const char *topic, char *payload, unsigned int length);
+boolean publish(MQTTMessage *message)
 ```
 
 - The last function can be used to publish messages with more low level attributes like `retained`.
@@ -142,14 +143,14 @@ Subscribe to a topic:
 
 ```c++
 boolean subscribe(String topic);
-boolean subscribe(const char * topic);
+boolean subscribe(const char *topic);
 ```
 
 Unsubscribe from a topic:
 
 ```c++
 boolean unsubscribe(String topic);
-boolean unsubscribe(const char * topic);
+boolean unsubscribe(const char *topic);
 ```
 
 Sends and receives packets:
