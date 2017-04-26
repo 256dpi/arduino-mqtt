@@ -1,8 +1,0 @@
-{
-  "private": true,
-  "devDependencies": {
-    "del": "^2.1.0",
-    "gulp": "^3.8.10",
-    "gulp-zip": "^3.0.2"
-  }
-}
