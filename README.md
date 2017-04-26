@@ -94,9 +94,9 @@ void messageReceived(String topic, String payload, char *bytes, unsigned int len
 Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
-boolean begin(Client& client);
-boolean begin(const char *hostname, Client &client);
-boolean begin(const char *hostname, int port, Client &client);
+void begin(Client& client);
+void begin(const char *hostname, Client &client);
+void begin(const char *hostname, int port, Client &client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
