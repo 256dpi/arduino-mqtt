@@ -1,8 +1,6 @@
 #ifndef LWMQTT_ARDUINO_H
 #define LWMQTT_ARDUINO_H
 
-#include <sys/time.h>
-
 #include <Arduino.h>
 #include <Client.h>
 
