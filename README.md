@@ -113,6 +113,7 @@ Set the will message that gets registered on a connect:
 ```c++
 void setWill(const char * topic);
 void setWill(const char * topic, const char * payload);
+void clearWill();
 ```
 
 Connect to broker using the supplied client id and an optional username and password:

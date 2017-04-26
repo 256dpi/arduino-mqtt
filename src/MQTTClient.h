@@ -100,7 +100,14 @@ class AdvancedMQTTClient {
     this->will.payload_len = (int)strlen(payload);
   }
 
-  // TODO: Add clearWill().
+  void clearWill() {
+    this->hasWill = false;
+    this->will.topic = NULL;
+    this->will.payload = NULL;
+    this->will.payload_len = 0;
+  }
+
+  // TODO: Add will QOS.
 
   boolean connect(const char *clientId) { return this->connect(clientId, NULL, NULL); }
 
