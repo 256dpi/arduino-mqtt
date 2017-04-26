@@ -7,8 +7,6 @@ include_directories(/Applications/Arduino.app/Contents/Java/hardware/arduino/avr
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(src/lwmqtt)
-
 set(SOURCE_FILES
     src/MQTTClient.h
     src/MQTTTest.h
