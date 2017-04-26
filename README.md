@@ -154,7 +154,7 @@ boolean unsubscribe(const char * topic);
 Sends and receives packets:
 
 ```c++
-void loop();
+boolean loop();
 ```
 
 - This function should be called in every `loop`.
