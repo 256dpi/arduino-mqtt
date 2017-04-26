@@ -10,14 +10,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories(src/lwmqtt)
 
 set(SOURCE_FILES
-    src/MQTTClient.cpp
     src/MQTTClient.h
     src/MQTTTest.h
-    src/Network.cpp
-    src/Network.h
-    src/Timer.cpp
-    src/Timer.h
-    src/system.c
+    src/system.cpp
     src/system.h)
 
 add_executable(arduino-mqtt ${SOURCE_FILES})

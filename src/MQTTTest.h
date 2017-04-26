@@ -1,11 +1,12 @@
 #include <Arduino.h>
 
-template <class T> class MQTTTest {
-public:
+template <class T>
+class MQTTTest {
+ public:
   void run(T *client);
   void message(String topic, String payload);
 
-private:
+ private:
   T *client;
   void printResult(boolean res);
   boolean testMessage(const char *topic, const char *payload);
@@ -18,14 +19,14 @@ private:
 
 /* Methods */
 
-template <class T> void MQTTTest<T>::run(T *client) {
+template <class T>
+void MQTTTest<T>::run(T *client) {
   this->client = client;
 
   Serial.println("Starting tests...");
 
   Serial.print("[Test 1] Connect: ");
-  this->printResult(this->client->connect("arduino-mqtt-test", "try", "try") &&
-                    this->testConnectivity(true));
+  this->printResult(this->client->connect("arduino-mqtt-test", "try", "try") && this->testConnectivity(true));
 
   Serial.print("[Test 2] Subscribe & Publish: ");
   this->client->subscribe("arduino-mqtt-test/topic1");
@@ -47,15 +48,16 @@ template <class T> void MQTTTest<T>::run(T *client) {
   Serial.println("Tests finished!");
 }
 
-template <class T> void MQTTTest<T>::message(String topic, String payload) {
+template <class T>
+void MQTTTest<T>::message(String topic, String payload) {
   this->newMessage = true;
-  this->passedTest =
-      topic.equals(this->testTopic) && payload.equals(this->testPayload);
+  this->passedTest = topic.equals(this->testTopic) && payload.equals(this->testPayload);
 }
 
 /* Helpers */
 
-template <class T> void MQTTTest<T>::printResult(boolean res) {
+template <class T>
+void MQTTTest<T>::printResult(boolean res) {
   res ? Serial.println("SUCCESS") : Serial.println("FAILED");
 }
 
@@ -75,7 +77,8 @@ boolean MQTTTest<T>::testMessage(const char *topic, const char *payload) {
   return ret;
 }
 
-template <class T> boolean MQTTTest<T>::testConnectivity(boolean test) {
+template <class T>
+boolean MQTTTest<T>::testConnectivity(boolean test) {
   while (this->client->connected() != test) {
     this->client->loop();
   }
