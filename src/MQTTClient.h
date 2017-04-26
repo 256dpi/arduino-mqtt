@@ -7,13 +7,6 @@
 
 #include "system.h"
 
-typedef struct {
-  char *topic;
-  char *payload;
-  unsigned int length;
-  boolean retained;
-} MQTTMessage;
-
 void messageReceived(String topic, String payload, char *bytes, unsigned int length);
 
 void MQTTClient_callback(lwmqtt_client_t *client, lwmqtt_string_t *topic, lwmqtt_message_t *message) {
@@ -155,12 +148,16 @@ class AdvancedMQTTClient {
   }
 
   boolean publish(const char *topic, char *payload, unsigned int length) {
+    this->publish(topic, payload, length, false, 0);
+  }
+
+  boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos) {
     // prepare message
     lwmqtt_message_t message = lwmqtt_default_message;
-    message.qos = LWMQTT_QOS0;
-    message.retained = false;
     message.payload = payload;
     message.payload_len = length;
+    message.retained = retained;
+    message.qos = lwmqtt_qos_t(qos);
 
     // publish message
     this->err = lwmqtt_publish(&this->client, topic, &message, this->timeout);
@@ -171,26 +168,6 @@ class AdvancedMQTTClient {
 
     return true;
   }
-
-  boolean publish(MQTTMessage *message) {
-    // prepare message
-    lwmqtt_message_t _message = lwmqtt_default_message;
-    _message.qos = LWMQTT_QOS0;
-    _message.retained = message->retained;
-    _message.payload = message->payload;
-    _message.payload_len = message->length;
-
-    // publish message
-    this->err = lwmqtt_publish(&this->client, message->topic, &_message, this->timeout);
-    if (this->err != LWMQTT_SUCCESS) {
-      this->isConnected = false;
-      return false;
-    }
-
-    return true;
-  }
-
-  // TODO: Add QOS.
 
   boolean subscribe(String topic) { return this->subscribe(topic.c_str()); }
 
