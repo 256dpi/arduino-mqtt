@@ -168,6 +168,13 @@ Check if the client is currently connected:
 boolean connected();
 ```
 
+Get valuable information for debugging:
+
+```
+lwmqtt_err_t lastError();
+lwmqtt_return_code_t returnCode();
+```
+
 Disconnects from the broker:
 
 ```c++

@@ -40,7 +40,7 @@ class AdvancedMQTTClient {
 
   bool isConnected = false;
   Client *netClient;
-  lwmqtt_return_code_t returnCode;
+  lwmqtt_return_code_t returnCde;
   lwmqtt_err_t lastErr;
 
   lwmqtt_arduino_network_t network;
@@ -123,7 +123,7 @@ class AdvancedMQTTClient {
     }
 
     // connect to broker
-    this->lastErr = lwmqtt_connect(&this->client, &options, will, &this->returnCode, this->timeout);
+    this->lastErr = lwmqtt_connect(&this->client, &options, will, &this->returnCde, this->timeout);
     if (this->lastErr != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
@@ -240,6 +240,14 @@ class AdvancedMQTTClient {
   }
 
   boolean connected() { return this->isConnected; }
+
+  lwmqtt_err_t lastError() {
+    return this->lastErr;
+  }
+
+  lwmqtt_return_code_t returnCode() {
+    return this->returnCde;
+  }
 
   boolean disconnect() {
     this->isConnected = false;
