@@ -22,6 +22,7 @@ void setup() {
   Serial.begin(115200);
   Ethernet.begin(mac, ip);
   client.begin("broker.shiftr.io", net);
+  client.onMessage(messageReceived);
 
   connect();
 }

@@ -13,6 +13,7 @@ void setup() {
 
   // run a very basic automated test
   client.begin("broker.shiftr.io", net);
+  client.onMessage(messageReceived);
   test.run(&client);
 }
 

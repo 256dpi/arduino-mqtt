@@ -7,9 +7,12 @@
 
 #include "system.h"
 
-void messageReceived(String topic, String payload, char *bytes, unsigned int length);
+typedef void (*MQTTClientCallback)(String topic, String payload, char bytes[], unsigned int length);
 
-void MQTTClient_callback(lwmqtt_client_t *client, lwmqtt_string_t *topic, lwmqtt_message_t *message) {
+static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t *topic, lwmqtt_message_t *message) {
+  // get callback
+  MQTTClientCallback cb = (MQTTClientCallback)ref;
+
   // null terminate topic to create String object
   char t[topic->len + 1];
   memcpy(topic, topic->data, (size_t)topic->len);
@@ -22,7 +25,7 @@ void MQTTClient_callback(lwmqtt_client_t *client, lwmqtt_string_t *topic, lwmqtt
   payload[message->payload_len] = '\0';
 
   // call the user callback
-  messageReceived(String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
+  cb(String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
 }
 
 template <int BUF_SIZE>
@@ -69,9 +72,17 @@ class AdvancedMQTTClient {
 
     // set network
     lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
+  }
+
+  void onMessage(MQTTClientCallback cb) {
+    // unset callback if NULL is supplied
+    if(cb == NULL) {
+      lwmqtt_set_callback(&this->client, NULL, NULL);
+      return;
+    }
 
     // set callback
-    lwmqtt_set_callback(&this->client, MQTTClient_callback);
+    lwmqtt_set_callback(&this->client, cb, MQTTClient_callback);
   }
 
   void setHost(const char *hostname) { this->setHost(hostname, 1883); }

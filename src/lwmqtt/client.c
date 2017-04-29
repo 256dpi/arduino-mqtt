@@ -43,7 +43,10 @@ void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *ne
   client->timer_set(client, client->command_timer, 0);
 }
 
-void lwmqtt_set_callback(lwmqtt_client_t *client, lwmqtt_callback_t cb) { client->callback = cb; }
+void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t cb) {
+  client->callback_ref = ref;
+  client->callback = cb;
+}
 
 static unsigned short lwmqtt_get_next_packet_id(lwmqtt_client_t *c) {
   return c->next_packet_id = (unsigned short)((c->next_packet_id == 65535) ? 1 : c->next_packet_id + 1);
@@ -154,7 +157,7 @@ static lwmqtt_err_t lwmqtt_cycle(lwmqtt_client_t *c, int *read, lwmqtt_packet_ty
 
       // call callback if set
       if (c->callback != NULL) {
-        c->callback(c, &topic, &msg);
+        c->callback(c, c->callback_ref, &topic, &msg);
       }
 
       // break early of qos zero

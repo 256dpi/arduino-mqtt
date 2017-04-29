@@ -103,7 +103,7 @@ typedef unsigned int (*lwmqtt_timer_get_t)(lwmqtt_client_t *c, void *ref);
 /**
  * The callback used to forward incoming messages.
  */
-typedef void (*lwmqtt_callback_t)(lwmqtt_client_t *, lwmqtt_string_t *, lwmqtt_message_t *);
+typedef void (*lwmqtt_callback_t)(lwmqtt_client_t *, void *ref, lwmqtt_string_t *, lwmqtt_message_t *);
 
 /**
  * The client object.
@@ -116,6 +116,7 @@ struct lwmqtt_client_t {
   int write_buf_size, read_buf_size;
   unsigned char *write_buf, *read_buf;
 
+  void *callback_ref;
   lwmqtt_callback_t callback;
 
   void *network;
@@ -166,9 +167,10 @@ void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *ne
  * Will set the callback used to receive incoming messages.
  *
  * @param client - The client object.
+ * @param ref - A custom reference that will passed to the callback.
  * @param cb - The callback to be called.
  */
-void lwmqtt_set_callback(lwmqtt_client_t *client, lwmqtt_callback_t cb);
+void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t cb);
 
 /**
  * The object defining the last will of a client.

@@ -29,6 +29,7 @@ void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
   client.begin("broker.shiftr.io", 8883, net);
+  client.onMessage(messageReceived);
 
   connect();
 }

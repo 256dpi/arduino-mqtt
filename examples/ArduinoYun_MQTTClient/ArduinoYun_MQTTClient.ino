@@ -20,6 +20,7 @@ void setup() {
   Bridge.begin();
   Serial.begin(115200);
   client.begin("broker.shiftr.io", net);
+  client.onMessage(messageReceived);
 
   connect();
 }
