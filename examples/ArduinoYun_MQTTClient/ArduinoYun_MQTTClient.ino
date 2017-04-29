@@ -8,8 +8,8 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <Bridge.h>
-#include <YunClient.h>
 #include <MQTTClient.h>
+#include <YunClient.h>
 
 YunClient net;
 MQTTClient client;
@@ -52,7 +52,7 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+void messageReceived(String topic, String payload, char* bytes, unsigned int length) {
   Serial.print("incoming: ");
   Serial.print(topic);
   Serial.print(" - ");

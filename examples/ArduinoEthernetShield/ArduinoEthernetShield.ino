@@ -11,7 +11,7 @@
 #include <MQTTClient.h>
 
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = {192, 168, 1, 177}; // <- change to match your network
+byte ip[] = {192, 168, 1, 177};  // <- change to match your network
 
 EthernetClient net;
 MQTTClient client;
@@ -54,7 +54,7 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+void messageReceived(String topic, String payload, char* bytes, unsigned int length) {
   Serial.print("incoming: ");
   Serial.print(topic);
   Serial.print(" - ");

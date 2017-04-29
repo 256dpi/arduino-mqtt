@@ -7,8 +7,8 @@
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
 
-#include <WiFi.h>
 #include <MQTTClient.h>
+#include <WiFi.h>
 
 const char *ssid = "ssid";
 const char *pass = "pass";
@@ -18,7 +18,7 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void connect(); // <- predefine connect() for setup()
+void connect();  // <- predefine connect() for setup()
 
 void setup() {
   Serial.begin(115200);
@@ -50,7 +50,7 @@ void connect() {
 
 void loop() {
   client.loop();
-  delay(10); // <- fixes some issues with WiFi stability
+  delay(10);  // <- fixes some issues with WiFi stability
 
   if (!client.connected()) {
     connect();
@@ -63,7 +63,7 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+void messageReceived(String topic, String payload, char *bytes, unsigned int length) {
   Serial.print("incoming: ");
   Serial.print(topic);
   Serial.print(" - ");
