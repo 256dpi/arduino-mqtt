@@ -31,7 +31,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
 template <int BUF_SIZE>
 class AdvancedMQTTClient {
  private:
-  unsigned char readBuf[BUF_SIZE+1]; // plus one byte to ensure null termination
+  unsigned char readBuf[BUF_SIZE + 1];  // plus one byte to ensure null termination
   unsigned char writeBuf[BUF_SIZE];
 
   unsigned int timeout = 1000;
@@ -76,7 +76,7 @@ class AdvancedMQTTClient {
 
   void onMessage(MQTTClientCallback cb) {
     // unset callback if NULL is supplied
-    if(cb == NULL) {
+    if (cb == NULL) {
       lwmqtt_set_callback(&this->client, NULL, NULL);
       return;
     }
@@ -252,13 +252,9 @@ class AdvancedMQTTClient {
 
   boolean connected() { return this->isConnected; }
 
-  lwmqtt_err_t lastError() {
-    return this->lastErr;
-  }
+  lwmqtt_err_t lastError() { return this->lastErr; }
 
-  lwmqtt_return_code_t returnCode() {
-    return this->returnCde;
-  }
+  lwmqtt_return_code_t returnCode() { return this->returnCde; }
 
   boolean disconnect() {
     this->isConnected = false;
