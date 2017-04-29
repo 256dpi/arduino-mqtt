@@ -27,7 +27,7 @@ Other shields and boards should work if they also provide a [Client](https://www
 
 ## Caveats
 
-- The maximum size for packets being published and received is set by default to 128 bytes. To change that value, you need to download the library manually and change the value in the following file: https://github.com/256dpi/arduino-mqtt/blob/master/src/MQTTClient.h#L5.
+- The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `AdvancedMQTTClient<256> client` instead of just `MQTTClient client` on the top of your sketch. The value in the angle brackets denotes the buffer size.
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
