@@ -6,9 +6,7 @@
 
 This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) client and adds a thin wrapper to get an Arduino like API.
 
-Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section.
-
-*Or even better use the builtin Library Manager in the Arduino IDE and search for "MQTT".*
+Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section. Or even better use the builtin Library Manager in the Arduino IDE and search for "MQTT".
 
 ## Compatibility
 
@@ -56,6 +54,16 @@ void setWill(const char topic[]);
 void setWill(const char topic[], const char payload[]);
 void setWill(const char topic[], const char payload[], bool retained, int qos);
 void clearWill();
+```
+
+Register a callback to receive messages:
+
+```c+++
+void onMessage(MQTTClientCallbackSimple);
+// Callback signature: void messageReceived(String topic, String payload) {}
+
+voud onMessageAdvanced(MQTTClientCallbackAdvanced);
+// Callback signature: void messageReceived(String topic, String payload, char topic[], unsigned int length) {}
 ```
 
 Connect to broker using the supplied client id and an optional username and password:
