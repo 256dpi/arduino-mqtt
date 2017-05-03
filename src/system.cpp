@@ -31,8 +31,6 @@ lwmqtt_err_t lwmqtt_arduino_network_connect(lwmqtt_arduino_network_t *network, C
   return LWMQTT_SUCCESS;
 }
 
-void lwmqtt_arduino_network_disconnect(lwmqtt_arduino_network_t *network) { network->client->stop(); }
-
 lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, unsigned char *buffer, int len, int *read,
                                          unsigned int timeout) {
   // cast network reference

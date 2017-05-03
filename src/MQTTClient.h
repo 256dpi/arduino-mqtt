@@ -265,7 +265,7 @@ class AdvancedMQTTClient {
   boolean disconnect() {
     this->_connected = false;
     this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
-    lwmqtt_arduino_network_disconnect(&this->network);
+    this->netClient->stop();
     return this->_lastError == LWMQTT_SUCCESS;
   }
 };
