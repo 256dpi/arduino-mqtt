@@ -43,13 +43,14 @@ class AdvancedMQTTClient {
 
   bool isConnected = false;
   Client *netClient;
-  lwmqtt_return_code_t returnCde;
-  lwmqtt_err_t lastErr;
 
   lwmqtt_arduino_network_t network;
   lwmqtt_arduino_timer_t timer1;
   lwmqtt_arduino_timer_t timer2;
   lwmqtt_client_t client;
+
+  lwmqtt_return_code_t _returnCode;
+  lwmqtt_err_t _lastError;
 
  public:
   AdvancedMQTTClient() {}
@@ -113,8 +114,8 @@ class AdvancedMQTTClient {
     // TODO: What to do if already connected?
 
     // connect to network
-    this->lastErr = lwmqtt_arduino_network_connect(&this->network, this->netClient, (char *)this->hostname, this->port);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_arduino_network_connect(&this->network, this->netClient, (char *)this->hostname, this->port);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -134,8 +135,8 @@ class AdvancedMQTTClient {
     }
 
     // connect to broker
-    this->lastErr = lwmqtt_connect(&this->client, &options, will, &this->returnCde, this->timeout);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_connect(&this->client, &options, will, &this->_returnCode, this->timeout);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -174,8 +175,8 @@ class AdvancedMQTTClient {
     message.qos = lwmqtt_qos_t(qos);
 
     // publish message
-    this->lastErr = lwmqtt_publish(&this->client, topic, &message, this->timeout);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_publish(&this->client, topic, &message, this->timeout);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -194,8 +195,8 @@ class AdvancedMQTTClient {
     }
 
     // subscribe to topic
-    this->lastErr = lwmqtt_subscribe(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_subscribe(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -212,8 +213,8 @@ class AdvancedMQTTClient {
     }
 
     // unsubscribe from topic
-    this->lastErr = lwmqtt_unsubscribe(&this->client, topic, this->timeout);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_unsubscribe(&this->client, topic, this->timeout);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -233,16 +234,16 @@ class AdvancedMQTTClient {
 
     // yield if data is available
     if (available > 0) {
-      this->lastErr = lwmqtt_yield(&this->client, available, this->timeout);
-      if (this->lastErr != LWMQTT_SUCCESS) {
+      this->_lastError = lwmqtt_yield(&this->client, available, this->timeout);
+      if (this->_lastError != LWMQTT_SUCCESS) {
         this->isConnected = false;
         return false;
       }
     }
 
     // keep the connection alive
-    this->lastErr = lwmqtt_keep_alive(&this->client, this->timeout);
-    if (this->lastErr != LWMQTT_SUCCESS) {
+    this->_lastError = lwmqtt_keep_alive(&this->client, this->timeout);
+    if (this->_lastError != LWMQTT_SUCCESS) {
       this->isConnected = false;
       return false;
     }
@@ -252,15 +253,15 @@ class AdvancedMQTTClient {
 
   boolean connected() { return this->isConnected; }
 
-  lwmqtt_err_t lastError() { return this->lastErr; }
+  lwmqtt_err_t lastError() { return this->_lastError; }
 
-  lwmqtt_return_code_t returnCode() { return this->returnCde; }
+  lwmqtt_return_code_t returnCode() { return this->_returnCode; }
 
   boolean disconnect() {
     this->isConnected = false;
-    this->lastErr = lwmqtt_disconnect(&this->client, this->timeout);
+    this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
     lwmqtt_arduino_network_disconnect(&this->network);
-    return this->lastErr == LWMQTT_SUCCESS;
+    return this->_lastError == LWMQTT_SUCCESS;
   }
 };
 
