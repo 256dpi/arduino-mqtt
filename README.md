@@ -4,7 +4,7 @@
 
 **MQTT library for Arduino based on the lwmqtt project**
 
-This library bundles the [lwmqtt](https://githbu.com/256dpi/lwmqtt) client and adds a thin wrapper to get an Arduino like API.
+This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) client and adds a thin wrapper to get an Arduino like API.
 
 Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section.
 
