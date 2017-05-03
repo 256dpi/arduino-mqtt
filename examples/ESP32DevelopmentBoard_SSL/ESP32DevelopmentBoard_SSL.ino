@@ -10,8 +10,8 @@
 #include <MQTTClient.h>
 #include <WiFiClientSecure.h>
 
-const char *ssid = "ssid";
-const char *pass = "pass";
+const char ssid[] = "ssid";
+const char pass[] = "pass";
 
 WiFiClientSecure net;
 MQTTClient client;

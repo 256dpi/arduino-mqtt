@@ -35,8 +35,8 @@ Initialize the object using the hostname of the broker, the brokers port (defaul
 
 ```c++
 void begin(Client& client);
-void begin(const char *hostname, Client &client);
-void begin(const char *hostname, int port, Client &client);
+void begin(const char hostname[], Client &client);
+void begin(const char hostname[], int port, Client &client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
@@ -45,24 +45,24 @@ void begin(const char *hostname, int port, Client &client);
 The hostname and port can also be changed after calling `begin()`:
 
 ```c++
-void setHost(const char *hostname);
-void setHost(const char *hostname, int port);
+void setHost(const char hostname[]);
+void setHost(const char hostname[], int port);
 ```
 
 Set a will message (last testament) that gets registered on the broker after connecting:
 
 ```c++
-void setWill(const char *topic);
-void setWill(const char *topic, const char *payload);
-void setWill(const char *topic, const char *payload, bool retained, int qos);
+void setWill(const char topic[]);
+void setWill(const char topic[], const char payload[]);
+void setWill(const char topic[], const char payload[], bool retained, int qos);
 void clearWill();
 ```
 
 Connect to broker using the supplied client id and an optional username and password:
 
 ```c++
-boolean connect(const char *clientId);
-boolean connect(const char *clientId, const char *username, const char *password);
+boolean connect(const char clientId[]);
+boolean connect(const char clientId[], const char username[], const char password[]);
 ```
 
 - This functions returns a boolean that indicates if the connection has been established successfully.
@@ -71,15 +71,15 @@ Publishes a message to the broker with an optional payload:
 
 ```c++
 boolean publish(String topic);
-boolean publish(const char *topic);
+boolean publish(const char topic[]);
 boolean publish(String topic, String payload);
 boolean publish(String topic, String payload, bool retained, int qos);
-boolean publish(const char *topic, String payload);
-boolean publish(const char *topic, String payload, bool retained, int qos);
-boolean publish(const char *topic, const char *payload);
-boolean publish(const char *topic, const char *payload, bool retained, int qos);
-boolean publish(const char *topic, char *payload, unsigned int length);
-boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos);
+boolean publish(const char topic[], String payload);
+boolean publish(const char topic[], String payload, bool retained, int qos);
+boolean publish(const char topic[], const char payload[]);
+boolean publish(const char topic[], const char payload[], bool retained, int qos);
+boolean publish(const char topic[], char payload[], unsigned int length);
+boolean publish(const char topic[], char payload[], unsigned int length, bool retained, int qos);
 ```
 
 Subscribe to a topic:
@@ -87,15 +87,15 @@ Subscribe to a topic:
 ```c++
 boolean subscribe(String topic);
 boolean subscribe(String topic, int qos); 
-boolean subscribe(const char *topic);
-boolean subscribe(const char *topic, int qos);
+boolean subscribe(const char topic[]);
+boolean subscribe(const char topic[], int qos);
 ```
 
 Unsubscribe from a topic:
 
 ```c++
 boolean unsubscribe(String topic);
-boolean unsubscribe(const char *topic);
+boolean unsubscribe(const char topic[]);
 ```
 
 Sends and receives packets:

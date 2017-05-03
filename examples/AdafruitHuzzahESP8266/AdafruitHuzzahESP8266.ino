@@ -10,8 +10,8 @@
 #include <ESP8266WiFi.h>
 #include <MQTTClient.h>
 
-const char *ssid = "ssid";
-const char *pass = "pass";
+const char ssid[] = "ssid";
+const char pass[] = "pass";
 
 WiFiClient net;
 MQTTClient client;

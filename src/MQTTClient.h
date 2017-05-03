@@ -56,9 +56,9 @@ class AdvancedMQTTClient {
 
   void begin(Client &client) { this->begin("", client); }
 
-  void begin(const char *hostname, Client &client) { this->begin(hostname, 1883, client); }
+  void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client); }
 
-  void begin(const char *hostname, int port, Client &client) {
+  void begin(const char hostname[], int port, Client &client) {
     // set config
     this->hostname = hostname;
     this->port = port;
@@ -85,18 +85,18 @@ class AdvancedMQTTClient {
     lwmqtt_set_callback(&this->client, (void *)cb, MQTTClient_callback);
   }
 
-  void setHost(const char *hostname) { this->setHost(hostname, 1883); }
+  void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
 
-  void setHost(const char *hostname, int port) {
+  void setHost(const char hostname[], int port) {
     this->hostname = hostname;
     this->port = port;
   }
 
-  void setWill(const char *topic) { this->setWill(topic, ""); }
+  void setWill(const char topic[]) { this->setWill(topic, ""); }
 
-  void setWill(const char *topic, const char *payload) { this->setWill(topic, payload, false, 0); }
+  void setWill(const char topic[], const char payload[]) { this->setWill(topic, payload, false, 0); }
 
-  void setWill(const char *topic, const char *payload, bool retained, int qos) {
+  void setWill(const char topic[], const char payload[], bool retained, int qos) {
     this->hasWill = true;
     this->will.topic = lwmqtt_str(topic);
     this->will.payload = (void *)payload;
@@ -107,9 +107,9 @@ class AdvancedMQTTClient {
 
   void clearWill() { this->hasWill = false; }
 
-  boolean connect(const char *clientId) { return this->connect(clientId, NULL, NULL); }
+  boolean connect(const char clientId[]) { return this->connect(clientId, NULL, NULL); }
 
-  boolean connect(const char *clientId, const char *username, const char *password) {
+  boolean connect(const char clientId[], const char username[], const char password[]) {
     // return immediately if connected
     if (this->connected()) {
       return false;
@@ -152,7 +152,7 @@ class AdvancedMQTTClient {
 
   boolean publish(String topic) { return this->publish(topic.c_str(), ""); }
 
-  boolean publish(const char *topic) { return this->publish(topic, ""); }
+  boolean publish(const char topic[]) { return this->publish(topic, ""); }
 
   boolean publish(String topic, String payload) { return this->publish(topic.c_str(), payload.c_str()); }
 
@@ -160,25 +160,25 @@ class AdvancedMQTTClient {
     return this->publish(topic.c_str(), payload.c_str(), retained, qos);
   }
 
-  boolean publish(const char *topic, String payload) { return this->publish(topic, payload.c_str()); }
+  boolean publish(const char topic[], String payload) { return this->publish(topic, payload.c_str()); }
 
-  boolean publish(const char *topic, String payload, bool retained, int qos) {
+  boolean publish(const char topic[], String payload, bool retained, int qos) {
     return this->publish(topic, payload.c_str(), retained, qos);
   }
 
-  boolean publish(const char *topic, const char *payload) {
+  boolean publish(const char topic[], const char payload[]) {
     return this->publish(topic, (char *)payload, (unsigned int)strlen(payload));
   }
 
-  boolean publish(const char *topic, const char *payload, bool retained, int qos) {
+  boolean publish(const char topic[], const char payload[], bool retained, int qos) {
     return this->publish(topic, (char *)payload, (unsigned int)strlen(payload), retained, qos);
   }
 
-  boolean publish(const char *topic, char *payload, unsigned int length) {
+  boolean publish(const char topic[], char payload[], unsigned int length) {
     return this->publish(topic, payload, length, false, 0);
   }
 
-  boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos) {
+  boolean publish(const char topic[], char payload[], unsigned int length, bool retained, int qos) {
     // return immediately if not connected
     if (!this->connected()) {
       return false;
@@ -205,9 +205,9 @@ class AdvancedMQTTClient {
 
   boolean subscribe(String topic, int qos) { return this->subscribe(topic.c_str(), qos); }
 
-  boolean subscribe(const char *topic) { this->subscribe(topic, 0); }
+  boolean subscribe(const char topic[]) { this->subscribe(topic, 0); }
 
-  boolean subscribe(const char *topic, int qos) {
+  boolean subscribe(const char topic[], int qos) {
     // return immediately if not connected
     if (!this->connected()) {
       return false;
@@ -225,7 +225,7 @@ class AdvancedMQTTClient {
 
   boolean unsubscribe(String topic) { return this->unsubscribe(topic.c_str()); }
 
-  boolean unsubscribe(const char *topic) {
+  boolean unsubscribe(const char topic[]) {
     // return immediately if not connected
     if (!this->connected()) {
       return false;
