@@ -111,7 +111,7 @@ class AdvancedMQTTClient {
 
   boolean connect(const char *clientId, const char *username, const char *password) {
     // return immediately if connected
-    if (this->_connected) {
+    if (this->connected()) {
       return false;
     }
 
@@ -165,7 +165,7 @@ class AdvancedMQTTClient {
 
   boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos) {
     // return immediately if not connected
-    if (!this->_connected) {
+    if (!this->connected()) {
       return false;
     }
 
@@ -192,7 +192,7 @@ class AdvancedMQTTClient {
 
   boolean subscribe(const char *topic, int qos) {
     // return immediately if not connected
-    if (!this->_connected) {
+    if (!this->connected()) {
       return false;
     }
 
@@ -210,7 +210,7 @@ class AdvancedMQTTClient {
 
   boolean unsubscribe(const char *topic) {
     // return immediately if not connected
-    if (!this->_connected) {
+    if (!this->connected()) {
       return false;
     }
 
@@ -226,7 +226,7 @@ class AdvancedMQTTClient {
 
   boolean loop() {
     // return immediately if not connected
-    if (!this->_connected) {
+    if (!this->connected()) {
       return false;
     }
 
