@@ -13,8 +13,8 @@
 #include <SPI.h>
 #include <WiFi101.h>
 
-char *ssid = "ssid";
-char *pass = "pass";
+const char ssid[] = "ssid";
+const char pass[] = "pass";
 
 WiFiClient net;
 MQTTClient client;

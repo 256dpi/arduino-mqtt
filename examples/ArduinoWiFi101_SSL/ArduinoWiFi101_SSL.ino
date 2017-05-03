@@ -17,8 +17,8 @@
 #include <WiFi101.h>
 #include <WiFiSSLClient.h>
 
-char *ssid = "ssid";
-char *pass = "pass";
+const char ssid[] = "ssid";
+const char pass[] = "pass";
 
 WiFiSSLClient net;
 MQTTClient client;
