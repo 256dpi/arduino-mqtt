@@ -115,10 +115,11 @@ class AdvancedMQTTClient {
       return false;
     }
 
-    // connect to network
-    this->_lastError = lwmqtt_arduino_network_connect(&this->network, this->netClient, (char *)this->hostname, this->port);
-    if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
+    // save client
+    this->network.client = this->netClient;
+
+    // connect to host
+    if (this->netClient->connect(this->hostname, (uint16_t)this->port) < 0) {
       return false;
     }
 

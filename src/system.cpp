@@ -18,19 +18,6 @@ unsigned int lwmqtt_arduino_timer_get(lwmqtt_client_t *client, void *ref) {
   return (unsigned int)(t->end - millis());
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_connect(lwmqtt_arduino_network_t *network, Client *client, char *host, int port) {
-  // save client
-  network->client = client;
-
-  // connect to host
-  int rc = network->client->connect(host, (uint16_t)port);
-  if (rc < 0) {
-    return LWMQTT_FAILURE;
-  }
-
-  return LWMQTT_SUCCESS;
-}
-
 lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, unsigned char *buffer, int len, int *read,
                                          unsigned int timeout) {
   // cast network reference
