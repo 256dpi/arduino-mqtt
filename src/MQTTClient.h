@@ -12,8 +12,8 @@ typedef void (*MQTTClientCallbackAdvanced)(String topic, String payload, char by
 
 typedef struct {
     bool use_advanced = false;
-    MQTTClientCallbackSimple simple;
-    MQTTClientCallbackAdvanced advanced;
+    MQTTClientCallbackSimple simple = NULL;
+    MQTTClientCallbackAdvanced advanced = NULL;
 } MQTTClientCallback;
 
 static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t *topic, lwmqtt_message_t *message) {
@@ -22,7 +22,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
 
   // null terminate topic to create String object
   char t[topic->len + 1];
-  memcpy(topic, topic->data, (size_t)topic->len);
+  memcpy(t, topic->data, (size_t)topic->len);
   t[topic->len] = '\0';
 
   // get payload
