@@ -110,7 +110,10 @@ class AdvancedMQTTClient {
   boolean connect(const char *clientId) { return this->connect(clientId, NULL, NULL); }
 
   boolean connect(const char *clientId, const char *username, const char *password) {
-    // TODO: What to do if already connected?
+    // return immediately if connected
+    if (this->_connected) {
+      return false;
+    }
 
     // connect to network
     this->_lastError = lwmqtt_arduino_network_connect(&this->network, this->netClient, (char *)this->hostname, this->port);
