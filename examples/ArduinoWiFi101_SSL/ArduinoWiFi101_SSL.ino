@@ -28,6 +28,9 @@ unsigned long lastMillis = 0;
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
   client.begin("broker.shiftr.io", 8883, net);
   client.onMessage(messageReceived);
 
