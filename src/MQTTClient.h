@@ -82,7 +82,7 @@ class AdvancedMQTTClient {
     }
 
     // set callback
-    lwmqtt_set_callback(&this->client, (void*)cb, MQTTClient_callback);
+    lwmqtt_set_callback(&this->client, (void *)cb, MQTTClient_callback);
   }
 
   void setHost(const char *hostname) { this->setHost(hostname, 1883); }
