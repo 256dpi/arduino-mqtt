@@ -29,7 +29,7 @@ lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uns
   // read bytes
   *read = (int)n->client->readBytes(buffer, (size_t)len);
   if (*read <= 0) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NETWORK_READ_ERROR;
   }
 
   return LWMQTT_SUCCESS;
@@ -43,7 +43,7 @@ lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, un
   // write bytes
   *sent = (int)n->client->write(buffer, (size_t)len);
   if (*sent <= 0) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NETWORK_WRITE_ERR;
   };
 
   return LWMQTT_SUCCESS;
