@@ -79,7 +79,7 @@ static lwmqtt_err_t lwmqtt_decode_remaining_length(unsigned char **buf, int buf_
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_packet_type_t lwmqtt_detect_packet_type(unsigned char *buf) {
+lwmqtt_err_t lwmqtt_detect_packet_type(unsigned char *buf, lwmqtt_packet_type_t *packet_type) {
   // prepare pointer
   unsigned char *ptr = buf;
 
@@ -98,9 +98,11 @@ lwmqtt_packet_type_t lwmqtt_detect_packet_type(unsigned char *buf) {
     case LWMQTT_SUBACK_PACKET:
     case LWMQTT_UNSUBACK_PACKET:
     case LWMQTT_PINGRESP_PACKET:
-      return (lwmqtt_packet_type_t)header.bits.type;
+      *packet_type = (lwmqtt_packet_type_t)header.bits.type;
+      return LWMQTT_SUCCESS;
     default:
-      return LWMQTT_INVALID_PACKET;
+      *packet_type = LWMQTT_NO_PACKET;
+      return LWMQTT_DECODE_ERROR;
   }
 }
 
@@ -243,7 +245,7 @@ lwmqtt_err_t lwmqtt_decode_connack(bool *session_present, lwmqtt_return_code_t *
   lwmqtt_header_t header;
   header.byte = lwmqtt_read_char(&ptr);
   if (header.bits.type != LWMQTT_CONNACK_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_DECODE_ERROR;
   }
 
   // read remaining length
@@ -358,7 +360,7 @@ lwmqtt_err_t lwmqtt_decode_publish(bool *dup, lwmqtt_qos_t *qos, bool *retained,
   lwmqtt_header_t header;
   header.byte = lwmqtt_read_char(&ptr);
   if (header.bits.type != LWMQTT_PUBLISH_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_DECODE_ERROR;
   }
 
   // set dup
@@ -387,7 +389,7 @@ lwmqtt_err_t lwmqtt_decode_publish(bool *dup, lwmqtt_qos_t *qos, bool *retained,
 
   // do we have enough data to read the topic?
   if (!lwmqtt_read_string(topic, &ptr, end_ptr) || end_ptr - ptr < 0) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_DECODE_ERROR;
   }
 
   // read packet id if qos is at least 1
@@ -503,7 +505,7 @@ lwmqtt_err_t lwmqtt_decode_suback(unsigned short *packet_id, int max_count, int 
   lwmqtt_header_t header;
   header.byte = lwmqtt_read_char(&ptr);
   if (header.bits.type != LWMQTT_SUBACK_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_DECODE_ERROR;
   }
 
   // read remaining length
@@ -526,7 +528,7 @@ lwmqtt_err_t lwmqtt_decode_suback(unsigned short *packet_id, int max_count, int 
   *count = 0;
   while (ptr < end_ptr) {
     if (*count > max_count) {
-      return LWMQTT_FAILURE;
+      return LWMQTT_DECODE_ERROR;
     }
 
     granted_qos_levels[(*count)++] = (lwmqtt_qos_t)lwmqtt_read_char(&ptr);

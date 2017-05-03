@@ -11,7 +11,6 @@
  * The available packet types.
  */
 typedef enum {
-  LWMQTT_INVALID_PACKET = -1,
   LWMQTT_NO_PACKET = 0,
   LWMQTT_CONNECT_PACKET = 1,
   LWMQTT_CONNACK_PACKET,
@@ -32,12 +31,11 @@ typedef enum {
 /**
  * Will detect the packet type from the at least one byte long buffer.
  *
- * If the packet cannot be received by a client, LWMQTT_INVALID_PACKET is returned instead.
- *
  * @param buf - The buffer from which the packet type will be detected.
+ * @param packet_type - Pointer to the receiver of the packet type.
  * @return An error value.
  */
-lwmqtt_packet_type_t lwmqtt_detect_packet_type(unsigned char *buf);
+lwmqtt_err_t lwmqtt_detect_packet_type(unsigned char *buf, lwmqtt_packet_type_t *packet_type);
 
 /**
  * Will detect the remaining length form the at least on byte long buffer.

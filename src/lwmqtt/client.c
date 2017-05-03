@@ -64,9 +64,9 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, 
   }
 
   // detect packet type
-  *packet_type = lwmqtt_detect_packet_type(c->read_buf);
-  if (*packet_type == LWMQTT_INVALID_PACKET) {
-    return LWMQTT_FAILURE;
+  err = lwmqtt_detect_packet_type(c->read_buf, packet_type);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // prepare variables
@@ -97,6 +97,11 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, 
 
   // read the rest of the buffer if needed
   if (rem_len > 0) {
+    // check read buffer capacity
+    if (c->read_buf_size < 1 + len + rem_len) {
+      return LWMQTT_BUFFER_TOO_SHORT;
+    }
+
     partial_read = 0;
     err = c->network_read(c, c->network, c->read_buf + 1 + len, rem_len, &partial_read,
                           c->timer_get(c, c->command_timer));
@@ -307,12 +312,13 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t *options, 
 
   // encode connect packet
   int len;
-  if (lwmqtt_encode_connect(client->write_buf, client->write_buf_size, &len, options, will) != LWMQTT_SUCCESS) {
-    return LWMQTT_FAILURE;
+  lwmqtt_err_t err = lwmqtt_encode_connect(client->write_buf, client->write_buf_size, &len, options, will);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // send packet
-  lwmqtt_err_t err = lwmqtt_send_packet_in_buffer(client, len);
+  err = lwmqtt_send_packet_in_buffer(client, len);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -323,18 +329,19 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t *options, 
   if (err != LWMQTT_SUCCESS) {
     return err;
   } else if (packet_type != LWMQTT_CONNACK_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NO_OR_WRONG_PACKET;
   }
 
   // decode connack packet
   bool session_present;
-  if (lwmqtt_decode_connack(&session_present, return_code, client->read_buf, client->read_buf_size) != LWMQTT_SUCCESS) {
-    return LWMQTT_FAILURE;
+  err = lwmqtt_decode_connack(&session_present, return_code, client->read_buf, client->read_buf_size);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // return error if connection was not accepted
   if (*return_code != LWMQTT_CONNACK_CONNECTION_ACCEPTED) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_CONNECTION_DENIED;
   }
 
   return LWMQTT_SUCCESS;
@@ -368,7 +375,7 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, const char *topic_filter,
   if (err != LWMQTT_SUCCESS) {
     return err;
   } else if (packet_type != LWMQTT_SUBACK_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NO_OR_WRONG_PACKET;
   }
 
   // decode packet
@@ -410,7 +417,7 @@ lwmqtt_err_t lwmqtt_unsubscribe(lwmqtt_client_t *client, const char *topic_filte
   if (err != LWMQTT_SUCCESS) {
     return err;
   } else if (packet_type != LWMQTT_UNSUBACK_PACKET) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NO_OR_WRONG_PACKET;
   }
 
   // decode unsuback packet
@@ -472,7 +479,7 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, const char *topic, lwmqtt_m
   if (err != LWMQTT_SUCCESS) {
     return err;
   } else if (packet_type != ack_type) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_NO_OR_WRONG_PACKET;
   }
 
   // decode ack packet
@@ -491,12 +498,13 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, unsigned int timeout) {
 
   // encode disconnect packet
   int len;
-  if (lwmqtt_encode_zero(client->write_buf, client->write_buf_size, &len, LWMQTT_DISCONNECT_PACKET) != LWMQTT_SUCCESS) {
-    return LWMQTT_FAILURE;
+  lwmqtt_err_t err = lwmqtt_encode_zero(client->write_buf, client->write_buf_size, &len, LWMQTT_DISCONNECT_PACKET);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // send disconnected packet
-  lwmqtt_err_t err = lwmqtt_send_packet_in_buffer(client, len);
+  err = lwmqtt_send_packet_in_buffer(client, len);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -522,7 +530,7 @@ lwmqtt_err_t lwmqtt_keep_alive(lwmqtt_client_t *client, unsigned int timeout) {
 
   // fail immediately if a ping is still outstanding
   if (client->ping_outstanding) {
-    return LWMQTT_FAILURE;
+    return LWMQTT_UNANSWERED_PIN;
   }
 
   // encode pingreq packet
