@@ -253,7 +253,11 @@ class AdvancedMQTTClient {
     return true;
   }
 
-  boolean connected() { return this->_connected; }
+  boolean connected() {
+    // a client is connected if the network is connected and
+    // a connection has been properly initiated
+    return this->netClient->connected() && this->_connected;
+  }
 
   lwmqtt_err_t lastError() { return this->_lastError; }
 
