@@ -19,9 +19,7 @@ set(SOURCE_FILES
     examples/ArduinoYun_MQTTClient/ArduinoYun_MQTTClient.ino
     examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino
     examples/ESP32DevelopmentBoard_SSL/ESP32DevelopmentBoard_SSL.ino
-    examples/tests
     src/MQTTClient.h
-    src/MQTTTest.h
     src/system.cpp
     src/system.h)
 
