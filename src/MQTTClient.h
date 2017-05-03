@@ -189,6 +189,8 @@ class AdvancedMQTTClient {
 
   boolean subscribe(String topic) { return this->subscribe(topic.c_str()); }
 
+  boolean subscribe(String topic, int qos) { return this->subscribe(topic.c_str(), qos); }
+
   boolean subscribe(const char *topic) { this->subscribe(topic, 0); }
 
   boolean subscribe(const char *topic, int qos) {

@@ -82,6 +82,7 @@ Subscribe to a topic:
 
 ```c++
 boolean subscribe(String topic);
+boolean subscribe(String topic, int qos); 
 boolean subscribe(const char *topic);
 boolean subscribe(const char *topic, int qos);
 ```
