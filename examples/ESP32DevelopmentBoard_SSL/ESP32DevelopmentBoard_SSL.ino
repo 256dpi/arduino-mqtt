@@ -18,8 +18,6 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void connect();  // <- predefine connect() for setup()
-
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
