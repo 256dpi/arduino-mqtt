@@ -71,9 +71,13 @@ Publishes a message to the broker with an optional payload:
 
 ```c++
 boolean publish(String topic);
+boolean publish(const char *topic);
 boolean publish(String topic, String payload);
+boolean publish(String topic, String payload, bool retained, int qos);
 boolean publish(const char *topic, String payload);
+boolean publish(const char *topic, String payload, bool retained, int qos);
 boolean publish(const char *topic, const char *payload);
+boolean publish(const char *topic, const char *payload, bool retained, int qos);
 boolean publish(const char *topic, char *payload, unsigned int length);
 boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos);
 ```

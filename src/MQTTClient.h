@@ -152,12 +152,26 @@ class AdvancedMQTTClient {
 
   boolean publish(String topic) { return this->publish(topic.c_str(), ""); }
 
+  boolean publish(const char *topic) { return this->publish(topic, ""); }
+
   boolean publish(String topic, String payload) { return this->publish(topic.c_str(), payload.c_str()); }
+
+  boolean publish(String topic, String payload, bool retained, int qos) {
+    return this->publish(topic.c_str(), payload.c_str(), retained, qos);
+  }
 
   boolean publish(const char *topic, String payload) { return this->publish(topic, payload.c_str()); }
 
+  boolean publish(const char *topic, String payload, bool retained, int qos) {
+    return this->publish(topic, payload.c_str(), retained, qos);
+  }
+
   boolean publish(const char *topic, const char *payload) {
     return this->publish(topic, (char *)payload, (unsigned int)strlen(payload));
+  }
+
+  boolean publish(const char *topic, const char *payload, bool retained, int qos) {
+    return this->publish(topic, (char *)payload, (unsigned int)strlen(payload), retained, qos);
   }
 
   boolean publish(const char *topic, char *payload, unsigned int length) {
