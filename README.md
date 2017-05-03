@@ -27,7 +27,7 @@ Other shields and boards should also work if they provide a [Client](https://www
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
-##Example
+## Example
 
 The following example uses an Arduino MKR1000 to connect to shiftr.io. You can check on your device after a successful connection here: https://shiftr.io/try.
 
