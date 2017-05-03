@@ -43,20 +43,12 @@ lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uns
   // cast network reference
   lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
 
-  if (!n->client->connected()) {
-    return LWMQTT_FAILURE;
-  }
-
-  *read = n->client->available();
-  if (*read == 0) {
-    return LWMQTT_SUCCESS;
-  }
-
   // set timeout
   n->client->setTimeout(timeout);
 
   // read bytes
-  if (n->client->readBytes(buffer, (size_t)len) <= 0) {
+  *read = (int)n->client->readBytes(buffer, (size_t)len);
+  if (*read <= 0) {
     return LWMQTT_FAILURE;
   }
 
@@ -68,16 +60,9 @@ lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, un
   // cast network reference
   lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
 
-  // check if still connected
-  if (!n->client->connected()) {
-    return LWMQTT_FAILURE;
-  }
-
-  // set timeout
-  n->client->setTimeout(timeout);
-
   // write bytes
-  if (n->client->write(buffer, (size_t)len) <= 0) {
+  *sent = (int)n->client->write(buffer, (size_t)len);
+  if (*sent <= 0) {
     return LWMQTT_FAILURE;
   };
 
