@@ -48,8 +48,8 @@ void connect() {
 
   Serial.println("\nconnected!");
 
-  client.subscribe("/example");
-  // client.unsubscribe("/example");
+  client.subscribe("/hello");
+  // client.unsubscribe("/hello");
 }
 
 void loop() {
