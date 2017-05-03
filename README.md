@@ -58,11 +58,11 @@ void clearWill();
 
 Register a callback to receive messages:
 
-```c+++
+```c++
 void onMessage(MQTTClientCallbackSimple);
 // Callback signature: void messageReceived(String topic, String payload) {}
 
-voud onMessageAdvanced(MQTTClientCallbackAdvanced);
+void onMessageAdvanced(MQTTClientCallbackAdvanced);
 // Callback signature: void messageReceived(String topic, String payload, char topic[], unsigned int length) {}
 ```
 
