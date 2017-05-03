@@ -9,7 +9,7 @@ env:
     - EXAMPLE="ArduinoWiFi101" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoWiFi101_SSL" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
-    - EXAMPLE="ArduinoYun_MQTTClient" BOARD="arduino:avr:yun"
+    - EXAMPLE="ArduinoYun" BOARD="arduino:avr:yun"
     - EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32:FlashFreq=80"
     - EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32:FlashFreq=80"
 before_install:
