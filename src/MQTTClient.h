@@ -36,19 +36,18 @@ class AdvancedMQTTClient {
 
   unsigned int timeout = 1000;
 
+  Client *netClient;
   const char *hostname;
   int port;
   lwmqtt_will_t will;
   bool hasWill;
-
-  bool isConnected = false;
-  Client *netClient;
 
   lwmqtt_arduino_network_t network;
   lwmqtt_arduino_timer_t timer1;
   lwmqtt_arduino_timer_t timer2;
   lwmqtt_client_t client;
 
+  bool _connected = false;
   lwmqtt_return_code_t _returnCode;
   lwmqtt_err_t _lastError;
 
@@ -116,7 +115,7 @@ class AdvancedMQTTClient {
     // connect to network
     this->_lastError = lwmqtt_arduino_network_connect(&this->network, this->netClient, (char *)this->hostname, this->port);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
@@ -137,12 +136,12 @@ class AdvancedMQTTClient {
     // connect to broker
     this->_lastError = lwmqtt_connect(&this->client, &options, will, &this->_returnCode, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
     // set flag
-    this->isConnected = true;
+    this->_connected = true;
 
     return true;
   }
@@ -163,7 +162,7 @@ class AdvancedMQTTClient {
 
   boolean publish(const char *topic, char *payload, unsigned int length, bool retained, int qos) {
     // return immediately if not connected
-    if (!this->isConnected) {
+    if (!this->_connected) {
       return false;
     }
 
@@ -177,7 +176,7 @@ class AdvancedMQTTClient {
     // publish message
     this->_lastError = lwmqtt_publish(&this->client, topic, &message, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
@@ -190,14 +189,14 @@ class AdvancedMQTTClient {
 
   boolean subscribe(const char *topic, int qos) {
     // return immediately if not connected
-    if (!this->isConnected) {
+    if (!this->_connected) {
       return false;
     }
 
     // subscribe to topic
     this->_lastError = lwmqtt_subscribe(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
@@ -208,14 +207,14 @@ class AdvancedMQTTClient {
 
   boolean unsubscribe(const char *topic) {
     // return immediately if not connected
-    if (!this->isConnected) {
+    if (!this->_connected) {
       return false;
     }
 
     // unsubscribe from topic
     this->_lastError = lwmqtt_unsubscribe(&this->client, topic, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
@@ -224,7 +223,7 @@ class AdvancedMQTTClient {
 
   boolean loop() {
     // return immediately if not connected
-    if (!this->isConnected) {
+    if (!this->_connected) {
       return false;
     }
 
@@ -236,7 +235,7 @@ class AdvancedMQTTClient {
     if (available > 0) {
       this->_lastError = lwmqtt_yield(&this->client, available, this->timeout);
       if (this->_lastError != LWMQTT_SUCCESS) {
-        this->isConnected = false;
+        this->_connected = false;
         return false;
       }
     }
@@ -244,21 +243,21 @@ class AdvancedMQTTClient {
     // keep the connection alive
     this->_lastError = lwmqtt_keep_alive(&this->client, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->isConnected = false;
+      this->_connected = false;
       return false;
     }
 
     return true;
   }
 
-  boolean connected() { return this->isConnected; }
+  boolean connected() { return this->_connected; }
 
   lwmqtt_err_t lastError() { return this->_lastError; }
 
   lwmqtt_return_code_t returnCode() { return this->_returnCode; }
 
   boolean disconnect() {
-    this->isConnected = false;
+    this->_connected = false;
     this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
     lwmqtt_arduino_network_disconnect(&this->network);
     return this->_lastError == LWMQTT_SUCCESS;
