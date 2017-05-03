@@ -20,8 +20,6 @@ lwmqtt_err_t lwmqtt_arduino_network_connect(lwmqtt_arduino_network_t *network, C
 
 void lwmqtt_arduino_network_disconnect(lwmqtt_arduino_network_t *network);
 
-lwmqtt_err_t lwmqtt_arduino_network_peek(lwmqtt_client_t *client, lwmqtt_arduino_network_t *network, int *available);
-
 lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, unsigned char *buf, int len, int *read,
                                          unsigned int timeout);
 lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, unsigned char *buf, int len, int *sent,

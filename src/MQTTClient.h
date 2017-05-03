@@ -230,9 +230,8 @@ class AdvancedMQTTClient {
       return false;
     }
 
-    // get available bytes
-    int available = 0;
-    lwmqtt_arduino_network_peek(&this->client, &this->network, &available);
+    // get available bytes on the network
+    int available = this->netClient->available();
 
     // yield if data is available
     if (available > 0) {
