@@ -101,6 +101,7 @@ void begin(const char *hostname, int port, Client &client);
 ```
 
 - Specify port `8883` when using SSL clients for secure connections.
+- Local domain names (e.g. `Computer.local` on OSX) are not supported by Arduino. You need to set the IP address directly.
 
 The host can also be changed later:
 
