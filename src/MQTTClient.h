@@ -190,19 +190,19 @@ class MQTTClient {
     return true;
   }
 
-  boolean publish(String topic) { return this->publish(topic.c_str(), ""); }
+  boolean publish(const String &topic) { return this->publish(topic.c_str(), ""); }
 
   boolean publish(const char topic[]) { return this->publish(topic, ""); }
 
-  boolean publish(String topic, String payload) { return this->publish(topic.c_str(), payload.c_str()); }
+  boolean publish(const String &topic, const String &payload) { return this->publish(topic.c_str(), payload.c_str()); }
 
-  boolean publish(String topic, String payload, bool retained, int qos) {
+  boolean publish(const String &topic, const String &payload, bool retained, int qos) {
     return this->publish(topic.c_str(), payload.c_str(), retained, qos);
   }
 
-  boolean publish(const char topic[], String payload) { return this->publish(topic, payload.c_str()); }
+  boolean publish(const char topic[], const String &payload) { return this->publish(topic, payload.c_str()); }
 
-  boolean publish(const char topic[], String payload, bool retained, int qos) {
+  boolean publish(const char topic[], const String &payload, bool retained, int qos) {
     return this->publish(topic, payload.c_str(), retained, qos);
   }
 
@@ -214,11 +214,11 @@ class MQTTClient {
     return this->publish(topic, (char *)payload, (unsigned int)strlen(payload), retained, qos);
   }
 
-  boolean publish(const char topic[], char payload[], unsigned int length) {
+  boolean publish(const char topic[], const char payload[], unsigned int length) {
     return this->publish(topic, payload, length, false, 0);
   }
 
-  boolean publish(const char topic[], char payload[], unsigned int length, bool retained, int qos) {
+  boolean publish(const char topic[], const char payload[], unsigned int length, bool retained, int qos) {
     // return immediately if not connected
     if (!this->connected()) {
       return false;
@@ -226,7 +226,7 @@ class MQTTClient {
 
     // prepare message
     lwmqtt_message_t message = lwmqtt_default_message;
-    message.payload = payload;
+    message.payload = (void*)payload;
     message.payload_len = length;
     message.retained = retained;
     message.qos = lwmqtt_qos_t(qos);
@@ -241,9 +241,9 @@ class MQTTClient {
     return true;
   }
 
-  boolean subscribe(String topic) { return this->subscribe(topic.c_str()); }
+  boolean subscribe(const String &topic) { return this->subscribe(topic.c_str()); }
 
-  boolean subscribe(String topic, int qos) { return this->subscribe(topic.c_str(), qos); }
+  boolean subscribe(const String &topic, int qos) { return this->subscribe(topic.c_str(), qos); }
 
   boolean subscribe(const char topic[]) { this->subscribe(topic, 0); }
 
@@ -263,7 +263,7 @@ class MQTTClient {
     return true;
   }
 
-  boolean unsubscribe(String topic) { return this->unsubscribe(topic.c_str()); }
+  boolean unsubscribe(const String &topic) { return this->unsubscribe(topic.c_str()); }
 
   boolean unsubscribe(const char topic[]) {
     // return immediately if not connected

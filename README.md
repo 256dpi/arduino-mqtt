@@ -145,23 +145,23 @@ boolean connect(const char clientId[], const char username[], const char passwor
 Publishes a message to the broker with an optional payload:
 
 ```c++
-boolean publish(String topic);
+boolean publish(const String &topic);
 boolean publish(const char topic[]);
-boolean publish(String topic, String payload);
-boolean publish(String topic, String payload, bool retained, int qos);
-boolean publish(const char topic[], String payload);
-boolean publish(const char topic[], String payload, bool retained, int qos);
+boolean publish(const String &topic, const String &payload);
+boolean publish(const String &topic, const String &payload, bool retained, int qos);
+boolean publish(const char topic[], const String &payload);
+boolean publish(const char topic[], const String &payload, bool retained, int qos);
 boolean publish(const char topic[], const char payload[]);
 boolean publish(const char topic[], const char payload[], bool retained, int qos);
-boolean publish(const char topic[], char payload[], unsigned int length);
-boolean publish(const char topic[], char payload[], unsigned int length, bool retained, int qos);
+boolean publish(const char topic[], const char payload[], unsigned int length);
+boolean publish(const char topic[], const char payload[], unsigned int length, bool retained, int qos);
 ```
 
 Subscribe to a topic:
 
 ```c++
-boolean subscribe(String topic);
-boolean subscribe(String topic, int qos); 
+boolean subscribe(const String &topic);
+boolean subscribe(const String &topic, int qos); 
 boolean subscribe(const char topic[]);
 boolean subscribe(const char topic[], int qos);
 ```
@@ -169,7 +169,7 @@ boolean subscribe(const char topic[], int qos);
 Unsubscribe from a topic:
 
 ```c++
-boolean unsubscribe(String topic);
+boolean unsubscribe(const String &topic);
 boolean unsubscribe(const char topic[]);
 ```
 
