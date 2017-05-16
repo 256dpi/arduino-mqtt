@@ -11,14 +11,14 @@ typedef void (*MQTTClientCallbackSimple)(String topic, String payload);
 typedef void (*MQTTClientCallbackAdvanced)(String topic, String payload, char bytes[], unsigned int length);
 
 typedef struct {
-    bool use_advanced = false;
-    MQTTClientCallbackSimple simple = NULL;
-    MQTTClientCallbackAdvanced advanced = NULL;
+  bool use_advanced = false;
+  MQTTClientCallbackSimple simple = NULL;
+  MQTTClientCallbackAdvanced advanced = NULL;
 } MQTTClientCallback;
 
 static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t *topic, lwmqtt_message_t *message) {
   // get callback
-  MQTTClientCallback * cb = (MQTTClientCallback*)ref;
+  MQTTClientCallback *cb = (MQTTClientCallback *)ref;
 
   // null terminate topic to create String object
   char t[topic->len + 1];
@@ -32,18 +32,18 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   payload[message->payload_len] = '\0';
 
   // call the user callback
-  if(cb->use_advanced) {
+  if (cb->use_advanced) {
     cb->advanced(String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
   } else {
     cb->simple(String(t), String(payload));
   }
 }
 
-template <int BUF_SIZE>
-class AdvancedMQTTClient {
+class MQTTClient {
  private:
-  unsigned char readBuf[BUF_SIZE + 1];  // plus one byte to ensure null termination
-  unsigned char writeBuf[BUF_SIZE];
+  int bufSize;
+  unsigned char *readBuf;
+  unsigned char *writeBuf;
 
   unsigned int timeout = 1000;
 
@@ -64,7 +64,16 @@ class AdvancedMQTTClient {
   lwmqtt_err_t _lastError;
 
  public:
-  AdvancedMQTTClient() {}
+  MQTTClient(int bufSize = 128) {
+    this->bufSize = bufSize;
+    this->readBuf = (unsigned char *)malloc((size_t)bufSize + 1);
+    this->writeBuf = (unsigned char *)malloc((size_t)bufSize);
+  }
+
+  ~MQTTClient() {
+    free(this->readBuf);
+    free(this->writeBuf);
+  }
 
   void begin(Client &client) { this->begin("", client); }
 
@@ -77,7 +86,7 @@ class AdvancedMQTTClient {
     this->netClient = &client;
 
     // initialize client
-    lwmqtt_init(&this->client, this->writeBuf, BUF_SIZE, this->readBuf, BUF_SIZE);
+    lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
 
     // set timers
     lwmqtt_set_timers(&this->client, &this->timer1, &this->timer2, lwmqtt_arduino_timer_set, lwmqtt_arduino_timer_get);
@@ -317,7 +326,5 @@ class AdvancedMQTTClient {
     return this->_lastError == LWMQTT_SUCCESS;
   }
 };
-
-class MQTTClient : public AdvancedMQTTClient<128> {};
 
 #endif
