@@ -3,7 +3,12 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(arduino-mqtt)
 
-include_directories(/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/)
+include_directories(
+        /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/
+        /Users/256dpi/Development/Arduino/libraries/Ethernet/src
+        /Users/256dpi/Development/Arduino/libraries/WiFi101/src
+        /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFi/src
+        /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFiClientSecure/src)
 
 include_directories(src/)
 
