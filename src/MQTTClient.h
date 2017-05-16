@@ -8,7 +8,7 @@
 #include "system.h"
 
 typedef void (*MQTTClientCallbackSimple)(String topic, String payload);
-typedef void (*MQTTClientCallbackAdvanced)(String topic, String payload, char bytes[], unsigned int length);
+typedef void (*MQTTClientCallbackAdvanced)(const String &topic, const String &payload, char bytes[], unsigned int length);
 
 typedef struct {
   bool use_advanced = false;
