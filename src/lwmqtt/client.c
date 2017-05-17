@@ -52,15 +52,75 @@ static unsigned short lwmqtt_get_next_packet_id(lwmqtt_client_t *c) {
   return c->next_packet_id = (unsigned short)((c->next_packet_id == 65535) ? 1 : c->next_packet_id + 1);
 }
 
+static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *c, int offset, int len) {
+  // check read buffer capacity
+  if (c->read_buf_size < offset + len) {
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
+
+  // prepare counter
+  int read = 0;
+
+  // read while data is missing
+  while (read < len) {
+    // get remaining time
+    unsigned int remaining_time = c->timer_get(c, c->command_timer);
+
+    // check timeout
+    if (remaining_time <= 0) {
+      return LWMQTT_NOT_ENOUGH_DATA;
+    }
+
+    // read
+    int partial_read = 0;
+    lwmqtt_err_t err =
+        c->network_read(c, c->network, c->read_buf + offset + read, len - read, &partial_read, remaining_time);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // increment counter
+    read += partial_read;
+  }
+
+  return LWMQTT_SUCCESS;
+}
+
+static lwmqtt_err_t lwmqtt_write_to_network(lwmqtt_client_t *c, int offset, int len) {
+  // prepare counter
+  int written = 0;
+
+  // write while data is left
+  while (written < len) {
+    // get remaining time
+    unsigned int remaining_time = c->timer_get(c, c->command_timer);
+
+    // check timeout
+    if (remaining_time <= 0) {
+      return LWMQTT_NOT_ENOUGH_DATA;
+    }
+
+    // read
+    int partial_write = 0;
+    lwmqtt_err_t err =
+        c->network_write(c, c->network, c->write_buf + offset + written, len - written, &partial_write, remaining_time);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // increment counter
+    written += partial_write;
+  }
+
+  return LWMQTT_SUCCESS;
+}
+
 static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, lwmqtt_packet_type_t *packet_type) {
   // read header byte
-  int partial_read = 0;
-  lwmqtt_err_t err = c->network_read(c, c->network, c->read_buf, 1, &partial_read, c->timer_get(c, c->command_timer));
+  lwmqtt_err_t err = lwmqtt_read_from_network(c, 0, 1);
   if (err != LWMQTT_SUCCESS) {
-    return err;
-  } else if (partial_read == 0) {
     *packet_type = LWMQTT_NO_PACKET;
-    return LWMQTT_SUCCESS;
+    return err;
   }
 
   // detect packet type
@@ -78,12 +138,9 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, 
     len++;
 
     // read next byte
-    partial_read = 0;
-    err = c->network_read(c, c->network, c->read_buf + len, 1, &partial_read, c->timer_get(c, c->command_timer));
+    err = lwmqtt_read_from_network(c, len, 1);
     if (err != LWMQTT_SUCCESS) {
       return err;
-    } else if (partial_read != 1) {
-      return LWMQTT_NOT_ENOUGH_DATA;
     }
 
     // attempt to detect remaining length
@@ -97,18 +154,9 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, 
 
   // read the rest of the buffer if needed
   if (rem_len > 0) {
-    // check read buffer capacity
-    if (c->read_buf_size < 1 + len + rem_len) {
-      return LWMQTT_BUFFER_TOO_SHORT;
-    }
-
-    partial_read = 0;
-    err = c->network_read(c, c->network, c->read_buf + 1 + len, rem_len, &partial_read,
-                          c->timer_get(c, c->command_timer));
+    err = lwmqtt_read_from_network(c, 1 + len, rem_len);
     if (err != LWMQTT_SUCCESS) {
       return err;
-    } else if (partial_read != rem_len) {
-      return LWMQTT_NOT_ENOUGH_DATA;
     }
   }
 
@@ -120,15 +168,9 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *c, int *read, 
 
 static lwmqtt_err_t lwmqtt_send_packet_in_buffer(lwmqtt_client_t *c, int length) {
   // write to network
-  int sent = 0;
-  lwmqtt_err_t err = c->network_write(c, c->network, c->write_buf, length, &sent, c->timer_get(c, c->command_timer));
+  lwmqtt_err_t err = lwmqtt_write_to_network(c, 0, length);
   if (err != LWMQTT_SUCCESS) {
     return err;
-  }
-
-  // check length
-  if (sent != length) {
-    return LWMQTT_NOT_ENOUGH_DATA;
   }
 
   // reset keep alive timer

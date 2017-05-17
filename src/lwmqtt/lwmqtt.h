@@ -79,10 +79,10 @@ typedef struct {
 typedef struct lwmqtt_client_t lwmqtt_client_t;
 
 /**
- * The callback used to read from a network object. It may set read to zero if no data is available.
+ * The callback used to read from a network object.
  *
- * The callback is expected to read the exact amount of bytes requested. It should wait up to the specified
- * timeout to read the requested data from the network.
+ * The callbacks is expected to read up to the amount of bytes in to the passed buffer. It should block the specified
+ * timeout and wait for more incoming data. It may set read to zero if no data is has been read.
  */
 typedef lwmqtt_err_t (*lwmqtt_network_read_t)(lwmqtt_client_t *c, void *ref, unsigned char *buf, int len, int *read,
                                               unsigned int timeout);
@@ -90,8 +90,8 @@ typedef lwmqtt_err_t (*lwmqtt_network_read_t)(lwmqtt_client_t *c, void *ref, uns
 /**
  * The callback used to write to a network object.
  *
- * The callback is expected to write the exact amount of bytes requested. If should wait up to the specified
- * timeout to read write the specified data to the network.
+ * The callback is expected to write up to the amount of bytes from the passed buffer. It should wait up to the
+ * specified timeout to write the specified data to the network.
  */
 typedef lwmqtt_err_t (*lwmqtt_network_write_t)(lwmqtt_client_t *c, void *ref, unsigned char *buf, int len, int *sent,
                                                unsigned int timeout);
