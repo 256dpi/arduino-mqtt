@@ -7,8 +7,8 @@
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
 
-#include <MQTTClient.h>
 #include <WiFiClientSecure.h>
+#include <MQTTClient.h>
 
 const char ssid[] = "ssid";
 const char pass[] = "pass";
