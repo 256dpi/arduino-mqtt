@@ -24,6 +24,7 @@ set(SOURCE_FILES
     examples/ArduinoWiFi101_SSL/ArduinoWiFi101_SSL.ino
     examples/ArduinoWiFiShield/ArduinoWiFiShield.ino
     examples/ArduinoYun/ArduinoYun.ino
+    examples/ArduinoYun_SSL/ArduinoYun_SSL.ino
     examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino
     examples/ESP32DevelopmentBoard_SSL/ESP32DevelopmentBoard_SSL.ino
     src/MQTTClient.h
