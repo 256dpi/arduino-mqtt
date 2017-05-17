@@ -8,10 +8,10 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <Bridge.h>
+#include <BridgeClient.h>
 #include <MQTTClient.h>
-#include <YunClient.h>
 
-YunClient net;
+BridgeClient net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;

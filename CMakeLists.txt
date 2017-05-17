@@ -7,6 +7,7 @@ include_directories(
         /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/
         /Users/256dpi/Development/Arduino/libraries/Ethernet/src
         /Users/256dpi/Development/Arduino/libraries/WiFi101/src
+        /Applications/Arduino.app/Contents/Java/libraries/Bridge/src
         /Users/256dpi/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/libraries/ESP8266WiFi/src
         /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFi/src
         /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFiClientSecure/src)

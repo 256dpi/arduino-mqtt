@@ -27,7 +27,7 @@ void setup() {
   // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
   // You need to set the IP address directly.
   //
-  // MQTT brokers usually use port 8883 for secure connections
+  // MQTT brokers usually use port 8883 for secure connections.
   client.begin("broker.shiftr.io", 8883, net);
   client.onMessage(messageReceived);
 
