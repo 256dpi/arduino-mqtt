@@ -10,20 +10,24 @@
 #include <WiFiClientSecure.h>
 #include <MQTTClient.h>
 
-const char *ssid = "ssid";
-const char *pass = "pass";
+const char ssid[] = "ssid";
+const char pass[] = "pass";
 
 WiFiClientSecure net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void connect(); // <- predefine connect() for setup()
-
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
-  client.begin("broker.shiftr.io", 8883, net); // MQTT brokers usually use port 8883 for secure connections
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+  //
+  // MQTT brokers usually use port 8883 for secure connections.
+  client.begin("broker.shiftr.io", 8883, net);
+  client.onMessage(messageReceived);
 
   connect();
 }
@@ -43,13 +47,13 @@ void connect() {
 
   Serial.println("\nconnected!");
 
-  client.subscribe("/example");
-  // client.unsubscribe("/example");
+  client.subscribe("/hello");
+  // client.unsubscribe("/hello");
 }
 
 void loop() {
   client.loop();
-  delay(10); // <- fixes some issues with WiFi stability
+  delay(10);  // <- fixes some issues with WiFi stability
 
   if (!client.connected()) {
     connect();
@@ -62,10 +66,6 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-  Serial.print("incoming: ");
-  Serial.print(topic);
-  Serial.print(" - ");
-  Serial.print(payload);
-  Serial.println();
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
 }

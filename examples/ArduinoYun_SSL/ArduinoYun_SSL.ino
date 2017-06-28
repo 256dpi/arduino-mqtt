@@ -8,10 +8,10 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <Bridge.h>
-#include <YunClient.h>
+#include <BridgeSSLClient.h>
 #include <MQTTClient.h>
 
-YunClient net;
+BridgeSSLClient net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;
@@ -19,7 +19,13 @@ unsigned long lastMillis = 0;
 void setup() {
   Bridge.begin();
   Serial.begin(115200);
-  client.begin("broker.shiftr.io", net);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+  //
+  // MQTT brokers usually use port 8883 for secure connections.
+  client.begin("broker.shiftr.io", 8883, net);
+  client.onMessage(messageReceived);
 
   connect();
 }
@@ -33,8 +39,8 @@ void connect() {
 
   Serial.println("\nconnected!");
 
-  client.subscribe("/example");
-  // client.unsubscribe("/example");
+  client.subscribe("/hello");
+  // client.unsubscribe("/hello");
 }
 
 void loop() {
@@ -51,10 +57,6 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-  Serial.print("incoming: ");
-  Serial.print(topic);
-  Serial.print(" - ");
-  Serial.print(payload);
-  Serial.println();
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
 }

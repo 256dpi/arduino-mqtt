@@ -1,7 +1,7 @@
 language: generic
 env:
   global:
-    - IDE_VERSION=1.8.1
+    - IDE_VERSION=1.8.3
   matrix:
     - EXAMPLE="AdafruitHuzzahESP8266" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
     - EXAMPLE="AdafruitHuzzahESP8266_SSL" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
@@ -9,9 +9,8 @@ env:
     - EXAMPLE="ArduinoWiFi101" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoWiFi101_SSL" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
-    - EXAMPLE="ArduinoYun_MQTTClient" BOARD="arduino:avr:yun"
-    - EXAMPLE="ArduinoYun_YunMQTTClient" BOARD="arduino:avr:yun"
-    - EXAMPLE="ArduinoYun_YunMQTTClient_SSL" BOARD="arduino:avr:yun"
+    - EXAMPLE="ArduinoYun" BOARD="arduino:avr:yun"
+    - EXAMPLE="ArduinoYun_SSL" BOARD="arduino:avr:yun"
     - EXAMPLE="ESP32DevelopmentBoard" BOARD="espressif:esp32:esp32:FlashFreq=80"
     - EXAMPLE="ESP32DevelopmentBoard_SSL" BOARD="espressif:esp32:esp32:FlashFreq=80"
 before_install:
