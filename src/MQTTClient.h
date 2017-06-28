@@ -7,10 +7,10 @@
 
 #include "system.h"
 
-typedef void (*MQTTClientCallbackSimple)(String topic, String payload);
-typedef void (*MQTTClientCallbackAdvanced)(const MQTTClient * client, const String &topic, const String &payload, char bytes[], unsigned int length);
 class MQTTClient;
 
+typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
+typedef void (*MQTTClientCallbackAdvanced)(MQTTClient * client, String &topic, String &payload, char bytes[], unsigned int length);
 
 typedef struct {
   MQTTClient * client = NULL;
@@ -24,9 +24,9 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   MQTTClientCallback *cb = (MQTTClientCallback *)ref;
 
   // null terminate topic to create String object
-  char t[topic->len + 1];
-  memcpy(t, topic->data, (size_t)topic->len);
-  t[topic->len] = '\0';
+  char terminated_topic[topic->len + 1];
+  memcpy(terminated_topic, topic->data, (size_t)topic->len);
+  terminated_topic[topic->len] = '\0';
 
   // get payload
   char *payload = (char *)message->payload;
@@ -34,11 +34,15 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   // null terminate payload
   payload[message->payload_len] = '\0';
 
+  // create arduino strings
+  String str_topic = String(terminated_topic);
+  String str_payload = String(payload);
+
   // call the user callback
   if (cb->use_advanced) {
-    cb->advanced(cb->client, String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
+    cb->advanced(cb->client, str_topic, str_payload, (char *)message->payload, (unsigned int)message->payload_len);
   } else {
-    cb->simple(String(t), String(payload));
+    cb->simple(str_topic, str_payload);
   }
 }
 

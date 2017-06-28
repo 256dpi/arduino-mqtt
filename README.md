@@ -127,10 +127,10 @@ Register a callback to receive messages:
 
 ```c++
 void onMessage(MQTTClientCallbackSimple);
-// Callback signature: void messageReceived(String topic, String payload) {}
+// Callback signature: void messageReceived(String &topic, String &payload) {}
 
 void onMessageAdvanced(MQTTClientCallbackAdvanced);
-// Callback signature: void messageReceived(const MQTTClient *client, const String &topic, const String &payload, char topic[], unsigned int length) {}
+// Callback signature: void messageReceived(MQTTClient *client, String &topic, String &payload, char topic[], unsigned int length) {}
 ```
 
 Connect to broker using the supplied client id and an optional username and password:
