@@ -10,7 +10,7 @@
 class MQTTClient;
 
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
-typedef void (*MQTTClientCallbackAdvanced)(MQTTClient * client, String &topic, String &payload, char bytes[], unsigned int length);
+typedef void (*MQTTClientCallbackAdvanced)(MQTTClient * client, char bytes[], unsigned int length);
 
 typedef struct {
   MQTTClient * client = NULL;
@@ -34,15 +34,17 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   // null terminate payload
   payload[message->payload_len] = '\0';
 
-  // create arduino strings
-  // TODO: Is there no way to create the strings without causing the data to be copied?
-  String str_topic = String(terminated_topic);
-  String str_payload = String(payload);
-
   // call the user callback
   if (cb->use_advanced) {
-    cb->advanced(cb->client, str_topic, str_payload, (char *)message->payload, (unsigned int)message->payload_len);
+    // call advanced callback
+    cb->advanced(cb->client, (char *)message->payload, (unsigned int)message->payload_len);
   } else {
+    // create arduino strings
+    // TODO: Is there no way to create the strings without causing the data to be copied?
+    String str_topic = String(terminated_topic);
+    String str_payload = String(payload);
+
+    // call simple callback
     cb->simple(str_topic, str_payload);
   }
 }
