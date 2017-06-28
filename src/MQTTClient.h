@@ -8,9 +8,10 @@
 #include "system.h"
 
 typedef void (*MQTTClientCallbackSimple)(String topic, String payload);
-typedef void (*MQTTClientCallbackAdvanced)(const String &topic, const String &payload, char bytes[], unsigned int length);
+typedef void (*MQTTClientCallbackAdvanced)(const MQTTClient * client, const String &topic, const String &payload, char bytes[], unsigned int length);
 
 typedef struct {
+  MQTTClient * client = NULL;
   bool use_advanced = false;
   MQTTClientCallbackSimple simple = NULL;
   MQTTClientCallbackAdvanced advanced = NULL;
@@ -33,7 +34,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
 
   // call the user callback
   if (cb->use_advanced) {
-    cb->advanced(String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
+    cb->advanced(cb->client, String(t), String(payload), (char *)message->payload, (unsigned int)message->payload_len);
   } else {
     cb->simple(String(t), String(payload));
   }
@@ -103,6 +104,7 @@ class MQTTClient {
     }
 
     // save callback
+    this->callback.client = this;
     this->callback.use_advanced = false;
     this->callback.simple = cb;
 
@@ -118,6 +120,7 @@ class MQTTClient {
     }
 
     // save callback
+    this->callback.client = this;
     this->callback.use_advanced = true;
     this->callback.advanced = cb;
 
