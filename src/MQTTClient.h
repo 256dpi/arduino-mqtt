@@ -9,6 +9,8 @@
 
 typedef void (*MQTTClientCallbackSimple)(String topic, String payload);
 typedef void (*MQTTClientCallbackAdvanced)(const MQTTClient * client, const String &topic, const String &payload, char bytes[], unsigned int length);
+class MQTTClient;
+
 
 typedef struct {
   MQTTClient * client = NULL;
