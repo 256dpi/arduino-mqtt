@@ -83,8 +83,6 @@ class MQTTClient {
     free(this->writeBuf);
   }
 
-  void begin(Client &client) { this->begin("", client); }
-
   void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client); }
 
   void begin(const char hostname[], int port, Client &client) {
