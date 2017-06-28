@@ -1,6 +1,7 @@
 # arduino-mqtt
 
 [![Build Status](https://travis-ci.org/256dpi/arduino-mqtt.svg?branch=master)](https://travis-ci.org/256dpi/arduino-mqtt)
+[![GitHub release](https://img.shields.io/github/release/256dpi/arduino-mqtt.svg)]()
 
 **MQTT library for Arduino based on the lwmqtt project**
 
