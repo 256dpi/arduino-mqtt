@@ -27,6 +27,7 @@ set(SOURCE_FILES
     examples/ArduinoYun_SSL/ArduinoYun_SSL.ino
     examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino
     examples/ESP32DevelopmentBoard_SSL/ESP32DevelopmentBoard_SSL.ino
+    src/lwmqtt
     src/MQTTClient.h
     src/system.cpp
     src/system.h)

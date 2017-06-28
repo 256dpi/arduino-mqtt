@@ -150,7 +150,7 @@ lwmqtt_err_t lwmqtt_encode_connect(unsigned char *buf, int buf_len, int *len, lw
 
   // add will if present
   if (will != NULL) {
-    rem_len += will->topic.len + 2 + will->payload_len + 2;
+    rem_len += will->topic.len + 2 + will->message.payload_len + 2;
   }
 
   // add username if present
@@ -189,8 +189,8 @@ lwmqtt_err_t lwmqtt_encode_connect(unsigned char *buf, int buf_len, int *len, lw
   // set will flags if present
   if (will != NULL) {
     flags.bits.will = 1;
-    flags.bits.will_qos = (unsigned int)will->qos;
-    flags.bits.will_retain = will->retained ? 1 : 0;
+    flags.bits.will_qos = (unsigned int)will->message.qos;
+    flags.bits.will_retain = will->message.retained ? 1 : 0;
   }
 
   // set username flag if present
@@ -215,9 +215,9 @@ lwmqtt_err_t lwmqtt_encode_connect(unsigned char *buf, int buf_len, int *len, lw
   // write will topic and payload if present
   if (will != NULL) {
     lwmqtt_write_string(&ptr, will->topic);
-    lwmqtt_write_int(&ptr, will->payload_len);
-    memcpy(ptr, will->payload, will->payload_len);
-    ptr += will->payload_len;
+    lwmqtt_write_int(&ptr, will->message.payload_len);
+    memcpy(ptr, will->message.payload, will->message.payload_len);
+    ptr += will->message.payload_len;
   }
 
   // write username if present

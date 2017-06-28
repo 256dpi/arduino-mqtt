@@ -22,7 +22,7 @@ typedef enum {
 } lwmqtt_err_t;
 
 /**
- * A multi value string. Can be either a c string or a length prefixed string.
+ * A multi value string. Can be either a C string or a length prefixed string.
  */
 typedef struct {
   int len;
@@ -36,18 +36,18 @@ typedef struct {
   { 0, NULL }
 
 /**
- * Return a string object for the passed c string.
+ * Return a string object for the passed C string.
  *
- * @param str - The c string.
+ * @param str - The C string.
  * @return A string object.
  */
 lwmqtt_string_t lwmqtt_str(const char *str);
 
 /**
- * Compares a string object to a c-string.
+ * Compares a string object to a C string.
  *
  * @param a - The string object to compare.
- * @param b - The c string to compare.
+ * @param b - The C string to compare.
  * @return Similarity e.g. strcmp().
  */
 int lwmqtt_strcmp(lwmqtt_string_t *a, char *b);
@@ -108,6 +108,12 @@ typedef unsigned int (*lwmqtt_timer_get_t)(lwmqtt_client_t *c, void *ref);
 
 /**
  * The callback used to forward incoming messages.
+ *
+ * Note: The callback is mostly executed because of a call to lwmqtt_yield() that processes incoming messages. However,
+ * it is possible that the callback is also executed during a call to lwmqtt_subscribe(), lwmqtt_publish() or
+ * lwmqtt_unsubscribe() if incoming messages are received between the required acknowledgements. It is therefore not
+ * recommended to call any further lwmqtt methods in the callback as this might result in weird call stacks. The
+ * callback should place the received messages in a queue and dispatch them after the caller has returned.
  */
 typedef void (*lwmqtt_callback_t)(lwmqtt_client_t *, void *ref, lwmqtt_string_t *, lwmqtt_message_t *);
 
@@ -139,10 +145,10 @@ struct lwmqtt_client_t {
  * Will initialize the specified client object.
  *
  * @param client - The client object.
- * @param write_buf
- * @param write_buf_size
- * @param read_buf
- * @param read_buf_size
+ * @param write_buf - The write buffer.
+ * @param write_buf_size - The write buffer size.
+ * @param read_buf - The read buffer.
+ * @param read_buf_size - The read buffer size.
  */
 void lwmqtt_init(lwmqtt_client_t *client, unsigned char *write_buf, int write_buf_size, unsigned char *read_buf,
                  int read_buf_size);
@@ -183,17 +189,14 @@ void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t c
  */
 typedef struct {
   lwmqtt_string_t topic;
-  void *payload;
-  int payload_len;
-  bool retained;
-  lwmqtt_qos_t qos;
+  lwmqtt_message_t message;
 } lwmqtt_will_t;
 
 /**
  * The default initializer for the will object.
  */
 #define lwmqtt_default_will \
-  { lwmqtt_default_string, NULL, 0, false, LWMQTT_QOS0 }
+  { lwmqtt_default_string, lwmqtt_default_message }
 
 /**
  * The object containing the connections options for a client.
@@ -242,6 +245,8 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t *options, 
 /**
  * Will send a publish packet and wait for all acks to complete.
  *
+ * Note: The message callback might be called with incoming messages as part of this call.
+ *
  * @param client - The client object.
  * @param topic - The topic.
  * @param message - The message.
@@ -251,7 +256,9 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t *options, 
 lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, const char *topic, lwmqtt_message_t *msg, unsigned int timeout);
 
 /**
- * Will send a subscribe packet with a single topic filter - qos level pair and wait for the suback to complete.
+ * Will send a subscribe packet with a single topic filter plus qos level and wait for the suback to complete.
+ *
+ * Note: The message callback might be called with incoming messages as part of this call.
  *
  * @param client - The client object.
  * @param topic_filter - The topic filter.
@@ -264,6 +271,8 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, const char *topic_filter,
 
 /**
  * Will send an unsubscribe packet and wait for the unsuback to complete.
+ *
+ * Note: The message callback might be called with incoming messages as part of this call.
  *
  * @param client - The client object.
  * @param topic_filter - The topic filter.
@@ -288,12 +297,14 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, unsigned int timeout);
  * until the timeout is reached. Furthermore, applications may specify the amount of bytes available to read in order
  * to constrain the yield to only receive packets that are already inflight.
  *
+ * Note: The message callback might be called with incoming messages as part of this call.
+ *
  * @param client - The client object.
  * @param available - The available bytes to read.
  * @param timeout - The command timeout.
  * @return An error value.
  */
-lwmqtt_err_t lwmqtt_yield(lwmqtt_client_t *client, int available, unsigned int timeout);
+lwmqtt_err_t lwmqtt_yield(lwmqtt_client_t *client, unsigned int available, unsigned int timeout);
 
 /**
  * Will yield control to the client to keep the connection alive.

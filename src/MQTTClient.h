@@ -139,10 +139,10 @@ class MQTTClient {
   void setWill(const char topic[], const char payload[], bool retained, int qos) {
     this->hasWill = true;
     this->will.topic = lwmqtt_str(topic);
-    this->will.payload = (void *)payload;
-    this->will.payload_len = (int)strlen(payload);
-    this->will.retained = retained;
-    this->will.qos = (lwmqtt_qos_t)qos;
+    this->will.message.payload = (void *)payload;
+    this->will.message.payload_len = (int)strlen(payload);
+    this->will.message.retained = retained;
+    this->will.message.qos = (lwmqtt_qos_t)qos;
   }
 
   void clearWill() { this->hasWill = false; }
