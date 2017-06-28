@@ -10,10 +10,10 @@
 class MQTTClient;
 
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
-typedef void (*MQTTClientCallbackAdvanced)(MQTTClient * client, char bytes[], unsigned int length);
+typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char bytes[], unsigned int length);
 
 typedef struct {
-  MQTTClient * client = NULL;
+  MQTTClient *client = NULL;
   bool use_advanced = false;
   MQTTClientCallbackSimple simple = NULL;
   MQTTClientCallbackAdvanced advanced = NULL;
@@ -236,7 +236,7 @@ class MQTTClient {
 
     // prepare message
     lwmqtt_message_t message = lwmqtt_default_message;
-    message.payload = (void*)payload;
+    message.payload = (void *)payload;
     message.payload_len = length;
     message.retained = retained;
     message.qos = lwmqtt_qos_t(qos);
