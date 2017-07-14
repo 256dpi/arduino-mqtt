@@ -88,7 +88,7 @@ void loop() {
   }
 }
 
-void messageReceived(String topic, String payload) {
+void messageReceived(String &topic, String &payload) {
   Serial.println("incoming: " + topic + " - " + payload);
 }
 ```
