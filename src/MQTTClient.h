@@ -10,7 +10,7 @@
 class MQTTClient;
 
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
-typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], unsigned int length);
+typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length);
 
 typedef struct {
   MQTTClient *client = NULL;
@@ -37,7 +37,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   // call the user callback
   if (cb->use_advanced) {
     // call advanced callback
-    cb->advanced(cb->client, terminated_topic, (char *)message->payload, (unsigned int)message->payload_len);
+    cb->advanced(cb->client, terminated_topic, (char *)message->payload, message->payload_len);
   } else {
     // create arduino strings
     // TODO: Is there no way to create the strings without causing the data to be copied?
@@ -52,10 +52,10 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
 class MQTTClient {
  private:
   int bufSize;
-  unsigned char *readBuf;
-  unsigned char *writeBuf;
+  void *readBuf;
+  void *writeBuf;
 
-  unsigned int timeout = 1000;
+  int timeout = 1000;
 
   Client *netClient;
   const char *hostname;
@@ -76,8 +76,8 @@ class MQTTClient {
  public:
   MQTTClient(int bufSize = 128) {
     this->bufSize = bufSize;
-    this->readBuf = (unsigned char *)malloc((size_t)bufSize + 1);
-    this->writeBuf = (unsigned char *)malloc((size_t)bufSize);
+    this->readBuf = malloc((size_t)bufSize + 1);
+    this->writeBuf = malloc((size_t)bufSize);
   }
 
   ~MQTTClient() {
@@ -217,18 +217,18 @@ class MQTTClient {
   }
 
   boolean publish(const char topic[], const char payload[]) {
-    return this->publish(topic, (char *)payload, (unsigned int)strlen(payload));
+    return this->publish(topic, (char *)payload, (int)strlen(payload));
   }
 
   boolean publish(const char topic[], const char payload[], bool retained, int qos) {
-    return this->publish(topic, (char *)payload, (unsigned int)strlen(payload), retained, qos);
+    return this->publish(topic, (char *)payload, (int)strlen(payload), retained, qos);
   }
 
-  boolean publish(const char topic[], const char payload[], unsigned int length) {
+  boolean publish(const char topic[], const char payload[], int length) {
     return this->publish(topic, payload, length, false, 0);
   }
 
-  boolean publish(const char topic[], const char payload[], unsigned int length, bool retained, int qos) {
+  boolean publish(const char topic[], const char payload[], int length, bool retained, int qos) {
     // return immediately if not connected
     if (!this->connected()) {
       return false;
@@ -264,7 +264,7 @@ class MQTTClient {
     }
 
     // subscribe to topic
-    this->_lastError = lwmqtt_subscribe(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
+    this->_lastError = lwmqtt_subscribe_one(&this->client, topic, (lwmqtt_qos_t)qos, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
       this->_connected = false;
       return false;
@@ -282,7 +282,7 @@ class MQTTClient {
     }
 
     // unsubscribe from topic
-    this->_lastError = lwmqtt_unsubscribe(&this->client, topic, this->timeout);
+    this->_lastError = lwmqtt_unsubscribe_one(&this->client, topic, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
       this->_connected = false;
       return false;
