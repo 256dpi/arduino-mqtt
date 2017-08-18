@@ -207,7 +207,7 @@ typedef struct {
  */
 typedef struct {
   lwmqtt_string_t client_id;
-  unsigned short keep_alive;
+  int keep_alive;
   bool clean_session;
   lwmqtt_string_t username;
   lwmqtt_string_t password;
