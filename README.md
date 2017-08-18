@@ -133,6 +133,16 @@ void onMessageAdvanced(MQTTClientCallbackAdvanced);
 
 - The set callback is mostly called during a call to `loop()` but may also be called during a call to `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` if messages have been received before receiving the required acknowledgement. Therefore, it is strongly recommended to not call `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` directly in the callback.
 
+Set more advanced options:
+
+```c++
+void setOptions(int keepAlive, bool cleanSession, int timeout);
+```
+
+- The `keepAlive` option controls the keep alive interval (default: 60).
+- The `cleanSession` option controls the session retention on the broker side (default: true).
+- The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000). 
+
 Connect to broker using the supplied client id and an optional username and password:
 
 ```c++

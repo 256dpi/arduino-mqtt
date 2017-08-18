@@ -54,6 +54,8 @@ class MQTTClient {
   void *readBuf;
   void *writeBuf;
 
+  int keepAlive = 60;
+  bool cleanSession = true;
   int timeout = 1000;
 
   Client *netClient;
@@ -156,6 +158,12 @@ class MQTTClient {
 
   void clearWill() { this->hasWill = false; }
 
+  void setOptions(int keepAlive, bool cleanSession, int timeout) {
+    this->keepAlive = keepAlive;
+    this->cleanSession = cleanSession;
+    this->timeout = timeout;
+  }
+
   boolean connect(const char clientId[]) { return this->connect(clientId, NULL, NULL); }
 
   boolean connect(const char clientId[], const char username[], const char password[]) {
@@ -174,6 +182,8 @@ class MQTTClient {
 
     // prepare options
     lwmqtt_options_t options = lwmqtt_default_options;
+    options.keep_alive = this->keepAlive;
+    options.clean_session = this->cleanSession;
     options.client_id = lwmqtt_str(clientId);
     if (username && password) {
       options.username = lwmqtt_str(username);
