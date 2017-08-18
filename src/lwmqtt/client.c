@@ -517,8 +517,7 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, const char *topic, lwmqtt_m
   // encode publish packet
   int len = 0;
   lwmqtt_err_t err =
-      lwmqtt_encode_publish(client->write_buf, client->write_buf_size, &len, 0, message->qos,
-                            (char)(message->retained ? 1 : 0), packet_id, str, message->payload, message->payload_len);
+      lwmqtt_encode_publish(client->write_buf, client->write_buf_size, &len, 0, message->qos, message->retained, packet_id, str, message->payload, message->payload_len);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }

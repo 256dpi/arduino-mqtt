@@ -5,7 +5,7 @@ fmt:
 
 update:
 	rm -rf ./lwmqtt
-	git clone --branch v0.2.0 https://github.com/256dpi/lwmqtt.git ./lwmqtt
+	git clone --branch v0.2.1 https://github.com/256dpi/lwmqtt.git ./lwmqtt
 	mkdir -p ./src/lwmqtt
 	cp -r ./lwmqtt/src/*.c ./src/lwmqtt/
 	cp -r ./lwmqtt/src/*.h ./src/lwmqtt/
