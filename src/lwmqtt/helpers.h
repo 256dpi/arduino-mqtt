@@ -6,53 +6,79 @@
 #include "lwmqtt.h"
 
 /**
- * Reads a string object from the buffer and populates the passed object.
+ * Reads a string from the specified buffer into the passed object. The pointer is incremented by the bytes read.
  *
  * @param str - The object into which the data is to be read.
- * @param pptr - Pointer to the output buffer - incremented by the number of bytes used & returned.
- * @param end_ptr - Pointer to the end of the data: do not read beyond.
- * @return One if successful, zero if not.
+ * @param buf - Pointer to the buffer.
+ * @param buf_end - Pointer to the end of the buffer.
+ * @return Length if successful, -1 if buffer is to short and -2 if overflowed.
  */
-bool lwmqtt_read_string(lwmqtt_string_t *str, unsigned char **pptr, unsigned char *end_ptr);
+long lwmqtt_read_string(lwmqtt_string_t *str, void **buf, void *buf_end);
 
 /**
- * Writes a string to an output buffer.
+ * Writes a string to the specified buffer. The pointer is incremented by the bytes written.
  *
- * @param pptr - Pointer to the output buffer - incremented by the number of bytes used & returned.
- * @param The string to write.
+ * @param buf - Pointer to the buffer.
+ * @param string - The string to write.
  */
-void lwmqtt_write_string(unsigned char **pptr, lwmqtt_string_t string);
+void lwmqtt_write_string(void **buf, lwmqtt_string_t string);
 
 /**
- * Calculates an integer from two bytes read from the input buffer.
+ * Reads two byte number from the specified buffer. The pointer is incremented by two.
  *
- * @param pptr - Pointer to the input buffer - incremented by the number of bytes used & returned.
- * @return The integer value calculated.
+ * @param buf - Pointer to the buffer.
+ * @return The read number.
  */
-int lwmqtt_read_int(unsigned char **pptr);
+long lwmqtt_read_num(void **buf);
 
 /**
- * Reads one character from the input buffer.
+ * Writes a two byte number to the specified buffer. The pointer is incremented by two.
  *
- * @param pptr - Pointer to the input buffer - incremented by the number of bytes used & returned.
- * @return The character read.
+ * @param buf - Pointer to the buffer.
+ * @param num - The number to write.
  */
-unsigned char lwmqtt_read_char(unsigned char **pptr);
+void lwmqtt_write_num(void **buf, long num);
 
 /**
- * Writes one character to an output buffer.
+ * Reads one byte from the buffer. The pointer is incremented by one.
  *
- * @param pptr - Pointer to the output buffer - incremented by the number of bytes used & returned.
- * @param The character to write
+ * @param buf - Pointer to the buffer.
+ * @return The read byte.
  */
-void lwmqtt_write_char(unsigned char **pptr, unsigned char chr);
+unsigned char lwmqtt_read_byte(void **buf);
 
 /**
- * Writes an integer as 2 bytes to an output buffer.
+ * Writes one byte to the specified buffer. The pointer is incremented by one.
  *
- * @param pptr - Pointer to the output buffer - incremented by the number of bytes used & returned.
- * @param The integer to write.
+ * @param buf - Pointer to the buffer.
+ * @param byte - The byte to write.
  */
-void lwmqtt_write_int(unsigned char **pptr, int num);
+void lwmqtt_write_byte(void **buf, unsigned char byte);
+
+/**
+ * Returns the amount of bytes required by the variable number.
+ *
+ * @param num - The number to check.
+ * @return The required length or -1 if overflowed.
+ */
+int lwmqtt_varnum_length(long num);
+
+/**
+ * Reads a variable number from the specified buffer. The pointer is incremented by the bytes read.
+ *
+ * @param buf - Pointer to the buffer.
+ * @param buf_len - The length of the buffer.
+ * @return Length if successful, -1 if buffer is to short and -2 if overflowed.
+ */
+long lwmqtt_read_varnum(void **buf, int buf_len);
+
+/**
+ * Writes a variable number to the specified buffer. The pointer is incremented by the bytes written.
+ * The length required by the variable number needs to be checked beforehand using lwmqtt_varnum_length().
+ *
+ * @param buf - Pointer to the buffer.
+ * @param num - The number to write.
+ */
+void lwmqtt_write_varnum(void **buf, long num);
 
 #endif
