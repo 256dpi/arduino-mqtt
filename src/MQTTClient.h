@@ -40,7 +40,6 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
     cb->advanced(cb->client, terminated_topic, (char *)message->payload, message->payload_len);
   } else {
     // create arduino strings
-    // TODO: Is there no way to create the strings without causing the data to be copied?
     String str_topic = String(terminated_topic);
     String str_payload = String(payload);
 
