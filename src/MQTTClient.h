@@ -339,9 +339,20 @@ class MQTTClient {
   lwmqtt_return_code_t returnCode() { return this->_returnCode; }
 
   boolean disconnect() {
+    // return immediately if not connected anymore
+    if (!this->_connected) {
+      return true;
+    }
+
+    // set flag
     this->_connected = false;
+
+    // cleanly disconnect
     this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
+
+    // close network
     this->netClient->stop();
+
     return this->_lastError == LWMQTT_SUCCESS;
   }
 };
