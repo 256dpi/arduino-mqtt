@@ -16,9 +16,9 @@ int lwmqtt_arduino_timer_get(lwmqtt_client_t *client, void *ref);
 
 typedef struct { Client *client; } lwmqtt_arduino_network_t;
 
-lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, void *buf, int len, int *read,
+lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uint8_t *buf, size_t len, size_t *read,
                                          int timeout);
-lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, void *buf, int len, int *sent,
+lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, uint8_t *buf, size_t len, size_t *sent,
                                           int timeout);
 
 #endif  // LWMQTT_ARDUINO_H

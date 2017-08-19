@@ -18,7 +18,7 @@ int lwmqtt_arduino_timer_get(lwmqtt_client_t *client, void *ref) {
   return (int)(t->end - millis());
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, void *buffer, int len, int *read,
+lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uint8_t *buffer, size_t len, size_t *read,
                                          int timeout) {
   // cast network reference
   lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
@@ -27,23 +27,23 @@ lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, voi
   n->client->setTimeout((unsigned long)timeout);
 
   // read bytes
-  *read = (int)n->client->readBytes((uint8_t *)buffer, (size_t)len);
+  *read = n->client->readBytes(buffer, len);
   if (*read <= 0) {
-    return LWMQTT_NETWORK_READ_ERROR;
+    return LWMQTT_NETWORK_FAILED_READ;
   }
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, void *buffer, int len, int *sent,
+lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, uint8_t *buffer, size_t len, size_t *sent,
                                           int timeout) {
   // cast network reference
   lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
 
   // write bytes
-  *sent = (int)n->client->write((const uint8_t *)buffer, (size_t)len);
+  *sent = n->client->write(buffer, len);
   if (*sent <= 0) {
-    return LWMQTT_NETWORK_WRITE_ERROR;
+    return LWMQTT_NETWORK_FAILED_WRITE;
   };
 
   return LWMQTT_SUCCESS;
