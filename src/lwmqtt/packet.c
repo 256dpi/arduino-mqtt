@@ -1,10 +1,7 @@
-#include "lwmqtt.h"
-#include <string.h>
-
 #include "packet.h"
 
 typedef union {
-  unsigned char byte;
+  uint8_t byte;
   struct {
     unsigned int retain : 1;
     unsigned int qos : 2;
@@ -14,7 +11,7 @@ typedef union {
 } lwmqtt_header_t;
 
 typedef union {
-  unsigned char byte;
+  uint8_t byte;
   struct {
     unsigned int _ : 1;
     unsigned int clean_session : 1;
@@ -27,26 +24,35 @@ typedef union {
 } lwmqtt_connect_flags_t;
 
 typedef union {
-  unsigned char byte;
+  uint8_t byte;
   struct {
     unsigned int _ : 7;
     unsigned int session_present : 1;
   } bits;
 } lwmqtt_connack_flags_t;
 
-lwmqtt_err_t lwmqtt_detect_packet_type(void *buf, lwmqtt_packet_type_t *packet_type) {
-  // prepare pointer
-  void *ptr = buf;
-
-  // read header
-  lwmqtt_header_t header;
-  header.byte = lwmqtt_read_byte(&ptr);
-
+lwmqtt_err_t lwmqtt_detect_packet_type(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t *packet_type) {
   // set default packet type
   *packet_type = LWMQTT_NO_PACKET;
 
+  // prepare pointer
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
+
+  // prepare header
+  lwmqtt_header_t header;
+
+  // reader header
+  lwmqtt_err_t err = lwmqtt_read_byte(&buf_ptr, buf_end, &header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // set packet type
+  *packet_type = (lwmqtt_packet_type_t)header.bits.type;
+
   // check if packet type is correct and can be received
-  switch ((lwmqtt_packet_type_t)header.bits.type) {
+  switch (*packet_type) {
     case LWMQTT_CONNACK_PACKET:
     case LWMQTT_PUBLISH_PACKET:
     case LWMQTT_PUBACK_PACKET:
@@ -56,58 +62,61 @@ lwmqtt_err_t lwmqtt_detect_packet_type(void *buf, lwmqtt_packet_type_t *packet_t
     case LWMQTT_SUBACK_PACKET:
     case LWMQTT_UNSUBACK_PACKET:
     case LWMQTT_PINGRESP_PACKET:
-      *packet_type = (lwmqtt_packet_type_t)header.bits.type;
       return LWMQTT_SUCCESS;
     default:
-      return LWMQTT_DECODE_ERROR;
+      *packet_type = LWMQTT_NO_PACKET;
+      return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
 }
 
-lwmqtt_err_t lwmqtt_detect_remaining_length(void *buf, int buf_len, long *rem_len) {
+lwmqtt_err_t lwmqtt_detect_remaining_length(uint8_t *buf, size_t buf_len, uint32_t *rem_len) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *ptr = buf;
 
   // attempt to decode remaining length
-  *rem_len = lwmqtt_read_varnum(&ptr, buf_len);
-  if (*rem_len == -1) {
-    *rem_len = 0;
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (*rem_len == -2) {
+  lwmqtt_err_t err = lwmqtt_read_varnum(&ptr, buf + buf_len, rem_len);
+  if (err == LWMQTT_VARNUM_OVERFLOW) {
     *rem_len = 0;
     return LWMQTT_REMAINING_LENGTH_OVERFLOW;
+  } else if (err != LWMQTT_SUCCESS) {
+    *rem_len = 0;
+    return err;
   }
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_connect(void *buf, int buf_len, int *len, lwmqtt_options_t *options, lwmqtt_will_t *will) {
-  // prepare pointer
-  void *ptr = buf;
+lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_options_t options,
+                                   lwmqtt_will_t *will) {
+  // prepare pointers
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // fixed header is 10
-  int rem_len = 10;
+  uint32_t rem_len = 10;
 
   // add client id to remaining length
-  rem_len += options->client_id.len + 2;
+  rem_len += options.client_id.len + 2;
 
   // add will if present to remaining length
   if (will != NULL) {
-    rem_len += will->topic.len + 2 + will->message.payload_len + 2;
+    rem_len += will->topic.len + 2 + will->payload.len + 2;
   }
 
   // add username if present to remaining length
-  if (options->username.len > 0) {
-    rem_len += options->username.len + 2;
+  if (options.username.len > 0) {
+    rem_len += options.username.len + 2;
 
     // add password if present to remaining length
-    if (options->password.len > 0) {
-      rem_len += options->password.len + 2;
+    if (options.password.len > 0) {
+      rem_len += options.password.len + 2;
     }
   }
 
   // calculate remaining length length
-  int rem_len_len = lwmqtt_varnum_length(rem_len);
-  if (rem_len_len < 0) {
+  int rem_len_len;
+  lwmqtt_err_t err = lwmqtt_varnum_length(rem_len, &rem_len_len);
+  if (err == LWMQTT_VARNUM_OVERFLOW) {
     return LWMQTT_REMAINING_LENGTH_OVERFLOW;
   }
 
@@ -116,440 +125,556 @@ lwmqtt_err_t lwmqtt_encode_connect(void *buf, int buf_len, int *len, lwmqtt_opti
     return LWMQTT_BUFFER_TOO_SHORT;
   }
 
-  // write header
+  // prepare header
   lwmqtt_header_t header = {0};
   header.bits.type = LWMQTT_CONNECT_PACKET;
-  lwmqtt_write_byte(&ptr, header.byte);
+
+  // write header
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, rem_len);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
-  // write version
-  lwmqtt_write_string(&ptr, lwmqtt_str("MQTT"));
-  lwmqtt_write_byte(&ptr, 4);
+  // write version string
+  err = lwmqtt_write_string(&buf_ptr, buf_end, lwmqtt_string("MQTT"));
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // write version number
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, 4);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // prepare flags
   lwmqtt_connect_flags_t flags = {0};
-  flags.bits.clean_session = options->clean_session ? 1 : 0;
+  flags.bits.clean_session = options.clean_session ? 1 : 0;
 
   // set will flags if present
   if (will != NULL) {
     flags.bits.will = 1;
-    flags.bits.will_qos = (unsigned int)will->message.qos;
-    flags.bits.will_retain = will->message.retained ? 1 : 0;
+    flags.bits.will_qos = (unsigned int)will->qos;
+    flags.bits.will_retain = will->retained ? 1 : 0;
   }
 
   // set username flag if present
-  if (options->username.len > 0) {
+  if (options.username.len > 0) {
     flags.bits.username = 1;
 
     // set password flag if present
-    if (options->password.len > 0) {
+    if (options.password.len > 0) {
       flags.bits.password = 1;
     }
   }
 
   // write flags
-  lwmqtt_write_byte(&ptr, flags.byte);
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, flags.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write keep alive
-  lwmqtt_write_num(&ptr, options->keep_alive);
+  err = lwmqtt_write_num(&buf_ptr, buf_end, options.keep_alive);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write client id
-  lwmqtt_write_string(&ptr, options->client_id);
+  err = lwmqtt_write_string(&buf_ptr, buf_end, options.client_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
-  // write will topic and payload if present
+  // write will if present
   if (will != NULL) {
-    lwmqtt_write_string(&ptr, will->topic);
-    lwmqtt_write_num(&ptr, will->message.payload_len);
-    memcpy(ptr, will->message.payload, will->message.payload_len);
-    ptr += will->message.payload_len;
+    // write topic
+    err = lwmqtt_write_string(&buf_ptr, buf_end, will->topic);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // write payload length
+    err = lwmqtt_write_num(&buf_ptr, buf_end, (uint16_t)will->payload.len);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // write payload
+    err = lwmqtt_write_data(&buf_ptr, buf_end, (uint8_t *)will->payload.data, will->payload.len);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
   }
 
   // write username if present
   if (flags.bits.username) {
-    lwmqtt_write_string(&ptr, options->username);
+    err = lwmqtt_write_string(&buf_ptr, buf_end, options.username);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+  }
 
-    // write password if present
-    if (flags.bits.password) {
-      lwmqtt_write_string(&ptr, options->password);
+  // write password if present
+  if (flags.bits.username && flags.bits.password) {
+    err = lwmqtt_write_string(&buf_ptr, buf_end, options.password);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
     }
   }
 
   // set written length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_decode_connack(void *buf, int buf_len, bool *session_present, lwmqtt_return_code_t *return_code) {
-  // prepare pointer
-  void *ptr = buf;
+lwmqtt_err_t lwmqtt_decode_connack(uint8_t *buf, size_t buf_len, bool *session_present,
+                                   lwmqtt_return_code_t *return_code) {
+  // prepare pointers
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // read header
   lwmqtt_header_t header;
-  header.byte = lwmqtt_read_byte(&ptr);
-  if (header.bits.type != LWMQTT_CONNACK_PACKET) {
-    return LWMQTT_DECODE_ERROR;
+  lwmqtt_err_t err = lwmqtt_read_byte(&buf_ptr, buf_end, &header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  } else if (header.bits.type != LWMQTT_CONNACK_PACKET) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
 
   // read remaining length
-  long rem_len = lwmqtt_read_varnum(&ptr, buf_len - 1);
-  if (rem_len == -1) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (rem_len == -2) {
-    return LWMQTT_REMAINING_LENGTH_OVERFLOW;
+  uint32_t rem_len;
+  err = lwmqtt_read_varnum(&buf_ptr, buf_end, &rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
-  // check remaining length and buffer size
-  if (rem_len != 2 || buf_len < rem_len + 2) {
-    return LWMQTT_LENGTH_MISMATCH;
+  // check remaining length
+  if (rem_len != 2) {
+    return LWMQTT_REMAINING_LENGTH_MISMATCH;
   }
 
   // read flags
   lwmqtt_connack_flags_t flags;
-  flags.byte = lwmqtt_read_byte(&ptr);
+  err = lwmqtt_read_byte(&buf_ptr, buf_end, &flags.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // read return code
+  uint8_t raw_return_code;
+  err = lwmqtt_read_byte(&buf_ptr, buf_end, &raw_return_code);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // set variables
   *session_present = flags.bits.session_present == 1;
-  *return_code = (lwmqtt_return_code_t)lwmqtt_read_byte(&ptr);
+  *return_code = (lwmqtt_return_code_t)raw_return_code;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_zero(void *buf, int buf_len, int *len, lwmqtt_packet_type_t packet_type) {
+lwmqtt_err_t lwmqtt_encode_zero(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_packet_type_t packet_type) {
   // prepare pointer
-  void *ptr = buf;
-
-  // check buffer capacity
-  if (buf_len < 2) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  }
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // write header
   lwmqtt_header_t header = {0};
   header.bits.type = packet_type;
-  lwmqtt_write_byte(&ptr, header.byte);
+  lwmqtt_err_t err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, 0);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, 0);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // set length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_decode_ack(void *buf, int buf_len, lwmqtt_packet_type_t *packet_type, bool *dup, long *packet_id) {
+lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t *packet_type, bool *dup,
+                               uint16_t *packet_id) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // read header
   lwmqtt_header_t header = {0};
-  header.byte = lwmqtt_read_byte(&ptr);
+  lwmqtt_err_t err = lwmqtt_read_byte(&buf_ptr, buf_end, &header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // set variables
   *dup = header.bits.dup == 1;
   *packet_type = (lwmqtt_packet_type_t)header.bits.type;
 
   // read remaining length
-  long rem_len = lwmqtt_read_varnum(&ptr, buf_len - 1);
-  if (rem_len == -1) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (rem_len == -2) {
-    return LWMQTT_REMAINING_LENGTH_OVERFLOW;
+  uint32_t rem_len;
+  err = lwmqtt_read_varnum(&buf_ptr, buf + buf_len, &rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
-  // check remaining length and buffer size
-  if (rem_len != 2 || buf_len < rem_len + 2) {
-    return LWMQTT_LENGTH_MISMATCH;
+  // check remaining length
+  if (rem_len != 2) {
+    return LWMQTT_REMAINING_LENGTH_MISMATCH;
   }
 
   // read packet id
-  *packet_id = lwmqtt_read_num(&ptr);
+  err = lwmqtt_read_num(&buf_ptr, buf_end, packet_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_ack(void *buf, int buf_len, int *len, lwmqtt_packet_type_t packet_type, bool dup,
-                               long packet_id) {
+lwmqtt_err_t lwmqtt_encode_ack(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_packet_type_t packet_type, bool dup,
+                               uint16_t packet_id) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
-  // check buffer capacity
-  if (buf_len < 4) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  }
-
-  // write header
+  // prepare header
   lwmqtt_header_t header = {0};
   header.bits.type = packet_type;
   header.bits.dup = dup ? 1 : 0;
   header.bits.qos = (packet_type == LWMQTT_PUBREL_PACKET) ? 1 : 0;
-  lwmqtt_write_byte(&ptr, header.byte);
+
+  // write header
+  lwmqtt_err_t err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, 2);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, 2);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write packet id
-  lwmqtt_write_num(&ptr, packet_id);
+  err = lwmqtt_write_num(&buf_ptr, buf_end, packet_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // set written length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_decode_publish(void *buf, int buf_len, bool *dup, lwmqtt_qos_t *qos, bool *retained,
-                                   long *packet_id, lwmqtt_string_t *topic, void **payload, int *payload_len) {
+lwmqtt_err_t lwmqtt_decode_publish(uint8_t *buf, size_t buf_len, bool *dup, uint16_t *packet_id, lwmqtt_string_t *topic,
+                                   lwmqtt_message_t *msg) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // read header
   lwmqtt_header_t header;
-  header.byte = lwmqtt_read_byte(&ptr);
-  if (header.bits.type != LWMQTT_PUBLISH_PACKET) {
-    return LWMQTT_DECODE_ERROR;
+  lwmqtt_err_t err = lwmqtt_read_byte(&buf_ptr, buf_end, &header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  } else if (header.bits.type != LWMQTT_PUBLISH_PACKET) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
 
-  // set dup
+  // set variables
   *dup = header.bits.dup == 1;
-
-  // set qos
-  *qos = (lwmqtt_qos_t)header.bits.qos;
-
-  // set retained
-  *retained = header.bits.retain == 1;
+  msg->qos = (lwmqtt_qos_t)header.bits.qos;
+  msg->retained = header.bits.retain == 1;
 
   // read remaining length
-  long rem_len = lwmqtt_read_varnum(&ptr, buf_len - 1);
-  if (rem_len == -1) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (rem_len == -2) {
-    return LWMQTT_REMAINING_LENGTH_OVERFLOW;
+  uint32_t rem_len;
+  err = lwmqtt_read_varnum(&buf_ptr, buf_end, &rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // check remaining length (topic length)
   if (rem_len < 2) {
-    return LWMQTT_LENGTH_MISMATCH;
+    return LWMQTT_REMAINING_LENGTH_MISMATCH;
   }
-
-  // check buffer size
-  if (buf_len < 1 + lwmqtt_varnum_length(rem_len) + rem_len) {
-    return LWMQTT_LENGTH_MISMATCH;
-  }
-
-  // calculate end pointer
-  void *end_ptr = ptr + rem_len;
 
   // read topic
-  long ret = lwmqtt_read_string(topic, &ptr, end_ptr);
-  if (ret == -1) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (ret == -2) {
-    return LWMQTT_DECODE_ERROR;
+  err = lwmqtt_read_string(&buf_ptr, buf_end, topic);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // read packet id if qos is at least 1
-  if (*qos > 0) {
-    // check buffer size
-    if (end_ptr - ptr < 2) {
-      return LWMQTT_BUFFER_TOO_SHORT;
+  if (msg->qos > 0) {
+    err = lwmqtt_read_num(&buf_ptr, buf_end, packet_id);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
     }
-
-    *packet_id = lwmqtt_read_num(&ptr);
   } else {
     *packet_id = 0;
   }
 
-  // set payload
-  *payload_len = (int)(end_ptr - ptr);
-  *payload = ptr;
+  // read payload
+  err = lwmqtt_read_data(&buf_ptr, buf_end, &msg->payload, buf_end - buf_ptr);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // set payload length
+  msg->payload_len = buf_end - buf_ptr;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_publish(void *buf, int buf_len, int *len, bool dup, lwmqtt_qos_t qos, bool retained,
-                                   long packet_id, lwmqtt_string_t topic, void *payload, int payload_len) {
+lwmqtt_err_t lwmqtt_encode_publish(uint8_t *buf, size_t buf_len, size_t *len, bool dup, uint16_t packet_id,
+                                   lwmqtt_string_t topic, lwmqtt_message_t msg) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // calculate remaining length
-  long rem_len = 2 + topic.len + payload_len;
-  if (qos > 0) {
+  uint32_t rem_len = 2 + topic.len + (uint32_t)msg.payload_len;
+  if (msg.qos > 0) {
     rem_len += 2;
   }
 
   // calculate remaining length length
-  int rem_len_len = lwmqtt_varnum_length(rem_len);
-  if (rem_len_len < 0) {
+  int rem_len_len;
+  lwmqtt_err_t err = lwmqtt_varnum_length(rem_len, &rem_len_len);
+  if (err == LWMQTT_VARNUM_OVERFLOW) {
     return LWMQTT_REMAINING_LENGTH_OVERFLOW;
   }
 
-  // check buffer capacity
-  if (1 + rem_len_len + rem_len > buf_len) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  }
-
-  // write header
+  // prepare header
   lwmqtt_header_t header = {0};
   header.bits.type = LWMQTT_PUBLISH_PACKET;
   header.bits.dup = dup ? 1 : 0;
-  header.bits.qos = (unsigned int)qos;
-  header.bits.retain = retained ? 1 : 0;
-  lwmqtt_write_byte(&ptr, header.byte);
+  header.bits.qos = (unsigned int)msg.qos;
+  header.bits.retain = msg.retained ? 1 : 0;
+
+  // write header
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, rem_len);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write topic
-  lwmqtt_write_string(&ptr, topic);
+  err = lwmqtt_write_string(&buf_ptr, buf_end, topic);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write packet id if qos is at least 1
-  if (qos > 0) {
-    lwmqtt_write_num(&ptr, packet_id);
+  if (msg.qos > 0) {
+    err = lwmqtt_write_num(&buf_ptr, buf_end, packet_id);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
   }
 
   // write payload
-  memcpy(ptr, payload, payload_len);
-  ptr += payload_len;
+  err = lwmqtt_write_data(&buf_ptr, buf_end, msg.payload, msg.payload_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // set length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_subscribe(void *buf, int buf_len, int *len, long packet_id, int count,
+lwmqtt_err_t lwmqtt_encode_subscribe(uint8_t *buf, size_t buf_len, size_t *len, uint16_t packet_id, int count,
                                      lwmqtt_string_t *topic_filters, lwmqtt_qos_t *qos_levels) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // calculate remaining length
-  int rem_len = 2;
+  uint32_t rem_len = 2;
   for (int i = 0; i < count; i++) {
     rem_len += 2 + topic_filters[i].len + 1;
   }
 
   // calculate remaining length length
-  int rem_len_len = lwmqtt_varnum_length(rem_len);
-  if (rem_len_len < 0) {
+  int rem_len_len;
+  lwmqtt_err_t err = lwmqtt_varnum_length(rem_len, &rem_len_len);
+  if (err == LWMQTT_VARNUM_OVERFLOW) {
     return LWMQTT_REMAINING_LENGTH_OVERFLOW;
   }
 
-  // check buffer capacity
-  if (1 + rem_len_len + rem_len > buf_len) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  }
-
-  // write header
+  // prepare header
   lwmqtt_header_t header = {0};
   header.bits.type = LWMQTT_SUBSCRIBE_PACKET;
   header.bits.qos = 1;
-  lwmqtt_write_byte(&ptr, header.byte);
+
+  // write header
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, rem_len);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write packet id
-  lwmqtt_write_num(&ptr, packet_id);
+  err = lwmqtt_write_num(&buf_ptr, buf_end, packet_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
-  // write all topics
+  // write all subscriptions
   for (int i = 0; i < count; i++) {
-    lwmqtt_write_string(&ptr, topic_filters[i]);
-    lwmqtt_write_byte(&ptr, (unsigned char)qos_levels[i]);
+    // write topic
+    err = lwmqtt_write_string(&buf_ptr, buf_end, topic_filters[i]);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // write qos level
+    err = lwmqtt_write_byte(&buf_ptr, buf_end, (uint8_t)qos_levels[i]);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
   }
 
   // set length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_decode_suback(void *buf, int buf_len, long *packet_id, int max_count, int *count,
+lwmqtt_err_t lwmqtt_decode_suback(uint8_t *buf, size_t buf_len, uint16_t *packet_id, int max_count, int *count,
                                   lwmqtt_qos_t *granted_qos_levels) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // read header
   lwmqtt_header_t header;
-  header.byte = lwmqtt_read_byte(&ptr);
-  if (header.bits.type != LWMQTT_SUBACK_PACKET) {
-    return LWMQTT_DECODE_ERROR;
+  lwmqtt_err_t err = lwmqtt_read_byte(&buf_ptr, buf_end, &header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  } else if (header.bits.type != LWMQTT_SUBACK_PACKET) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
 
   // read remaining length
-  long rem_len = lwmqtt_read_varnum(&ptr, buf_len - 1);
-  if (rem_len == -1) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  } else if (rem_len == -2) {
-    return LWMQTT_REMAINING_LENGTH_OVERFLOW;
+  uint32_t rem_len;
+  err = lwmqtt_read_varnum(&buf_ptr, buf_end, &rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
   }
 
   // check remaining length (packet id + min. one suback code)
   if (rem_len < 3) {
-    return LWMQTT_LENGTH_MISMATCH;
-  }
-
-  // check buffer size
-  if (buf_len < 1 + lwmqtt_varnum_length(rem_len) + rem_len) {
-    return LWMQTT_LENGTH_MISMATCH;
+    return LWMQTT_REMAINING_LENGTH_MISMATCH;
   }
 
   // read packet id
-  *packet_id = lwmqtt_read_num(&ptr);
+  err = lwmqtt_read_num(&buf_ptr, buf_end, packet_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // read all suback codes
-  for (*count = 0; *count < rem_len - 2; (*count)++) {
+  for (*count = 0; *count < (int)rem_len - 2; (*count)++) {
     // check max count
     if (*count > max_count) {
-      return LWMQTT_DECODE_ERROR;
+      return LWMQTT_SUBACK_ARRAY_OVERFLOW;
     }
 
-    // add qos level
-    granted_qos_levels[*count] = (lwmqtt_qos_t)lwmqtt_read_byte(&ptr);
+    // read qos level
+    uint8_t raw_qos_level;
+    err = lwmqtt_read_byte(&buf_ptr, buf_end, &raw_qos_level);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // set qos level
+    granted_qos_levels[*count] = (lwmqtt_qos_t)raw_qos_level;
   }
 
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_unsubscribe(void *buf, int buf_len, int *len, long packet_id, int count,
+lwmqtt_err_t lwmqtt_encode_unsubscribe(uint8_t *buf, size_t buf_len, size_t *len, uint16_t packet_id, int count,
                                        lwmqtt_string_t *topic_filters) {
   // prepare pointer
-  void *ptr = buf;
+  uint8_t *buf_ptr = buf;
+  uint8_t *buf_end = buf + buf_len;
 
   // calculate remaining length
-  int rem_len = 2;
+  uint32_t rem_len = 2;
   for (int i = 0; i < count; i++) {
     rem_len += 2 + topic_filters[i].len;
   }
 
   // calculate remaining length length
-  int rem_len_len = lwmqtt_varnum_length(rem_len);
-  if (rem_len_len < 0) {
+  int rem_len_len;
+  lwmqtt_err_t err = lwmqtt_varnum_length(rem_len, &rem_len_len);
+  if (err == LWMQTT_VARNUM_OVERFLOW) {
     return LWMQTT_REMAINING_LENGTH_OVERFLOW;
   }
 
-  // check buffer capacity
-  if (1 + rem_len_len + rem_len > buf_len) {
-    return LWMQTT_BUFFER_TOO_SHORT;
-  }
-
-  // write header
+  // prepare header
   lwmqtt_header_t header = {0};
   header.bits.type = LWMQTT_UNSUBSCRIBE_PACKET;
   header.bits.qos = 1;
-  lwmqtt_write_byte(&ptr, header.byte);
+
+  // write header
+  err = lwmqtt_write_byte(&buf_ptr, buf_end, header.byte);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write remaining length
-  lwmqtt_write_varnum(&ptr, rem_len);
+  err = lwmqtt_write_varnum(&buf_ptr, buf_end, rem_len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write packet id
-  lwmqtt_write_num(&ptr, packet_id);
+  err = lwmqtt_write_num(&buf_ptr, buf_end, packet_id);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
 
   // write topics
   for (int i = 0; i < count; i++) {
-    lwmqtt_write_string(&ptr, topic_filters[i]);
+    err = lwmqtt_write_string(&buf_ptr, buf_end, topic_filters[i]);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
   }
 
   // set length
-  *len = (int)(ptr - buf);
+  *len = buf_ptr - buf;
 
   return LWMQTT_SUCCESS;
 }

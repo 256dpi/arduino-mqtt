@@ -2,140 +2,177 @@
 
 #include "helpers.h"
 
-lwmqtt_string_t lwmqtt_str(const char *str) { return (lwmqtt_string_t){(int)strlen(str), (char *)str}; }
-
-int lwmqtt_strcmp(lwmqtt_string_t *a, const char *b) {
-  // get length of b
-  size_t len = strlen(b);
-
-  // otherwise check if length matches
-  if (len != a->len) {
-    return -1;
+lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, uint8_t *buf_end, uint8_t **data, size_t len) {
+  // check zero length
+  if (len == 0) {
+    *data = NULL;
+    return LWMQTT_SUCCESS;
   }
 
-  // compare memory
-  return strncmp(a->data, b, len);
-}
-
-long lwmqtt_read_string(lwmqtt_string_t *str, void **buf, void *buf_end) {
-  // get buffer size
-  unsigned long buf_len = buf_end - (*buf);
-
-  // check if at least 2 bytes
-  if (buf_len < 2) {
-    return -1;
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < len) {
+    return LWMQTT_BUFFER_TOO_SHORT;
   }
 
-  // read length
-  long len = lwmqtt_read_num(buf);
-
-  // check if there is enough data
-  if (buf_len < len + 2) {
-    return -2;
-  }
-
-  // set string
-  str->len = len;
-  str->data = (char *)*buf;
+  // read data
+  *data = *buf;
 
   // advance pointer
-  *buf += str->len;
+  *buf += len;
 
-  return str->len;
+  return LWMQTT_SUCCESS;
 }
 
-void lwmqtt_write_string(void **buf, lwmqtt_string_t string) {
-  // write zero length if length is zero
-  if (string.len == 0) {
-    lwmqtt_write_num(buf, 0);
-    return;
+lwmqtt_err_t lwmqtt_write_data(uint8_t **buf, uint8_t *buf_end, uint8_t *data, size_t len) {
+  // check zero length
+  if (len == 0) {
+    return LWMQTT_SUCCESS;
   }
 
-  // write string length
-  lwmqtt_write_num(buf, string.len);
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < len) {
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
 
-  // write string
-  memcpy(*buf, string.data, string.len);
+  // write data
+  memcpy(*buf, data, len);
 
   // advance pointer
-  *buf += string.len;
+  *buf += len;
+
+  return LWMQTT_SUCCESS;
 }
 
-long lwmqtt_read_num(void **buf) {
-  // get array
-  unsigned char *ary = *buf;
+lwmqtt_err_t lwmqtt_read_num(uint8_t **buf, uint8_t *buf_end, uint16_t *num) {
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < 2) {
+    *num = 0;
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
 
   // read two byte integer
-  long num = 256 * ary[0] + ary[1];
+  *num = (uint16_t)256 * (*buf)[0] + (*buf)[1];
 
   // adjust pointer
   *buf += 2;
 
-  return num;
+  return LWMQTT_SUCCESS;
 }
 
-void lwmqtt_write_num(void **buf, long num) {
-  // get array
-  unsigned char *ary = *buf;
+lwmqtt_err_t lwmqtt_write_num(uint8_t **buf, uint8_t *buf_end, uint16_t num) {
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < 2) {
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
 
   // write bytes
-  ary[0] = (unsigned char)(num / 256);
-  ary[1] = (unsigned char)(num % 256);
+  (*buf)[0] = (uint8_t)(num / 256);
+  (*buf)[1] = (uint8_t)(num % 256);
 
   // adjust pointer
   *buf += 2;
+
+  return LWMQTT_SUCCESS;
 }
 
-unsigned char lwmqtt_read_byte(void **buf) {
-  // get array
-  unsigned char *ary = *buf;
+lwmqtt_err_t lwmqtt_read_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_t *str) {
+  // read length
+  uint16_t len;
+  lwmqtt_err_t err = lwmqtt_read_num(buf, buf_end, &len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // read data
+  err = lwmqtt_read_data(buf, buf_end, (uint8_t **)&str->data, len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // set length
+  str->len = len;
+
+  return LWMQTT_SUCCESS;
+}
+
+lwmqtt_err_t lwmqtt_write_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_t str) {
+  // write string length
+  lwmqtt_err_t err = lwmqtt_write_num(buf, buf_end, str.len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  // write data
+  err = lwmqtt_write_data(buf, buf_end, (uint8_t *)str.data, str.len);
+  if (err != LWMQTT_SUCCESS) {
+    return err;
+  }
+
+  return LWMQTT_SUCCESS;
+}
+
+lwmqtt_err_t lwmqtt_read_byte(uint8_t **buf, uint8_t *buf_end, uint8_t *byte) {
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < 1) {
+    *byte = 0;
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
+
+  // read byte
+  *byte = (*buf)[0];
 
   // adjust pointer
   *buf += 1;
 
-  return ary[0];
+  return LWMQTT_SUCCESS;
 }
 
-void lwmqtt_write_byte(void **buf, unsigned char byte) {
-  // get array
-  unsigned char *ary = *buf;
+lwmqtt_err_t lwmqtt_write_byte(uint8_t **buf, uint8_t *buf_end, uint8_t byte) {
+  // check buffer size
+  if ((size_t)(buf_end - (*buf)) < 1) {
+    return LWMQTT_BUFFER_TOO_SHORT;
+  }
 
-  // write single char
-  *ary = byte;
+  // write byte
+  (*buf)[0] = byte;
 
   // adjust pointer
   *buf += 1;
+
+  return LWMQTT_SUCCESS;
 }
 
-int lwmqtt_varnum_length(long num) {
-  if (num < 128) {
-    return 1;
-  } else if (num < 16384) {
-    return 2;
-  } else if (num < 2097151) {
-    return 3;
-  } else if (num < 268435455) {
-    return 4;
+lwmqtt_err_t lwmqtt_varnum_length(uint32_t varnum, int *len) {
+  if (varnum < 128) {
+    *len = 1;
+    return LWMQTT_SUCCESS;
+  } else if (varnum < 16384) {
+    *len = 2;
+    return LWMQTT_SUCCESS;
+  } else if (varnum < 2097151) {
+    *len = 3;
+    return LWMQTT_SUCCESS;
+  } else if (varnum < 268435455) {
+    *len = 4;
+    return LWMQTT_SUCCESS;
   } else {
-    return -1;
+    *len = 0;
+    return LWMQTT_VARNUM_OVERFLOW;
   }
 }
 
-long lwmqtt_read_varnum(void **buf, int buf_len) {
-  // get array
-  unsigned char *ary = *buf;
-
-  // prepare last digit
-  unsigned char digit;
+lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, uint8_t *buf_end, uint32_t *varnum) {
+  // prepare last byte
+  uint8_t byte;
 
   // prepare multiplier
-  long multiplier = 1;
+  uint32_t multiplier = 1;
 
   // prepare length
-  int len = 0;
+  size_t len = 0;
 
   // initialize number
-  long num = 0;
+  *varnum = 0;
 
   // decode variadic number
   do {
@@ -143,55 +180,64 @@ long lwmqtt_read_varnum(void **buf, int buf_len) {
     len++;
 
     // return error if buffer is to small
-    if (buf_len < len) {
-      return -1;
+    if ((size_t)(buf_end - (*buf)) < len) {
+      return LWMQTT_BUFFER_TOO_SHORT;
     }
 
     // return error if the length has overflowed
     if (len > 4) {
-      return -2;
+      return LWMQTT_VARNUM_OVERFLOW;
     }
 
-    // read digit
-    digit = ary[len - 1];
+    // read byte
+    byte = (*buf)[len - 1];
 
-    // add digit to number
-    num += (digit & 127) * multiplier;
+    // add byte to number
+    *varnum += (byte & 127) * multiplier;
 
     // increase multiplier
     multiplier *= 128;
-  } while ((digit & 128) != 0);
+  } while ((byte & 128) != 0);
 
   // adjust pointer
   *buf += len;
 
-  return num;
+  return LWMQTT_SUCCESS;
 }
 
-void lwmqtt_write_varnum(void **buf, long num) {
-  // get array
-  unsigned char *ary = *buf;
-
+lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, uint8_t *buf_end, uint32_t varnum) {
   // init len counter
-  int len = 0;
+  size_t len = 0;
 
   // encode variadic number
   do {
-    // calculate current digit
-    unsigned char digit = (unsigned char)(num % 128);
-
-    // change remaining length
-    num /= 128;
-
-    // set the top bit of this digit if there are more to encode
-    if (num > 0) {
-      digit |= 0x80;
+    // check overflow
+    if (len == 4) {
+      return LWMQTT_VARNUM_OVERFLOW;
     }
 
-    // write digit
-    ary[len++] = digit;
-  } while (num > 0);
+    // return error if buffer is to small
+    if ((size_t)(buf_end - (*buf)) < len + 1) {
+      return LWMQTT_BUFFER_TOO_SHORT;
+    }
+
+    // calculate current byte
+    uint8_t byte = (uint8_t)(varnum % 128);
+
+    // change remaining length
+    varnum /= 128;
+
+    // set the top bit of this byte if there are more to encode
+    if (varnum > 0) {
+      byte |= 0x80;
+    }
+
+    // write byte
+    (*buf)[len++] = byte;
+  } while (varnum > 0);
 
   // adjust pointer
   *buf += len;
+
+  return LWMQTT_SUCCESS;
 }
