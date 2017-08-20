@@ -13,15 +13,15 @@ typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
 typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length);
 
 typedef struct {
-  MQTTClient *client = NULL;
+  MQTTClient *client = nullptr;
   bool use_advanced = false;
-  MQTTClientCallbackSimple simple = NULL;
-  MQTTClientCallbackAdvanced advanced = NULL;
+  MQTTClientCallbackSimple simple = nullptr;
+  MQTTClientCallbackAdvanced advanced = nullptr;
 } MQTTClientCallback;
 
 static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
   // get callback
-  MQTTClientCallback *cb = (MQTTClientCallback *)ref;
+  auto *cb = (MQTTClientCallback *)ref;
 
   // null terminate topic to create String object
   char terminated_topic[topic.len + 1];
@@ -34,7 +34,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   // call the user callback
   if (cb->use_advanced) {
     // call advanced callback
-    cb->advanced(cb->client, terminated_topic, (char*)message.payload, (int)message.payload_len);
+    cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
   } else {
     // create arduino strings
     String str_topic = String(terminated_topic);
@@ -47,35 +47,35 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
 
 class MQTTClient {
  private:
-  size_t bufSize;
-  uint8_t *readBuf;
-  uint8_t *writeBuf;
+  size_t bufSize = 0;
+  uint8_t *readBuf = nullptr;
+  uint8_t *writeBuf = nullptr;
 
   int keepAlive = 60;
   bool cleanSession = true;
   int timeout = 1000;
 
-  Client *netClient;
-  const char *hostname;
-  int port;
-  lwmqtt_will_t will;
-  bool hasWill;
+  Client *netClient = nullptr;
+  const char *hostname = nullptr;
+  int port = 0;
+  lwmqtt_will_t will = lwmqtt_default_will;
+  bool hasWill = false;
   MQTTClientCallback callback;
 
-  lwmqtt_arduino_network_t network;
-  lwmqtt_arduino_timer_t timer1;
-  lwmqtt_arduino_timer_t timer2;
-  lwmqtt_client_t client;
+  lwmqtt_arduino_network_t network = {nullptr};
+  lwmqtt_arduino_timer_t timer1 = {0};
+  lwmqtt_arduino_timer_t timer2 = {0};
+  lwmqtt_client_t client = {0};
 
   bool _connected = false;
-  lwmqtt_return_code_t _returnCode;
-  lwmqtt_err_t _lastError;
+  lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
+  lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
 
  public:
-  MQTTClient(int bufSize = 128) {
+  explicit MQTTClient(int bufSize = 128) {
     this->bufSize = (size_t)bufSize;
-    this->readBuf = (uint8_t*)malloc((size_t)bufSize + 1);
-    this->writeBuf = (uint8_t*)malloc((size_t)bufSize);
+    this->readBuf = (uint8_t *)malloc((size_t)bufSize + 1);
+    this->writeBuf = (uint8_t *)malloc((size_t)bufSize);
   }
 
   ~MQTTClient() {
@@ -103,8 +103,8 @@ class MQTTClient {
 
   void onMessage(MQTTClientCallbackSimple cb) {
     // unset callback if NULL is supplied
-    if (cb == NULL) {
-      lwmqtt_set_callback(&this->client, NULL, NULL);
+    if (cb == nullptr) {
+      lwmqtt_set_callback(&this->client, nullptr, nullptr);
       return;
     }
 
@@ -119,8 +119,8 @@ class MQTTClient {
 
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
     // unset callback if NULL is supplied
-    if (cb == NULL) {
-      lwmqtt_set_callback(&this->client, NULL, NULL);
+    if (cb == nullptr) {
+      lwmqtt_set_callback(&this->client, nullptr, nullptr);
       return;
     }
 
@@ -160,7 +160,7 @@ class MQTTClient {
     this->timeout = timeout;
   }
 
-  boolean connect(const char clientId[]) { return this->connect(clientId, NULL, NULL); }
+  boolean connect(const char clientId[]) { return this->connect(clientId, nullptr, nullptr); }
 
   boolean connect(const char clientId[], const char username[], const char password[]) {
     // return immediately if connected
@@ -181,13 +181,13 @@ class MQTTClient {
     options.keep_alive = (uint16_t)this->keepAlive;
     options.clean_session = this->cleanSession;
     options.client_id = lwmqtt_string(clientId);
-    if (username && password) {
+    if (username != nullptr && password != nullptr) {
       options.username = lwmqtt_string(username);
       options.password = lwmqtt_string(password);
     }
 
     // prepare will reference
-    lwmqtt_will_t *will = NULL;
+    lwmqtt_will_t *will = nullptr;
     if (this->hasWill) {
       will = &this->will;
     }
@@ -241,7 +241,7 @@ class MQTTClient {
 
     // prepare message
     lwmqtt_message_t message = lwmqtt_default_message;
-    message.payload = (uint8_t*)payload;
+    message.payload = (uint8_t *)payload;
     message.payload_len = (size_t)length;
     message.retained = retained;
     message.qos = lwmqtt_qos_t(qos);
@@ -260,7 +260,7 @@ class MQTTClient {
 
   boolean subscribe(const String &topic, int qos) { return this->subscribe(topic.c_str(), qos); }
 
-  boolean subscribe(const char topic[]) { this->subscribe(topic, 0); }
+  boolean subscribe(const char topic[]) { return this->subscribe(topic, 0); }
 
   boolean subscribe(const char topic[], int qos) {
     // return immediately if not connected
@@ -303,7 +303,7 @@ class MQTTClient {
     }
 
     // get available bytes on the network
-    size_t available = (size_t)this->netClient->available();
+    auto available = (size_t)this->netClient->available();
 
     // yield if data is available
     if (available > 0) {
@@ -327,7 +327,7 @@ class MQTTClient {
   boolean connected() {
     // a client is connected if the network is connected and
     // a connection has been properly initiated
-    return this->netClient->connected() && this->_connected;
+    return this->netClient->connected() == 1 && this->_connected;
   }
 
   lwmqtt_err_t lastError() { return this->_lastError; }
