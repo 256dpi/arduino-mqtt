@@ -147,6 +147,7 @@ Connect to broker using the supplied client id and an optional username and pass
 
 ```c++
 boolean connect(const char clientId[]);
+boolean connect(const char clientId[], const char username[]);
 boolean connect(const char clientId[], const char username[], const char password[]);
 ```
 

@@ -162,6 +162,8 @@ class MQTTClient {
 
   boolean connect(const char clientId[]) { return this->connect(clientId, nullptr, nullptr); }
 
+  boolean connect(const char clientId[], const char username[]) { return this->connect(clientId, username, nullptr); }
+
   boolean connect(const char clientId[], const char username[], const char password[]) {
     // return immediately if connected
     if (this->connected()) {
