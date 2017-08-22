@@ -4,7 +4,7 @@
 
 void lwmqtt_arduino_timer_set(lwmqtt_client_t *client, void *ref, int timeout) {
   // cast timer reference
-  lwmqtt_arduino_timer_t *t = (lwmqtt_arduino_timer_t *)ref;
+  auto *t = (lwmqtt_arduino_timer_t *)ref;
 
   // set future end time
   t->end = millis() + timeout;
@@ -12,7 +12,7 @@ void lwmqtt_arduino_timer_set(lwmqtt_client_t *client, void *ref, int timeout) {
 
 int lwmqtt_arduino_timer_get(lwmqtt_client_t *client, void *ref) {
   // cast timer reference
-  lwmqtt_arduino_timer_t *t = (lwmqtt_arduino_timer_t *)ref;
+  auto *t = (lwmqtt_arduino_timer_t *)ref;
 
   // get difference to end time
   return (int)(t->end - millis());
@@ -21,7 +21,7 @@ int lwmqtt_arduino_timer_get(lwmqtt_client_t *client, void *ref) {
 lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uint8_t *buffer, size_t len, size_t *read,
                                          int timeout) {
   // cast network reference
-  lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
+  auto *n = (lwmqtt_arduino_network_t *)ref;
 
   // set timeout
   n->client->setTimeout((unsigned long)timeout);
@@ -38,7 +38,7 @@ lwmqtt_err_t lwmqtt_arduino_network_read(lwmqtt_client_t *client, void *ref, uin
 lwmqtt_err_t lwmqtt_arduino_network_write(lwmqtt_client_t *client, void *ref, uint8_t *buffer, size_t len, size_t *sent,
                                           int timeout) {
   // cast network reference
-  lwmqtt_arduino_network_t *n = (lwmqtt_arduino_network_t *)ref;
+  auto *n = (lwmqtt_arduino_network_t *)ref;
 
   // write bytes
   *sent = n->client->write(buffer, len);
