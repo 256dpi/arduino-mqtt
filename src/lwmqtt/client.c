@@ -326,8 +326,13 @@ static lwmqtt_err_t lwmqtt_cycle_until(lwmqtt_client_t *client, lwmqtt_packet_ty
       return err;
     }
 
-    // check if needle has been found
-    if (needle != LWMQTT_NO_PACKET && *packet_type == needle) {
+    // return when one packet has been successfully read when no availability has been given
+    if(needle == LWMQTT_NO_PACKET && available == 0) {
+      return LWMQTT_SUCCESS;
+    }
+
+    // otherwise check if needle has been found
+    if (*packet_type == needle) {
       return LWMQTT_SUCCESS;
     }
   } while (client->timer_get(client, client->command_timer) > 0 && (available == 0 || read < available));

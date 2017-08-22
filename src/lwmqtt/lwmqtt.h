@@ -330,6 +330,8 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, int timeout);
  * until the timeout is reached. Furthermore, applications may specify the amount of bytes available to read in order
  * to constrain the yield to only receive packets that are already inflight.
  *
+ * If no availability data is given the yield will return after one packet has been successfully read.
+ *
  * Note: The message callback might be called with incoming messages as part of this call.
  *
  * @param client - The client object.
