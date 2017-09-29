@@ -21,7 +21,7 @@ typedef struct {
 
 static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
   // get callback
-  auto *cb = (MQTTClientCallback *)ref;
+  auto cb = (MQTTClientCallback *)ref;
 
   // null terminate topic to create String object
   char terminated_topic[topic.len + 1];
