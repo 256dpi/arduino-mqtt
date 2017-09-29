@@ -2,7 +2,7 @@
 
 #include "helpers.h"
 
-lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, uint8_t *buf_end, uint8_t **data, size_t len) {
+lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, const uint8_t *buf_end, uint8_t **data, size_t len) {
   // check zero length
   if (len == 0) {
     *data = NULL;
@@ -23,7 +23,7 @@ lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, uint8_t *buf_end, uint8_t **data, s
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_write_data(uint8_t **buf, uint8_t *buf_end, uint8_t *data, size_t len) {
+lwmqtt_err_t lwmqtt_write_data(uint8_t **buf, const uint8_t *buf_end, uint8_t *data, size_t len) {
   // check zero length
   if (len == 0) {
     return LWMQTT_SUCCESS;
@@ -43,7 +43,7 @@ lwmqtt_err_t lwmqtt_write_data(uint8_t **buf, uint8_t *buf_end, uint8_t *data, s
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_read_num(uint8_t **buf, uint8_t *buf_end, uint16_t *num) {
+lwmqtt_err_t lwmqtt_read_num(uint8_t **buf, const uint8_t *buf_end, uint16_t *num) {
   // check buffer size
   if ((size_t)(buf_end - (*buf)) < 2) {
     *num = 0;
@@ -59,7 +59,7 @@ lwmqtt_err_t lwmqtt_read_num(uint8_t **buf, uint8_t *buf_end, uint16_t *num) {
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_write_num(uint8_t **buf, uint8_t *buf_end, uint16_t num) {
+lwmqtt_err_t lwmqtt_write_num(uint8_t **buf, const uint8_t *buf_end, uint16_t num) {
   // check buffer size
   if ((size_t)(buf_end - (*buf)) < 2) {
     return LWMQTT_BUFFER_TOO_SHORT;
@@ -75,7 +75,7 @@ lwmqtt_err_t lwmqtt_write_num(uint8_t **buf, uint8_t *buf_end, uint16_t num) {
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_read_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_t *str) {
+lwmqtt_err_t lwmqtt_read_string(uint8_t **buf, const uint8_t *buf_end, lwmqtt_string_t *str) {
   // read length
   uint16_t len;
   lwmqtt_err_t err = lwmqtt_read_num(buf, buf_end, &len);
@@ -95,7 +95,7 @@ lwmqtt_err_t lwmqtt_read_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_t
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_write_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_t str) {
+lwmqtt_err_t lwmqtt_write_string(uint8_t **buf, const uint8_t *buf_end, lwmqtt_string_t str) {
   // write string length
   lwmqtt_err_t err = lwmqtt_write_num(buf, buf_end, str.len);
   if (err != LWMQTT_SUCCESS) {
@@ -111,7 +111,7 @@ lwmqtt_err_t lwmqtt_write_string(uint8_t **buf, uint8_t *buf_end, lwmqtt_string_
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_read_byte(uint8_t **buf, uint8_t *buf_end, uint8_t *byte) {
+lwmqtt_err_t lwmqtt_read_byte(uint8_t **buf, const uint8_t *buf_end, uint8_t *byte) {
   // check buffer size
   if ((size_t)(buf_end - (*buf)) < 1) {
     *byte = 0;
@@ -127,7 +127,7 @@ lwmqtt_err_t lwmqtt_read_byte(uint8_t **buf, uint8_t *buf_end, uint8_t *byte) {
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_write_byte(uint8_t **buf, uint8_t *buf_end, uint8_t byte) {
+lwmqtt_err_t lwmqtt_write_byte(uint8_t **buf, const uint8_t *buf_end, uint8_t byte) {
   // check buffer size
   if ((size_t)(buf_end - (*buf)) < 1) {
     return LWMQTT_BUFFER_TOO_SHORT;
@@ -161,7 +161,7 @@ lwmqtt_err_t lwmqtt_varnum_length(uint32_t varnum, int *len) {
   }
 }
 
-lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, uint8_t *buf_end, uint32_t *varnum) {
+lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t *varnum) {
   // prepare last byte
   uint8_t byte;
 
@@ -205,7 +205,7 @@ lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, uint8_t *buf_end, uint32_t *varnu
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, uint8_t *buf_end, uint32_t varnum) {
+lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t varnum) {
   // init len counter
   size_t len = 0;
 

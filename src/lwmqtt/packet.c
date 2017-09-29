@@ -442,7 +442,6 @@ lwmqtt_err_t lwmqtt_decode_publish(uint8_t *buf, size_t buf_len, bool *dup, uint
     return err;
   }
 
-
   return LWMQTT_SUCCESS;
 }
 
