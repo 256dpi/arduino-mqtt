@@ -51,9 +51,9 @@ class MQTTClient {
   uint8_t *readBuf = nullptr;
   uint8_t *writeBuf = nullptr;
 
-  int keepAlive = 60;
+  uint16_t keepAlive = 60;
   bool cleanSession = true;
-  int timeout = 1000;
+  uint32_t timeout = 1000;
 
   Client *netClient = nullptr;
   const char *hostname = nullptr;
@@ -155,9 +155,9 @@ class MQTTClient {
   void clearWill() { this->hasWill = false; }
 
   void setOptions(int keepAlive, bool cleanSession, int timeout) {
-    this->keepAlive = keepAlive;
+    this->keepAlive = (uint16_t)keepAlive;
     this->cleanSession = cleanSession;
-    this->timeout = timeout;
+    this->timeout = (uint32_t)timeout;
   }
 
   boolean connect(const char clientId[]) { return this->connect(clientId, nullptr, nullptr); }
@@ -180,7 +180,7 @@ class MQTTClient {
 
     // prepare options
     lwmqtt_options_t options = lwmqtt_default_options;
-    options.keep_alive = (uint16_t)this->keepAlive;
+    options.keep_alive = this->keepAlive;
     options.clean_session = this->cleanSession;
     options.client_id = lwmqtt_string(clientId);
     if (username != nullptr && password != nullptr) {
