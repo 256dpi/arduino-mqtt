@@ -22,7 +22,7 @@ typedef enum {
   LWMQTT_CONNECTION_DENIED = -10,
   LWMQTT_FAILED_SUBSCRIPTION = -11,
   LWMQTT_SUBACK_ARRAY_OVERFLOW = -12,
-  LWMQTT_UNANSWERED_PING = -13,
+  LWMQTT_PONG_TIMEOUT = -13,
 } lwmqtt_err_t;
 
 /**
@@ -127,7 +127,7 @@ typedef void (*lwmqtt_callback_t)(lwmqtt_client_t *client, void *ref, lwmqtt_str
 struct lwmqtt_client_t {
   uint16_t last_packet_id;
   uint32_t keep_alive_interval;
-  bool ping_outstanding;
+  bool pong_pending;
 
   size_t write_buf_size, read_buf_size;
   uint8_t *write_buf, *read_buf;

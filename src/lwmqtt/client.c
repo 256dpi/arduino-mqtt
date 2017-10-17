@@ -4,7 +4,7 @@ void lwmqtt_init(lwmqtt_client_t *client, uint8_t *write_buf, size_t write_buf_s
                  size_t read_buf_size) {
   client->last_packet_id = 1;
   client->keep_alive_interval = 0;
-  client->ping_outstanding = false;
+  client->pong_pending = false;
 
   client->write_buf = write_buf;
   client->write_buf_size = write_buf_size;
@@ -185,7 +185,7 @@ static lwmqtt_err_t lwmqtt_send_packet_in_buffer(lwmqtt_client_t *client, size_t
   }
 
   // reset keep alive timer
-  client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval * 1000);
+  client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval);
 
   return LWMQTT_SUCCESS;
 }
@@ -301,7 +301,7 @@ static lwmqtt_err_t lwmqtt_cycle(lwmqtt_client_t *client, size_t *read, lwmqtt_p
     // handle pingresp packets
     case LWMQTT_PINGRESP_PACKET: {
       // set flag
-      client->ping_outstanding = false;
+      client->pong_pending = false;
 
       break;
     }
@@ -359,13 +359,14 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
   // set timer to command timeout
   client->timer_set(client, client->command_timer, timeout);
 
-  // save keep alive interval
-  client->keep_alive_interval = options.keep_alive;
+  // save keep alive interval (take 75% to be a little earlier than actually needed)
+  client->keep_alive_interval = (uint32_t)(options.keep_alive * 750);
 
   // set keep alive timer
-  if (client->keep_alive_interval > 0) {
-    client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval * 1000);
-  }
+  client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval);
+
+  // reset pong pending flag
+  client->pong_pending = false;
 
   // encode connect packet
   size_t len;
@@ -591,9 +592,9 @@ lwmqtt_err_t lwmqtt_keep_alive(lwmqtt_client_t *client, uint32_t timeout) {
 
   // a ping is due
 
-  // fail immediately if a ping is still outstanding
-  if (client->ping_outstanding) {
-    return LWMQTT_UNANSWERED_PING;
+  // fail immediately if a pong is already pending
+  if (client->pong_pending) {
+    return LWMQTT_PONG_TIMEOUT;
   }
 
   // encode pingreq packet
@@ -610,7 +611,7 @@ lwmqtt_err_t lwmqtt_keep_alive(lwmqtt_client_t *client, uint32_t timeout) {
   }
 
   // set flag
-  client->ping_outstanding = true;
+  client->pong_pending = true;
 
   return LWMQTT_SUCCESS;
 }
