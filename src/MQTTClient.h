@@ -327,9 +327,9 @@ class MQTTClient {
   }
 
   boolean connected() {
-    // a client is connected if the network is connected and
-    // a connection has been properly initiated
-    return this->netClient->connected() == 1 && this->_connected;
+    // a client is connected if the network is connected, a client is available and
+    // the connection has been properly initiated
+    return this->netClient != nullptr && this->netClient->connected() == 1 && this->_connected;
   }
 
   lwmqtt_err_t lastError() { return this->_lastError; }
