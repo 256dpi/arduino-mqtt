@@ -197,8 +197,7 @@ class MQTTClient {
     // connect to broker
     this->_lastError = lwmqtt_connect(&this->client, options, will, &this->_returnCode, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
-      return false;
+      return this->close();
     }
 
     // set flag
@@ -251,8 +250,7 @@ class MQTTClient {
     // publish message
     this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
-      return false;
+      return this->close();
     }
 
     return true;
@@ -273,8 +271,7 @@ class MQTTClient {
     // subscribe to topic
     this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), (lwmqtt_qos_t)qos, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
-      return false;
+      return this->close();
     }
 
     return true;
@@ -291,8 +288,7 @@ class MQTTClient {
     // unsubscribe from topic
     this->_lastError = lwmqtt_unsubscribe_one(&this->client, lwmqtt_string(topic), this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
-      return false;
+      return this->close();
     }
 
     return true;
@@ -311,16 +307,14 @@ class MQTTClient {
     if (available > 0) {
       this->_lastError = lwmqtt_yield(&this->client, available, this->timeout);
       if (this->_lastError != LWMQTT_SUCCESS) {
-        this->_connected = false;
-        return false;
+        return this->close();
       }
     }
 
     // keep the connection alive
     this->_lastError = lwmqtt_keep_alive(&this->client, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      this->_connected = false;
-      return false;
+      return this->close();
     }
 
     return true;
@@ -338,20 +332,28 @@ class MQTTClient {
 
   boolean disconnect() {
     // return immediately if not connected anymore
-    if (!this->_connected) {
-      return true;
+    if (!this->connected()) {
+      return false;
     }
-
-    // set flag
-    this->_connected = false;
 
     // cleanly disconnect
     this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
 
+    // close
+    this->close();
+
+    return this->_lastError == LWMQTT_SUCCESS;
+  }
+
+ private:
+  boolean close() {
+    // set flag
+    this->_connected = false;
+
     // close network
     this->netClient->stop();
 
-    return this->_lastError == LWMQTT_SUCCESS;
+    return false;
   }
 };
 
