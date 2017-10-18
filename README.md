@@ -139,7 +139,7 @@ Set more advanced options:
 void setOptions(int keepAlive, bool cleanSession, int timeout);
 ```
 
-- The `keepAlive` option controls the keep alive interval (default: 60).
+- The `keepAlive` option controls the keep alive interval (default: 10).
 - The `cleanSession` option controls the session retention on the broker side (default: true).
 - The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000). 
 

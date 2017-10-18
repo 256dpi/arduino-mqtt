@@ -62,7 +62,7 @@ class MQTTClient {
   uint8_t *readBuf = nullptr;
   uint8_t *writeBuf = nullptr;
 
-  uint16_t keepAlive = 60;
+  uint16_t keepAlive = 10;
   bool cleanSession = true;
   uint32_t timeout = 1000;
 
