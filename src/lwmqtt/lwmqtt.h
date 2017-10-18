@@ -87,6 +87,12 @@ typedef struct lwmqtt_client_t lwmqtt_client_t;
  *
  * The callbacks is expected to read up to the amount of bytes in to the passed buffer. It should block the specified
  * timeout and wait for more incoming data.
+ *
+ * @param ref - A custom reference.
+ * @param buf - The buffer.
+ * @param len - The length of the buffer.
+ * @param read - Variable that must be set with the amount of read bytes.
+ * @param timeout - The timeout in milliseconds for the operation.
  */
 typedef lwmqtt_err_t (*lwmqtt_network_read_t)(void *ref, uint8_t *buf, size_t len, size_t *read, uint32_t timeout);
 
@@ -95,18 +101,30 @@ typedef lwmqtt_err_t (*lwmqtt_network_read_t)(void *ref, uint8_t *buf, size_t le
  *
  * The callback is expected to write up to the amount of bytes from the passed buffer. It should wait up to the
  * specified timeout to write the specified data to the network.
+ *
+ * @param ref - A custom reference.
+ * @param buf - The buffer.
+ * @param len - The length of the buffer.
+ * @param sent - Variable that must be set with the amount of written bytes.
+ * @param timeout - The timeout in milliseconds for the operation.
  */
 typedef lwmqtt_err_t (*lwmqtt_network_write_t)(void *ref, uint8_t *buf, size_t len, size_t *sent, uint32_t timeout);
 
 /**
  * The callback used to set a timer.
+ *
+ * @param ref - A custom reference.
+ * @param timeout - The amount of milliseconds until the deadline.
  */
 typedef void (*lwmqtt_timer_set_t)(void *ref, uint32_t timeout);
 
 /**
  * The callback used to get a timers value.
+ *
+ * @param - A custom reference.
+ * @return The amount of milliseconds until the deadline. May return negative numbers if the deadline has been reached.
  */
-typedef uint32_t (*lwmqtt_timer_get_t)(void *ref);
+typedef int32_t (*lwmqtt_timer_get_t)(void *ref);
 
 /**
  * The callback used to forward incoming messages.
@@ -241,6 +259,7 @@ typedef enum {
  * @param client - The client object.
  * @param options - The options object.
  * @param will - The will object.
+ * @param return_code - The variable that will receive the return code.
  * @param timeout - The command timeout.
  * @return An error value.
  */
@@ -267,7 +286,7 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_string_t topic, lwmq
  *
  * @param client - The client object.
  * @param count - The number of topic filters and QOS levels.
- * @param topic_filter - The topic filters.
+ * @param topic_filter - The list of topic filters.
  * @param qos - The list of QOS levels.
  * @param timeout - The command timeout.
  * @return An error value.
@@ -330,7 +349,8 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, uint32_t timeout);
  * until the timeout is reached. Furthermore, applications may specify the amount of bytes available to read in order
  * to constrain the yield to only receive packets that are already inflight.
  *
- * If no availability data is given the yield will return after one packet has been successfully read.
+ * If no availability data is given the yield will return after one packet has been successfully read or the deadline
+ * has been reached but no single bytes has been received.
  *
  * Note: The message callback might be called with incoming messages as part of this call.
  *
