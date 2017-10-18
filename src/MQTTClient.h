@@ -18,7 +18,7 @@ typedef struct {
   MQTTClientCallbackAdvanced advanced = nullptr;
 } MQTTClientCallback;
 
-static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
+static void MQTTClientHandler(lwmqtt_client_t *client, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
   // get callback
   auto cb = (MQTTClientCallback *)ref;
 
@@ -112,7 +112,7 @@ class MQTTClient {
     lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
 
     // set callback
-    lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClient_callback);
+    lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
   }
 
   void onMessage(MQTTClientCallbackSimple cb) {
