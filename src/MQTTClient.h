@@ -161,9 +161,9 @@ class MQTTClient {
   boolean connect(const char clientId[], const char username[]) { return this->connect(clientId, username, nullptr); }
 
   boolean connect(const char clientId[], const char username[], const char password[]) {
-    // return immediately if connected
+    // close left open connection if still connected
     if (this->connected()) {
-      return false;
+      this->close();
     }
 
     // save client
