@@ -14,7 +14,6 @@ typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], cha
 
 typedef struct {
   MQTTClient *client = nullptr;
-  bool use_advanced = false;
   MQTTClientCallbackSimple simple = nullptr;
   MQTTClientCallbackAdvanced advanced = nullptr;
 } MQTTClientCallback;
@@ -23,26 +22,38 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   // get callback
   auto cb = (MQTTClientCallback *)ref;
 
-  // null terminate topic to create String object
+  // null terminate topic
   char terminated_topic[topic.len + 1];
   memcpy(terminated_topic, topic.data, topic.len);
   terminated_topic[topic.len] = '\0';
 
-  // null terminate payload
-  message.payload[message.payload_len] = '\0';
-
-  // call the user callback
-  if (cb->use_advanced) {
-    // call advanced callback
-    cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
-  } else {
-    // create arduino strings
-    String str_topic = String(terminated_topic);
-    String str_payload = String((const char *)message.payload);
-
-    // call simple callback
-    cb->simple(str_topic, str_payload);
+  // null terminate payload if available
+  if(message.payload != nullptr) {
+    message.payload[message.payload_len] = '\0';
   }
+
+  // call the advanced callback and return if available
+  if (cb->advanced != nullptr) {
+    cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
+    return;
+  }
+
+  // return if simple callback is not set
+  if (cb->simple == nullptr) {
+    return;
+  }
+
+  // create topic string
+  String str_topic = String(terminated_topic);
+
+  // create payload string
+  String str_payload;
+  if (message.payload != nullptr) {
+    str_payload = String((const char *)message.payload);
+  }
+
+  // call simple callback
+  cb->simple(str_topic, str_payload);
 }
 
 class MQTTClient {
@@ -99,38 +110,23 @@ class MQTTClient {
 
     // set network
     lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
+
+    // set callback
+    lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClient_callback);
   }
 
   void onMessage(MQTTClientCallbackSimple cb) {
-    // unset callback if NULL is supplied
-    if (cb == nullptr) {
-      lwmqtt_set_callback(&this->client, nullptr, nullptr);
-      return;
-    }
-
-    // save callback
-    this->callback.client = this;
-    this->callback.use_advanced = false;
-    this->callback.simple = cb;
-
     // set callback
-    lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClient_callback);
+    this->callback.client = this;
+    this->callback.simple = cb;
+    this->callback.advanced = nullptr;
   }
 
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
-    // unset callback if NULL is supplied
-    if (cb == nullptr) {
-      lwmqtt_set_callback(&this->client, nullptr, nullptr);
-      return;
-    }
-
-    // save callback
-    this->callback.client = this;
-    this->callback.use_advanced = true;
-    this->callback.advanced = cb;
-
     // set callback
-    lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClient_callback);
+    this->callback.client = this;
+    this->callback.simple = nullptr;
+    this->callback.advanced = cb;
   }
 
   void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
