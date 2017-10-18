@@ -10,7 +10,9 @@ void lwmqtt_init(lwmqtt_client_t *client, uint8_t *write_buf, size_t write_buf_s
   client->write_buf_size = write_buf_size;
   client->read_buf = read_buf;
   client->read_buf_size = read_buf_size;
+
   client->callback = NULL;
+  client->callback_ref = NULL;
 
   client->network = NULL;
   client->network_read = NULL;
@@ -35,8 +37,8 @@ void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *ne
   client->timer_set = set;
   client->timer_get = get;
 
-  client->timer_set(client, client->keep_alive_timer, 0);
-  client->timer_set(client, client->command_timer, 0);
+  client->timer_set(client->keep_alive_timer, 0);
+  client->timer_set(client->command_timer, 0);
 }
 
 void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t cb) {
@@ -69,7 +71,7 @@ static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t off
   // read while data is missing
   while (read < len) {
     // get remaining time
-    uint32_t remaining_time = client->timer_get(client, client->command_timer);
+    uint32_t remaining_time = client->timer_get(client->command_timer);
 
     // check timeout
     if (remaining_time <= 0) {
@@ -78,7 +80,7 @@ static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t off
 
     // read
     size_t partial_read = 0;
-    lwmqtt_err_t err = client->network_read(client, client->network, client->read_buf + offset + read, len - read,
+    lwmqtt_err_t err = client->network_read(client->network, client->read_buf + offset + read, len - read,
                                             &partial_read, remaining_time);
     if (err != LWMQTT_SUCCESS) {
       return err;
@@ -98,7 +100,7 @@ static lwmqtt_err_t lwmqtt_write_to_network(lwmqtt_client_t *client, size_t offs
   // write while data is left
   while (written < len) {
     // get remaining time
-    uint32_t remaining_time = client->timer_get(client, client->command_timer);
+    uint32_t remaining_time = client->timer_get(client->command_timer);
 
     // check timeout
     if (remaining_time <= 0) {
@@ -107,8 +109,8 @@ static lwmqtt_err_t lwmqtt_write_to_network(lwmqtt_client_t *client, size_t offs
 
     // read
     size_t partial_write = 0;
-    lwmqtt_err_t err = client->network_write(client, client->network, client->write_buf + offset + written,
-                                             len - written, &partial_write, remaining_time);
+    lwmqtt_err_t err = client->network_write(client->network, client->write_buf + offset + written, len - written,
+                                             &partial_write, remaining_time);
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
@@ -185,7 +187,7 @@ static lwmqtt_err_t lwmqtt_send_packet_in_buffer(lwmqtt_client_t *client, size_t
   }
 
   // reset keep alive timer
-  client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval);
+  client->timer_set(client->keep_alive_timer, client->keep_alive_interval);
 
   return LWMQTT_SUCCESS;
 }
@@ -335,14 +337,14 @@ static lwmqtt_err_t lwmqtt_cycle_until(lwmqtt_client_t *client, lwmqtt_packet_ty
     if (*packet_type == needle) {
       return LWMQTT_SUCCESS;
     }
-  } while (client->timer_get(client, client->command_timer) > 0 && (available == 0 || read < available));
+  } while (client->timer_get(client->command_timer) > 0 && (available == 0 || read < available));
 
   return LWMQTT_SUCCESS;
 }
 
 lwmqtt_err_t lwmqtt_yield(lwmqtt_client_t *client, size_t available, uint32_t timeout) {
   // set timeout
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // cycle until timeout has been reached
   lwmqtt_packet_type_t packet_type = LWMQTT_NO_PACKET;
@@ -357,13 +359,13 @@ lwmqtt_err_t lwmqtt_yield(lwmqtt_client_t *client, size_t available, uint32_t ti
 lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, lwmqtt_will_t *will,
                             lwmqtt_return_code_t *return_code, uint32_t timeout) {
   // set timer to command timeout
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // save keep alive interval (take 75% to be a little earlier than actually needed)
   client->keep_alive_interval = (uint32_t)(options.keep_alive * 750);
 
   // set keep alive timer
-  client->timer_set(client, client->keep_alive_timer, client->keep_alive_interval);
+  client->timer_set(client->keep_alive_timer, client->keep_alive_interval);
 
   // reset pong pending flag
   client->pong_pending = false;
@@ -398,7 +400,7 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
   }
 
   // return error if connection was not accepted
-  if (*return_code != LWMQTT_CONNACK_CONNECTION_ACCEPTED) {
+  if (*return_code != LWMQTT_CONNECTION_ACCEPTED) {
     return LWMQTT_CONNECTION_DENIED;
   }
 
@@ -408,7 +410,7 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
 lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, int count, lwmqtt_string_t *topic_filter, lwmqtt_qos_t *qos,
                               uint32_t timeout) {
   // set timeout
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // encode subscribe packet
   size_t len;
@@ -459,7 +461,7 @@ lwmqtt_err_t lwmqtt_subscribe_one(lwmqtt_client_t *client, lwmqtt_string_t topic
 
 lwmqtt_err_t lwmqtt_unsubscribe(lwmqtt_client_t *client, int count, lwmqtt_string_t *topic_filter, uint32_t timeout) {
   // set timer
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // encode unsubscribe packet
   size_t len;
@@ -502,7 +504,7 @@ lwmqtt_err_t lwmqtt_unsubscribe_one(lwmqtt_client_t *client, lwmqtt_string_t top
 lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_string_t topic, lwmqtt_message_t message,
                             uint32_t timeout) {
   // set timer
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // add packet id if at least qos 1
   uint16_t packet_id = 0;
@@ -558,7 +560,7 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_string_t topic, lwmq
 
 lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, uint32_t timeout) {
   // set timer
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // encode disconnect packet
   size_t len;
@@ -578,7 +580,7 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, uint32_t timeout) {
 
 lwmqtt_err_t lwmqtt_keep_alive(lwmqtt_client_t *client, uint32_t timeout) {
   // set timer
-  client->timer_set(client, client->command_timer, timeout);
+  client->timer_set(client->command_timer, timeout);
 
   // return immediately if keep alive interval is zero
   if (client->keep_alive_interval == 0) {
@@ -586,7 +588,7 @@ lwmqtt_err_t lwmqtt_keep_alive(lwmqtt_client_t *client, uint32_t timeout) {
   }
 
   // return immediately if no ping is due
-  if (client->timer_get(client, client->keep_alive_timer) > 0) {
+  if (client->timer_get(client->keep_alive_timer) > 0) {
     return LWMQTT_SUCCESS;
   }
 
