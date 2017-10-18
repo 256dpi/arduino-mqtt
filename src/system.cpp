@@ -10,12 +10,12 @@ void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   t->end = (uint32_t)(millis() + timeout);
 }
 
-uint32_t lwmqtt_arduino_timer_get(void *ref) {
+int32_t lwmqtt_arduino_timer_get(void *ref) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
   // get difference to end time
-  return (uint32_t)(t->end - millis());
+  return (int32_t)t->end - (int32_t)millis();
 }
 
 lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read, uint32_t timeout) {

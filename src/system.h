@@ -12,7 +12,7 @@ typedef struct { uint32_t end; } lwmqtt_arduino_timer_t;
 
 void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout);
 
-uint32_t lwmqtt_arduino_timer_get(void *ref);
+int32_t lwmqtt_arduino_timer_get(void *ref);
 
 typedef struct { Client *client; } lwmqtt_arduino_network_t;
 
