@@ -28,7 +28,7 @@ static void MQTTClient_callback(lwmqtt_client_t *client, void *ref, lwmqtt_strin
   terminated_topic[topic.len] = '\0';
 
   // null terminate payload if available
-  if(message.payload != nullptr) {
+  if (message.payload != nullptr) {
     message.payload[message.payload_len] = '\0';
   }
 
