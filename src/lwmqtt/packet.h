@@ -93,7 +93,7 @@ lwmqtt_err_t lwmqtt_encode_zero(uint8_t *buf, size_t buf_len, size_t *len, lwmqt
   * @param packet_id - The packet id.
   * @return An error value.
   */
-lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t *packet_type, bool *dup,
+lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t packet_type, bool *dup,
                                uint16_t *packet_id);
 
 /**

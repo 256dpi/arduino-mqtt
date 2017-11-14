@@ -4,6 +4,26 @@
 #include "lwmqtt.h"
 
 /**
+ * Reads bits from a byte.
+ *
+ * @param byte - The byte to read from.
+ * @param pos - The position of the first bit.
+ * @param num - The number of bits to read.
+ * @return The read bits as a byte.
+ */
+uint8_t lwmqtt_read_bits(uint8_t byte, int pos, int num);
+
+/**
+ * Write bits to a byte.
+ *
+ * @param byte - The byte to write bits to.
+ * @param value - The bits to write as a byte.
+ * @param pos - The position of the first bit.
+ * @param num - The number of bits to write.
+ */
+void lwmqtt_write_bits(uint8_t *byte, uint8_t value, int pos, int num);
+
+/**
  * Reads arbitrary data from the specified buffer. The pointer is incremented by bytes read.
  *
  * @param buf - Pointer to the buffer.

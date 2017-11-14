@@ -188,11 +188,11 @@ void lwmqtt_set_network(lwmqtt_client_t *client, void *ref, lwmqtt_network_read_
  *
  * @param client - The client object.
  * @param keep_alive_timer - The reference to the keep alive timer.
- * @param network_timer - The reference to the network timer.
+ * @param command_timer - The reference to the command timer.
  * @param set - The set callback.
  * @param get - The get callback.
  */
-void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *network_timer, lwmqtt_timer_set_t set,
+void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *command_timer, lwmqtt_timer_set_t set,
                        lwmqtt_timer_get_t get);
 
 /**
