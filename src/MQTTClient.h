@@ -179,9 +179,14 @@ class MQTTClient {
     options.keep_alive = this->keepAlive;
     options.clean_session = this->cleanSession;
     options.client_id = lwmqtt_string(clientId);
-    if (username != nullptr && password != nullptr) {
+
+    // set username and password if available
+    if (username != nullptr) {
       options.username = lwmqtt_string(username);
-      options.password = lwmqtt_string(password);
+
+      if (password != nullptr) {
+        options.password = lwmqtt_string(password);
+      }
     }
 
     // prepare will reference
