@@ -1,6 +1,8 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
+#include <string.h>
+
 #include <Arduino.h>
 #include <Client.h>
 #include <Stream.h>
@@ -18,7 +20,7 @@ typedef struct {
   MQTTClientCallbackAdvanced advanced = nullptr;
 } MQTTClientCallback;
 
-static void MQTTClientHandler(lwmqtt_client_t *client, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
+static void MQTTClientHandler(lwmqtt_client_t * /*client */, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
   // get callback
   auto cb = (MQTTClientCallback *)ref;
 
@@ -76,7 +78,7 @@ class MQTTClient {
   lwmqtt_arduino_network_t network = {nullptr};
   lwmqtt_arduino_timer_t timer1 = {0};
   lwmqtt_arduino_timer_t timer2 = {0};
-  lwmqtt_client_t client = {0};
+  lwmqtt_client_t client;
 
   bool _connected = false;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
@@ -84,6 +86,7 @@ class MQTTClient {
 
  public:
   explicit MQTTClient(int bufSize = 128) {
+    memset(&client, 0, sizeof(client));
     this->bufSize = (size_t)bufSize;
     this->readBuf = (uint8_t *)malloc((size_t)bufSize + 1);
     this->writeBuf = (uint8_t *)malloc((size_t)bufSize);
