@@ -34,7 +34,7 @@ lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len,
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent, uint32_t timeout) {
+lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent, uint32_t /*timeout*/) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
