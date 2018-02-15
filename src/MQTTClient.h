@@ -20,7 +20,8 @@ typedef struct {
   MQTTClientCallbackAdvanced advanced = nullptr;
 } MQTTClientCallback;
 
-static void MQTTClientHandler(lwmqtt_client_t * /*client */, void *ref, lwmqtt_string_t topic, lwmqtt_message_t message) {
+static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_string_t topic,
+                              lwmqtt_message_t message) {
   // get callback
   auto cb = (MQTTClientCallback *)ref;
 
