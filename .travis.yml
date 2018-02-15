@@ -35,8 +35,8 @@ before_install:
       cd $TRAVIS_BUILD_DIR;
     fi
   - if [[ "$BOARD" =~ "arduino:samd:mkrgsm1400" ]]; then
-      arduino --install-boards arduino:samd
-      arduino --install-library MKRGSM
+      arduino --install-boards arduino:samd;
+      arduino --install-library MKRGSM;
     fi
   - arduino --install-library WiFi101
 install:
