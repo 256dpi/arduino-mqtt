@@ -6,8 +6,8 @@ env:
     - EXAMPLE="AdafruitHuzzahESP8266" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
     - EXAMPLE="AdafruitHuzzahESP8266_SSL" BOARD="esp8266:esp8266:huzzah:FlashSize=4M3M,CpuFrequency=80"
     - EXAMPLE="ArduinoEthernetShield" BOARD="arduino:avr:uno"
-    - EXAMPLE="ArduinoMKRGSM1400" BOARD="arduino:avr:uno"
-    - EXAMPLE="ArduinoMKRGSM1400_SSL" BOARD="arduino:avr:uno"
+    - EXAMPLE="ArduinoMKRGSM1400" BOARD="arduino:samd:mkrgsm1400"
+    - EXAMPLE="ArduinoMKRGSM1400_SSL" BOARD="arduino:samd:mkrgsm1400"
     - EXAMPLE="ArduinoWiFi101_SSL" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoWiFiShield" BOARD="arduino:avr:uno"
     - EXAMPLE="ArduinoYun" BOARD="arduino:avr:yun"
@@ -34,8 +34,11 @@ before_install:
       python get.py &&
       cd $TRAVIS_BUILD_DIR;
     fi
+  - if [[ "$BOARD" =~ "arduino:samd:mkrgsm1400" ]]; then
+      arduino --install-boards arduino:samd
+      arduino --install-library MKRGSM
+    fi
   - arduino --install-library WiFi101
-  - arduino --install-library MKRGSM
 install:
   - mkdir -p ~/Arduino/libraries
   - ln -s $PWD ~/Arduino/libraries/.
