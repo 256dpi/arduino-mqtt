@@ -7,10 +7,12 @@ include_directories(
         /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/
         /Users/256dpi/Development/Arduino/libraries/Ethernet/src
         /Users/256dpi/Development/Arduino/libraries/WiFi101/src
+        /Users/256dpi/Development/Arduino/libraries/MKRGSM/src
         /Applications/Arduino.app/Contents/Java/libraries/Bridge/src
         /Users/256dpi/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/libraries/ESP8266WiFi/src
         /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFi/src
-        /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFiClientSecure/src)
+        /Users/256dpi/Development/Arduino/hardware/espressif/esp32/libraries/WiFiClientSecure/src
+        src/)
 
 include_directories(src/)
 
@@ -20,6 +22,8 @@ set(SOURCE_FILES
     examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino
     examples/AdafruitHuzzahESP8266_SSL/AdafruitHuzzahESP8266_SSL.ino
     examples/ArduinoEthernetShield/ArduinoEthernetShield.ino
+    examples/ArduinoMKRGSM1400/ArduinoMKRGSM1400.ino
+    examples/ArduinoMKRGSM1400_SSL/ArduinoMKRGSM1400_SSL.ino
     examples/ArduinoWiFi101/ArduinoWiFi101.ino
     examples/ArduinoWiFi101_SSL/ArduinoWiFi101_SSL.ino
     examples/ArduinoWiFiShield/ArduinoWiFiShield.ino
