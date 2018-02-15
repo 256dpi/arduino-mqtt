@@ -1,8 +1,6 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
-#include <string.h>
-
 #include <Arduino.h>
 #include <Client.h>
 #include <Stream.h>
