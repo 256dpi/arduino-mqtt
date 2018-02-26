@@ -6,7 +6,6 @@
 //
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
-
 #include <WiFi.h>
 #include <MQTTClient.h>
 
@@ -18,6 +17,33 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
+// Callback for additional processing of incoming messages
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+}
+
+// A helper routine to ensure the device is connected
+// to the WLAN and the MQTT broker.
+// Subscribe to topic "/hello"
+void connect() {
+  Serial.print("checking wifi...");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(1000);
+  }
+
+  Serial.print("\nconnecting...");
+  while (!client.connect("client-id", "user", "password")) {
+    Serial.print(".");
+    delay(1000);
+  }
+
+  Serial.println("\nconnected!");
+
+  client.subscribe("/hello");
+  // client.unsubscribe("/hello");
+}
+
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
@@ -28,25 +54,6 @@ void setup() {
   client.onMessage(messageReceived);
 
   connect();
-}
-
-void connect() {
-  Serial.print("checking wifi...");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(1000);
-  }
-
-  Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "try", "try")) {
-    Serial.print(".");
-    delay(1000);
-  }
-
-  Serial.println("\nconnected!");
-
-  client.subscribe("/hello");
-  // client.unsubscribe("/hello");
 }
 
 void loop() {
@@ -64,6 +71,3 @@ void loop() {
   }
 }
 
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
-}
