@@ -37,7 +37,7 @@ void setup() {
 
 void connect() {
   // connection state
-  boolean connected = false;
+  bool connected = false;
 
   Serial.print("connecting to cellular network ...");
 

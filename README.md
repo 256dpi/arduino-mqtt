@@ -149,9 +149,9 @@ void setOptions(int keepAlive, bool cleanSession, int timeout);
 Connect to broker using the supplied client id and an optional username and password:
 
 ```c++
-boolean connect(const char clientId[]);
-boolean connect(const char clientId[], const char username[]);
-boolean connect(const char clientId[], const char username[], const char password[]);
+bool connect(const char clientId[]);
+bool connect(const char clientId[], const char username[]);
+bool connect(const char clientId[], const char username[], const char password[]);
 ```
 
 - This functions returns a boolean that indicates if the connection has been established successfully.
@@ -159,38 +159,38 @@ boolean connect(const char clientId[], const char username[], const char passwor
 Publishes a message to the broker with an optional payload:
 
 ```c++
-boolean publish(const String &topic);
-boolean publish(const char topic[]);
-boolean publish(const String &topic, const String &payload);
-boolean publish(const String &topic, const String &payload, bool retained, int qos);
-boolean publish(const char topic[], const String &payload);
-boolean publish(const char topic[], const String &payload, bool retained, int qos);
-boolean publish(const char topic[], const char payload[]);
-boolean publish(const char topic[], const char payload[], bool retained, int qos);
-boolean publish(const char topic[], const char payload[], int length);
-boolean publish(const char topic[], const char payload[], int length, bool retained, int qos);
+bool publish(const String &topic);
+bool publish(const char topic[]);
+bool publish(const String &topic, const String &payload);
+bool publish(const String &topic, const String &payload, bool retained, int qos);
+bool publish(const char topic[], const String &payload);
+bool publish(const char topic[], const String &payload, bool retained, int qos);
+bool publish(const char topic[], const char payload[]);
+bool publish(const char topic[], const char payload[], bool retained, int qos);
+bool publish(const char topic[], const char payload[], int length);
+bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
 ```
 
 Subscribe to a topic:
 
 ```c++
-boolean subscribe(const String &topic);
-boolean subscribe(const String &topic, int qos); 
-boolean subscribe(const char topic[]);
-boolean subscribe(const char topic[], int qos);
+bool subscribe(const String &topic);
+bool subscribe(const String &topic, int qos); 
+bool subscribe(const char topic[]);
+bool subscribe(const char topic[], int qos);
 ```
 
 Unsubscribe from a topic:
 
 ```c++
-boolean unsubscribe(const String &topic);
-boolean unsubscribe(const char topic[]);
+bool unsubscribe(const String &topic);
+bool unsubscribe(const char topic[]);
 ```
 
 Sends and receives packets:
 
 ```c++
-boolean loop();
+bool loop();
 ```
 
 - This function should be called in every `loop`.
@@ -198,7 +198,7 @@ boolean loop();
 Check if the client is currently connected:
 
 ```c++
-boolean connected();
+bool connected();
 ```
 
 Access low-level information for debugging:
@@ -211,5 +211,5 @@ lwmqtt_return_code_t returnCode();
 Disconnect from the broker:
 
 ```c++
-boolean disconnect();
+bool disconnect();
 ```
