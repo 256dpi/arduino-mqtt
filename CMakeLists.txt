@@ -32,6 +32,7 @@ set(SOURCE_FILES
     examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino
     examples/ESP32DevelopmentBoard_SSL/ESP32DevelopmentBoard_SSL.ino
     src/lwmqtt
+    src/MQTT.h
     src/MQTTClient.h
     src/system.cpp
     src/system.h)

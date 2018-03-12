@@ -34,7 +34,7 @@ Other shields and boards should also work if they provide a [Client](https://www
 The following example uses an Arduino MKR1000 to connect to shiftr.io. You can check on your device after a successful connection here: https://shiftr.io/try.
 
 ```c++
-#include <MQTTClient.h>
+#include <MQTT.h>
 #include <SPI.h>
 #include <WiFi101.h>
 

@@ -10,7 +10,7 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <MKRGSM.h>
-#include <MQTTClient.h>
+#include <MQTT.h>
 
 const char pin[]      = "";
 const char apn[]      = "apn";
