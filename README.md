@@ -7,6 +7,11 @@ This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) MQTT 3.1.1 c
 
 Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section. Or even better use the builtin Library Manager in the Arduino IDE and search for "MQTT".
 
+To install the latest version when working with
+[platformio](https://platformio.org),
+use `pio lib install 617` or visit
+the [library page](https://platformio.org/lib/show/617/MQTT/installation).
+
 ## Compatibility
 
 The following examples show how you can use the library with various Arduino compatible hardware:

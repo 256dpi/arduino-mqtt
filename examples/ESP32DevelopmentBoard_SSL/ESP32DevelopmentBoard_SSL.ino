@@ -6,7 +6,6 @@
 //
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
-
 #include <WiFiClientSecure.h>
 #include <MQTT.h>
 
@@ -18,20 +17,14 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void setup() {
-  Serial.begin(115200);
-  WiFi.begin(ssid, pass);
-
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
-  // You need to set the IP address directly.
-  //
-  // MQTT brokers usually use port 8883 for secure connections.
-  client.begin("broker.shiftr.io", 8883, net);
-  client.onMessage(messageReceived);
-
-  connect();
+// Callback for additional processing of incoming messages
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
 }
 
+// A helper routine to ensure the device is connected
+// to the WLAN and the MQTT broker.
+// Subscribe to topic "/hello"
 void connect() {
   Serial.print("checking wifi...");
   while (WiFi.status() != WL_CONNECTED) {
@@ -40,7 +33,7 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "try", "try")) {
+  while (!client.connect("client-id", "user", "password")) {
     Serial.print(".");
     delay(1000);
   }
@@ -49,6 +42,20 @@ void connect() {
 
   client.subscribe("/hello");
   // client.unsubscribe("/hello");
+}
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, pass);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+  //
+  // MQTT brokers usually use port 8883 for secure connections
+  client.begin("broker.shiftr.io", 8883, net);
+  client.onMessage(messageReceived);
+
+  connect();
 }
 
 void loop() {
@@ -66,6 +73,3 @@ void loop() {
   }
 }
 
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
-}
