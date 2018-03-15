@@ -218,3 +218,8 @@ Disconnect from the broker:
 ```c++
 bool disconnect();
 ```
+
+## Release Management
+
+- Update version in `library.properties`.
+- Create release on GitHub.
