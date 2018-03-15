@@ -18,22 +18,6 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void connect();  // <- predefine connect() for setup()
-
-void setup() {
-  Serial.begin(115200);
-  WiFi.begin(ssid, pass);
-
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
-  // You need to set the IP address directly.
-  //
-  // MQTT brokers usually use port 8883 for secure connections.
-  client.begin("broker.shiftr.io", 8883, net);
-  client.onMessage(messageReceived);
-
-  connect();
-}
-
 void connect() {
   Serial.print("checking wifi...");
   while (WiFi.status() != WL_CONNECTED) {
@@ -53,6 +37,24 @@ void connect() {
   // client.unsubscribe("/hello");
 }
 
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+}
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, pass);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+  //
+  // MQTT brokers usually use port 8883 for secure connections.
+  client.begin("broker.shiftr.io", 8883, net);
+  client.onMessage(messageReceived);
+
+  connect();
+}
+
 void loop() {
   client.loop();
   delay(10);  // <- fixes some issues with WiFi stability
@@ -66,8 +68,4 @@ void loop() {
     lastMillis = millis();
     client.publish("/hello", "world");
   }
-}
-
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
 }

@@ -24,17 +24,6 @@ MQTTClient client;
 
 unsigned long lastMillis = 0;
 
-void setup() {
-  Serial.begin(115200);
-
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
-  // You need to set the IP address directly.
-  client.begin("broker.shiftr.io", net);
-  client.onMessage(messageReceived);
-
-  connect();
-}
-
 void connect() {
   // connection state
   bool connected = false;
@@ -52,7 +41,7 @@ void connect() {
       delay(1000);
     }
   }
-  
+
   Serial.print("\nconnecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
@@ -63,6 +52,21 @@ void connect() {
 
   client.subscribe("/hello");
   // client.unsubscribe("/hello");
+}
+
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported by Arduino.
+  // You need to set the IP address directly.
+  client.begin("broker.shiftr.io", net);
+  client.onMessage(messageReceived);
+
+  connect();
 }
 
 void loop() {
@@ -77,8 +81,4 @@ void loop() {
     lastMillis = millis();
     client.publish("/hello", "world");
   }
-}
-
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
 }
