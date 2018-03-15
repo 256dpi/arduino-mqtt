@@ -210,6 +210,9 @@ lwmqtt_err_t lastError();
 lwmqtt_return_code_t returnCode();
 ```
 
+- The error codes can be found [here](https://github.com/256dpi/lwmqtt/blob/master/include/lwmqtt.h#L11).
+- The return codes can be found [here](https://github.com/256dpi/lwmqtt/blob/master/include/lwmqtt.h#L243).
+
 Disconnect from the broker:
 
 ```c++
