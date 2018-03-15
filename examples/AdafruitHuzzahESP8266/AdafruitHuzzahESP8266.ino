@@ -8,7 +8,7 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <ESP8266WiFi.h>
-#include <MQTTClient.h>
+#include <MQTT.h>
 
 const char ssid[] = "ssid";
 const char pass[] = "pass";

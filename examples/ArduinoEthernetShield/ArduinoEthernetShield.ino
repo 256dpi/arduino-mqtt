@@ -8,7 +8,7 @@
 // https://github.com/256dpi/arduino-mqtt
 
 #include <Ethernet.h>
-#include <MQTTClient.h>
+#include <MQTT.h>
 
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 byte ip[] = {192, 168, 1, 177};  // <- change to match your network

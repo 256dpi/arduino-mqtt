@@ -9,7 +9,7 @@
 
 #include <Bridge.h>
 #include <BridgeSSLClient.h>
-#include <MQTTClient.h>
+#include <MQTT.h>
 
 BridgeSSLClient net;
 MQTTClient client;
