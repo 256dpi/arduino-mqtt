@@ -117,7 +117,7 @@ void setHost(const char hostname[]);
 void setHost(const char hostname[], int port);
 ```
 
-Set a will message (last testament) that gets registered on the broker after connecting:
+Set a will message (last testament) that gets registered on the broker after connecting. `setWill()` has to be called before calling `connect()`:
 
 ```c++
 void setWill(const char topic[]);
