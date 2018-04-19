@@ -117,7 +117,7 @@ void setHost(const char hostname[]);
 void setHost(const char hostname[], int port);
 ```
 
-Set a will message (last testament) that gets registered on the broker after connecting:
+Set a will message (last testament) that gets registered on the broker after connecting. `setWill()` has to be called before calling `connect()`:
 
 ```c++
 void setWill(const char topic[]);
@@ -144,7 +144,7 @@ Set more advanced options:
 void setOptions(int keepAlive, bool cleanSession, int timeout);
 ```
 
-- The `keepAlive` option controls the keep alive interval (default: 10).
+- The `keepAlive` option controls the keep alive interval in seconds (default: 10).
 - The `cleanSession` option controls the session retention on the broker side (default: true).
 - The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000). 
 
