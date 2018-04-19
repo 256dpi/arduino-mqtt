@@ -200,7 +200,10 @@ class MQTTClient {
     // connect to broker
     this->_lastError = lwmqtt_connect(&this->client, options, will, &this->_returnCode, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      return this->close();
+      // close connection
+      this->close();
+
+      return false;
     }
 
     // set flag
@@ -253,7 +256,10 @@ class MQTTClient {
     // publish message
     this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      return this->close();
+      // close connection
+      this->close();
+
+      return false;
     }
 
     return true;
@@ -274,7 +280,10 @@ class MQTTClient {
     // subscribe to topic
     this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), (lwmqtt_qos_t)qos, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      return this->close();
+      // close connection
+      this->close();
+
+      return false;
     }
 
     return true;
@@ -291,7 +300,10 @@ class MQTTClient {
     // unsubscribe from topic
     this->_lastError = lwmqtt_unsubscribe_one(&this->client, lwmqtt_string(topic), this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      return this->close();
+      // close connection
+      this->close();
+
+      return false;
     }
 
     return true;
@@ -310,14 +322,20 @@ class MQTTClient {
     if (available > 0) {
       this->_lastError = lwmqtt_yield(&this->client, available, this->timeout);
       if (this->_lastError != LWMQTT_SUCCESS) {
-        return this->close();
+        // close connection
+        this->close();
+
+        return false;
       }
     }
 
     // keep the connection alive
     this->_lastError = lwmqtt_keep_alive(&this->client, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
-      return this->close();
+      // close connection
+      this->close();
+
+      return false;
     }
 
     return true;
@@ -349,14 +367,12 @@ class MQTTClient {
   }
 
  private:
-  bool close() {
+  void close() {
     // set flag
     this->_connected = false;
 
     // close network
     this->netClient->stop();
-
-    return false;
   }
 };
 
