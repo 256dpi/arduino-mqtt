@@ -132,11 +132,11 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
 
   // set username flag if present
   if (options.username.len > 0) {
-    lwmqtt_write_bits(&flags, 1, 6, 1);
+    lwmqtt_write_bits(&flags, 1, 7, 1);
 
     // set password flag if present
     if (options.password.len > 0) {
-      lwmqtt_write_bits(&flags, 1, 7, 1);
+      lwmqtt_write_bits(&flags, 1, 6, 1);
     }
   }
 
