@@ -7,6 +7,10 @@
 
 /**
  * The error type used by all exposed APIs.
+ *
+ * If a function returns an error that operates on a connected client (e.g publish, keep_alive, etc.) the caller should
+ * switch into a disconnected state, close and cleanup the current connection and start over by creating a new
+ * connection.
  */
 typedef enum {
   LWMQTT_SUCCESS = 0,
@@ -345,11 +349,12 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, uint32_t timeout);
 /**
  * Will yield control to the client and receive incoming packets from the network.
  *
- * Applications may peek on the network if there is data available to read before calling yield and potentially block
- * until the timeout is reached. Furthermore, applications may specify the amount of bytes available to read in order
- * to constrain the yield to only receive packets that are already inflight.
+ * Single-threaded applications may peek on the network and assess if data is available to read before calling yield and
+ * potentially block until the timeout is reached. Multi-threaded applications may select on the socket and block until
+ * data is available and then yield to the client if data is available. All applications may specify the amount of bytes
+ * available to read in order to constrain the yield to only receive packets that are already in-flight.
  *
- * If no availability data is given the yield will return after one packet has been successfully read or the deadline
+ * If no availability info is given the yield will return after one packet has been successfully read or the deadline
  * has been reached but no single bytes has been received.
  *
  * Note: The message callback might be called with incoming messages as part of this call.
@@ -363,6 +368,9 @@ lwmqtt_err_t lwmqtt_yield(lwmqtt_client_t *client, size_t available, uint32_t ti
 
 /**
  * Will yield control to the client to keep the connection alive.
+ *
+ * This functions must be called at a rate slightly lower than 25% of the configured keep alive. If keep alive is zero,
+ * the function must not be called at all.
  *
  * @param client - The client object.
  * @param timeout - The command timeout.
