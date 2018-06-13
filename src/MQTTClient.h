@@ -273,22 +273,25 @@ class MQTTClient {
     this->timeout = (uint32_t)timeout;
   }
 
-  bool connect(const char clientId[]) { return this->connect(clientId, nullptr, nullptr); }
+  bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr); }
 
-  bool connect(const char clientId[], const char username[]) { return this->connect(clientId, username, nullptr); }
+  bool connect(const char clientId[], const char username[], bool skip = false) { return this->connect(clientId, username, nullptr); }
 
-  bool connect(const char clientId[], const char username[], const char password[]) {
+  bool connect(const char clientId[], const char username[], const char password[], bool skip = false) {
     // close left open connection if still connected
-    if (this->connected()) {
+    if (!skip && this->connected()) {
       this->close();
     }
 
     // save client
     this->network.client = this->netClient;
 
-    // connect to host
-    if (this->netClient->connect(this->hostname, (uint16_t)this->port) <= 0) {
-      return false;
+    // connect to hostg
+    if(!skip) {
+      int ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
+      if (ret <= 0) {
+        return false;
+      }
     }
 
     // prepare options
