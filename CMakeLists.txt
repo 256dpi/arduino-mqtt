@@ -20,17 +20,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
     examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino
-    examples/AdafruitHuzzahESP8266_SSL/AdafruitHuzzahESP8266_SSL.ino
+        examples/AdafruitHuzzahESP8266Secure/AdafruitHuzzahESP8266Secure.ino
     examples/ArduinoEthernetShield/ArduinoEthernetShield.ino
     examples/ArduinoMKRGSM1400/ArduinoMKRGSM1400.ino
-    examples/ArduinoMKRGSM1400_SSL/ArduinoMKRGSM1400_SSL.ino
+        examples/ArduinoMKRGSM1400Secure/ArduinoMKRGSM1400Secure.ino
     examples/ArduinoWiFi101/ArduinoWiFi101.ino
-    examples/ArduinoWiFi101_SSL/ArduinoWiFi101_SSL.ino
+        examples/ArduinoWiFi101Secure/ArduinoWiFi101Secure.ino
     examples/ArduinoWiFiShield/ArduinoWiFiShield.ino
     examples/ArduinoYun/ArduinoYun.ino
-    examples/ArduinoYun_SSL/ArduinoYun_SSL.ino
+        examples/ArduinoYunSecure/ArduinoYunSecure.ino
     examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino
-    examples/ESP32DevelopmentBoard_SSL/ESP32DevelopmentBoard_SSL.ino
+        examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino
     src/lwmqtt
     src/MQTT.h
     src/MQTTClient.h
