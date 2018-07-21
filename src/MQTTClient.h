@@ -99,9 +99,10 @@ class MQTTClient {
   void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client); }
 
   void begin(const char hostname[], int port, Client &client) {
-    // set config
-    this->hostname = hostname;
-    this->port = port;
+    // set hostname and port
+    this->setHost(hostname, port);
+
+    // set client
     this->netClient = &client;
 
     // initialize client
@@ -134,7 +135,13 @@ class MQTTClient {
   void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
 
   void setHost(const char hostname[], int port) {
-    this->hostname = hostname;
+    // free hostname if set
+    if(this->hostname != nullptr) {
+      free((void *)this->hostname);
+    }
+
+    // set hostname and port
+    this->hostname = strdup(hostname);
     this->port = port;
   }
 
