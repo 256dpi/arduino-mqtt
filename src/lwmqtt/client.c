@@ -366,6 +366,9 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
   // reset pong pending flag
   client->pong_pending = false;
 
+  // initialize return code
+  *return_code = LWMQTT_UNKNOWN_RETURN_CODE;
+
   // encode connect packet
   size_t len;
   lwmqtt_err_t err = lwmqtt_encode_connect(client->write_buf, client->write_buf_size, &len, options, will);
