@@ -287,7 +287,7 @@ class MQTTClient {
     this->network.client = this->netClient;
 
     // connect to host
-    if (this->netClient->connect(this->hostname, (uint16_t)this->port) < 0) {
+    if (this->netClient->connect(this->hostname, (uint16_t)this->port) <= 0) {
       return false;
     }
 
