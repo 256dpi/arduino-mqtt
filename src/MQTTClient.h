@@ -70,14 +70,13 @@ class MQTTClient {
   Client *netClient = nullptr;
   const char *hostname = nullptr;
   int port = 0;
-  lwmqtt_will_t will = lwmqtt_default_will;
-  bool hasWill = false;
+  lwmqtt_will_t *will = nullptr;
   MQTTClientCallback callback;
 
   lwmqtt_arduino_network_t network = {nullptr};
   lwmqtt_arduino_timer_t timer1 = {0};
   lwmqtt_arduino_timer_t timer2 = {0};
-  lwmqtt_client_t client;
+  lwmqtt_client_t client = {0};
 
   bool _connected = false;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
@@ -85,13 +84,25 @@ class MQTTClient {
 
  public:
   explicit MQTTClient(int bufSize = 128) {
-    memset(&client, 0, sizeof(client));
+    // reset client
+    memset(&this->client, 0, sizeof(lwmqtt_client_t));
+
+    // allocate buffers
     this->bufSize = (size_t)bufSize;
     this->readBuf = (uint8_t *)malloc((size_t)bufSize + 1);
     this->writeBuf = (uint8_t *)malloc((size_t)bufSize);
   }
 
   ~MQTTClient() {
+    // free will
+    this->clearWill();
+
+    // free hostname
+    if (this->hostname != nullptr) {
+      free((void *)this->hostname);
+    }
+
+    // free buffers
     free(this->readBuf);
     free(this->writeBuf);
   }
@@ -136,7 +147,7 @@ class MQTTClient {
 
   void setHost(const char hostname[], int port) {
     // free hostname if set
-    if(this->hostname != nullptr) {
+    if (this->hostname != nullptr) {
       free((void *)this->hostname);
     }
 
@@ -150,16 +161,54 @@ class MQTTClient {
   void setWill(const char topic[], const char payload[]) { this->setWill(topic, payload, false, 0); }
 
   void setWill(const char topic[], const char payload[], bool retained, int qos) {
-    this->hasWill = true;
-    this->will.topic = lwmqtt_string(topic);
-    this->will.payload = lwmqtt_string(payload);
-    this->will.retained = retained;
-    this->will.qos = (lwmqtt_qos_t)qos;
+    // return if topic is missing
+    if (topic == nullptr || strlen(topic) == 0) {
+      return;
+    }
+
+    // clear existing will
+    this->clearWill();
+
+    // allocate will
+    this->will = (lwmqtt_will_t *)malloc(sizeof(lwmqtt_will_t));
+    memset(this->will, 0, sizeof(lwmqtt_will_t));
+
+    // set topic
+    this->will->topic = lwmqtt_string(strdup(topic));
+
+    // set payload if available
+    if (payload != nullptr && strlen(payload) > 0) {
+      this->will->payload = lwmqtt_string(strdup(payload));
+    }
+
+    // set flags
+    this->will->retained = retained;
+    this->will->qos = (lwmqtt_qos_t)qos;
   }
 
-  void clearWill() { this->hasWill = false; }
+  void clearWill() {
+    // return if not set
+    if (this->will == nullptr) {
+      return;
+    }
+
+    // free payload if set
+    if (this->will->payload.len > 0) {
+      free(this->will->payload.data);
+    }
+
+    // free topic if set
+    if (this->will->topic.len > 0) {
+      free(this->will->topic.data);
+    }
+
+    // free will
+    free(this->will);
+    this->will = nullptr;
+  }
 
   void setOptions(int keepAlive, bool cleanSession, int timeout) {
+    // set new options
     this->keepAlive = (uint16_t)keepAlive;
     this->cleanSession = cleanSession;
     this->timeout = (uint32_t)timeout;
@@ -198,14 +247,8 @@ class MQTTClient {
       }
     }
 
-    // prepare will reference
-    lwmqtt_will_t *will = nullptr;
-    if (this->hasWill) {
-      will = &this->will;
-    }
-
     // connect to broker
-    this->_lastError = lwmqtt_connect(&this->client, options, will, &this->_returnCode, this->timeout);
+    this->_lastError = lwmqtt_connect(&this->client, options, this->will, &this->_returnCode, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
       // close connection
       this->close();
