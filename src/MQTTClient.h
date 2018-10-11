@@ -13,15 +13,12 @@ typedef struct {
   uint32_t end;
 } lwmqtt_arduino_timer_t;
 
-void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout);
-
-int32_t lwmqtt_arduino_timer_get(void *ref);
-
 typedef struct {
   Client *client;
 } lwmqtt_arduino_network_t;
 
-void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
+
+inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
@@ -29,7 +26,7 @@ void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   t->end = (uint32_t)(millis() + timeout);
 }
 
-int32_t lwmqtt_arduino_timer_get(void *ref) {
+inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
@@ -37,7 +34,7 @@ int32_t lwmqtt_arduino_timer_get(void *ref) {
   return (int32_t)t->end - (int32_t)millis();
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read, uint32_t timeout) {
+inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read, uint32_t timeout) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
@@ -53,7 +50,7 @@ lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len,
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent, uint32_t /*timeout*/) {
+inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent, uint32_t /*timeout*/) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
