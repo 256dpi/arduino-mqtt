@@ -33,8 +33,6 @@ set(SOURCE_FILES
         examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino
     src/lwmqtt
     src/MQTT.h
-    src/MQTTClient.h
-    src/system.cpp
-    src/system.h)
+    src/MQTTClient.h)
 
 add_executable(arduino-mqtt ${SOURCE_FILES})
