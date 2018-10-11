@@ -156,7 +156,7 @@ bool connect(const char clientId[], const char username[], bool skip = false);
 bool connect(const char clientId[], const char username[], const char password[], bool skip = false);
 ```
 
-- If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option should can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
+- If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
 - This functions returns a boolean that indicates if the connection has been established successfully.
 
 Publishes a message to the broker with an optional payload:
