@@ -5,7 +5,11 @@ inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
   // set future end time
-  t->end = (uint32_t)(millis() + timeout);
+  if (t->millis != nullptr) {
+    t->end = (uint32_t)(t->millis() + timeout);
+  } else {
+    t->end = (uint32_t)(millis() + timeout);
+  }
 }
 
 inline int32_t lwmqtt_arduino_timer_get(void *ref) {
@@ -13,7 +17,11 @@ inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
   // get difference to end time
-  return (int32_t)t->end - (int32_t)millis();
+  if (t->millis != nullptr) {
+    return (int32_t)(t->end - t->millis());
+  } else {
+    return (int32_t)(t->end - millis());
+  }
 }
 
 inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read,
@@ -142,6 +150,11 @@ void MQTTClient::onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
   this->callback.client = this;
   this->callback.simple = nullptr;
   this->callback.advanced = cb;
+}
+
+void MQTTClient::setClockSource(MQTTClientClockSource cb) {
+  this->timer1.millis = cb;
+  this->timer2.millis = cb;
 }
 
 void MQTTClient::setHost(const char hostname[], int port) {

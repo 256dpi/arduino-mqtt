@@ -146,7 +146,16 @@ void setOptions(int keepAlive, bool cleanSession, int timeout);
 
 - The `keepAlive` option controls the keep alive interval in seconds (default: 10).
 - The `cleanSession` option controls the session retention on the broker side (default: true).
-- The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000). 
+- The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000).
+
+Set a custom clock source "custom millis" callback to enable deep sleep applications:
+
+```c++
+void setClockSource(MQTTClientClockSource);
+// Callback signature: uint32_t clockSource() {}
+```
+
+- The specified callback is used by the internal timers to get a monotonic time in milliseconds. Since the clock source for the built-in `millis` is stopped when the the Arduino goes into deep sleep, you need to provide a custom callback that first syncs with a built-in or external Real Time Clock (RTC). You can pass `NULL` to reset to the default implementation.
 
 Connect to broker using the supplied client id and an optional username and password:
 

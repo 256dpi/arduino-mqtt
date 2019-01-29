@@ -9,8 +9,11 @@ extern "C" {
 #include "lwmqtt/lwmqtt.h"
 };
 
+typedef uint32_t (*MQTTClientClockSource)();
+
 typedef struct {
   uint32_t end;
+  MQTTClientClockSource millis;
 } lwmqtt_arduino_timer_t;
 
 typedef struct {
@@ -45,8 +48,8 @@ class MQTTClient {
   MQTTClientCallback callback;
 
   lwmqtt_arduino_network_t network = {nullptr};
-  lwmqtt_arduino_timer_t timer1 = {0};
-  lwmqtt_arduino_timer_t timer2 = {0};
+  lwmqtt_arduino_timer_t timer1 = {0, nullptr};
+  lwmqtt_arduino_timer_t timer2 = {0, nullptr};
   lwmqtt_client_t client = {0};
 
   bool _connected = false;
@@ -63,6 +66,8 @@ class MQTTClient {
 
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
+
+  void setClockSource(MQTTClientClockSource cb);
 
   void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
   void setHost(const char hostname[], int port);
