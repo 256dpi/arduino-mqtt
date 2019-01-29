@@ -9,8 +9,11 @@ extern "C" {
 #include "lwmqtt/lwmqtt.h"
 };
 
+typedef uint32_t (*MQTTClientClockSourceCb)();
+
 typedef struct {
   uint32_t end;
+  MQTTClientClockSourceCb clockSourceMillis;
 } lwmqtt_arduino_timer_t;
 
 typedef struct {
@@ -23,7 +26,13 @@ inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
   // set future end time
-  t->end = (uint32_t)(millis() + timeout);
+  if(t->clockSourceMillis != nullptr) {
+    t->end = (uint32_t)(t->clockSourceMillis() + timeout);
+  }
+  else {
+    t->end = (uint32_t)(millis() + timeout);
+  }
+  
 }
 
 inline int32_t lwmqtt_arduino_timer_get(void *ref) {
@@ -31,7 +40,12 @@ inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
   // get difference to end time
-  return (int32_t)t->end - (int32_t)millis();
+  if(t->clockSourceMillis != nullptr) {
+    return (int32_t)(t->end - t->clockSourceMillis());
+  }
+  else {
+    return (int32_t)(t->end - millis());
+  }
 }
 
 inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read, uint32_t timeout) {
@@ -130,8 +144,8 @@ class MQTTClient {
   MQTTClientCallback callback;
 
   lwmqtt_arduino_network_t network = {nullptr};
-  lwmqtt_arduino_timer_t timer1 = {0};
-  lwmqtt_arduino_timer_t timer2 = {0};
+  lwmqtt_arduino_timer_t timer1 = {0, nullptr};
+  lwmqtt_arduino_timer_t timer2 = {0, nullptr};
   lwmqtt_client_t client = {0};
 
   bool _connected = false;
@@ -199,6 +213,10 @@ class MQTTClient {
     this->callback.advanced = cb;
   }
 
+  void setClockSource(MQTTClientClockSourceCb cb) {
+    this->timer1.clockSourceMillis = cb;
+    this->timer2.clockSourceMillis = cb;
+  }
   void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
 
   void setHost(const char hostname[], int port) {
