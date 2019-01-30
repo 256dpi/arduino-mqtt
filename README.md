@@ -159,6 +159,17 @@ void setClockSource(MQTTClientClockSource);
 
 Connect to broker using the supplied client id and an optional username and password:
 
+Register a custom clock source ("millis source") callback:
+```c++
+void setClockSource(MQTTClientClockSourceCb);
+// Callback signature: uint32_t customMillis (void) {}
+
+void clearClockSource();
+```
+
+- If no callback is registered `millis()` function is used. Otherwise, passed function is used.
+- You can clear callback at any time. At this moment, `millis()` will be use again as "millis source"
+
 ```c++
 bool connect(const char clientId[], bool skip = false);
 bool connect(const char clientId[], const char username[], bool skip = false);
