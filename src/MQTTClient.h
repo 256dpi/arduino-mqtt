@@ -9,11 +9,11 @@ extern "C" {
 #include "lwmqtt/lwmqtt.h"
 };
 
-typedef uint32_t (*MQTTClientClockSourceCb)();
+typedef uint32_t (*MQTTClientClockSource)();
 
 typedef struct {
   uint32_t end;
-  MQTTClientClockSourceCb clockSourceMillis;
+  MQTTClientClockSource clockSourceMillis;
 } lwmqtt_arduino_timer_t;
 
 typedef struct {
@@ -213,7 +213,7 @@ class MQTTClient {
     this->callback.advanced = cb;
   }
 
-  void setClockSource(MQTTClientClockSourceCb cb) {
+  void setClockSource(MQTTClientClockSource cb) {
     this->timer1.clockSourceMillis = cb;
     this->timer2.clockSourceMillis = cb;
   }
