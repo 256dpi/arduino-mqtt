@@ -260,11 +260,6 @@ class MQTTClient {
     this->will->qos = (lwmqtt_qos_t)qos;
   }
 
-  void clearClockSource() {
-    this->timer1.clockSourceMillis = nullptr;
-    this->timer2.clockSourceMillis = nullptr;
-  }
-
   void clearWill() {
     // return if not set
     if (this->will == nullptr) {
