@@ -74,8 +74,8 @@ class MQTTClient {
 
   void setOptions(int keepAlive, bool cleanSession, int timeout);
 
-  bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr); }
-  bool connect(const char clientId[], const char username[], bool skip = false) { return this->connect(clientId, username, nullptr); }
+  bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr, skip); }
+  bool connect(const char clientId[], const char username[], bool skip = false) { return this->connect(clientId, username, nullptr, skip); }
   bool connect(const char clientId[], const char username[], const char password[], bool skip = false);
 
   bool publish(const String &topic) { return this->publish(topic.c_str(), ""); }
