@@ -16,7 +16,8 @@ inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   return (int32_t)t->end - (int32_t)millis();
 }
 
-inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read, uint32_t timeout) {
+inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size_t len, size_t *read,
+                                                uint32_t timeout) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
@@ -32,7 +33,8 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
   return LWMQTT_SUCCESS;
 }
 
-inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent, uint32_t /*timeout*/) {
+inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent,
+                                                 uint32_t /*timeout*/) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
@@ -242,7 +244,7 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
   this->network.client = this->netClient;
 
   // connect to host
-  if(!skip) {
+  if (!skip) {
     int ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
     if (ret <= 0) {
       return false;
