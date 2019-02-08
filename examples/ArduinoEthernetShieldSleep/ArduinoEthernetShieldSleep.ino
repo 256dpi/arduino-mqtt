@@ -146,6 +146,7 @@ uint32_t customMillis() {
 
   if(didWakeup) {
     offset = rtcMillis() - millis();
+    didWakeUp = false;
   }
 
   return millis() + offset;
