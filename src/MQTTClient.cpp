@@ -261,6 +261,7 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
     int ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
     if (ret <= 0) {
       return false;
+      this->_lastError = LWMQTT_NETWORK_FAILED_CONNECT;
     }
   }
 
