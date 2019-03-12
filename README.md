@@ -23,6 +23,8 @@ The following examples show how you can use the library with various Arduino com
 
 Other shields and boards should also work if they provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.
 
+**Check out the [Wiki](https://github.com/256dpi/arduino-mqtt/wiki) to find more examples.**
+
 ## Notes
 
 - The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` instead of just `MQTTClient client` on the top of your sketch. The passed value denotes the read and write buffer size.
