@@ -13,8 +13,8 @@
 #include <MQTT.h>
 #include <time.h>                 
 
-const char ssid[] = "Byron Bay Mobile";        //WiFi SSID
-const char pass[] = "Byron2015";               //WiFi Password
+const char ssid[] = "";        //WiFi SSID
+const char pass[] = "";               //WiFi Password
 
 //populate the below variables if you would like to define everything up here
 
