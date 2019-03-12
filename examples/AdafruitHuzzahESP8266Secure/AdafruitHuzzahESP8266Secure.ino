@@ -25,6 +25,11 @@ void connect() {
     delay(1000);
   }
 
+  // do not verify tls certificate
+  // check the following example for methods to verify the server:
+  // https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/examples/BearSSL_Validation/BearSSL_Validation.ino
+  net.setInsecure();
+
   Serial.print("\nconnecting...");
   while (!client.connect("arduino", "try", "try")) {
     Serial.print(".");
