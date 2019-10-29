@@ -101,8 +101,8 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
     return;
   }
 
-  // return if simple callback is not set
-  if (cb->simple == nullptr) {
+  // return if simple and lambda callbacks are not set
+  if (cb->simple == nullptr && cb->lambda == nullptr) {
     return;
   }
 
@@ -113,6 +113,12 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
   String str_payload;
   if (message.payload != nullptr) {
     str_payload = String((const char *)message.payload);
+  }
+
+  // call the lambda callback and return if available
+  if (cb->lambda != nullptr) {
+    cb->lambda(str_topic, str_payload);
+    return;
   }
 
   // call simple callback
@@ -163,10 +169,19 @@ void MQTTClient::begin(const char _hostname[], int _port, Client &_client) {
   lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
 }
 
+void MQTTClient::onMessage(MQTTClientCallbackLambda cb) {
+  // set callback
+  this->callback.client = this;
+  this->callback.simple = nullptr;
+  this->callback.lambda = cb;
+  this->callback.advanced = nullptr;
+}
+
 void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
   // set callback
   this->callback.client = this;
   this->callback.simple = cb;
+  this->callback.lambda = nullptr;
   this->callback.advanced = nullptr;
 }
 
@@ -174,6 +189,7 @@ void MQTTClient::onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
   // set callback
   this->callback.client = this;
   this->callback.simple = nullptr;
+  this->callback.lambda = nullptr;
   this->callback.advanced = cb;
 }
 

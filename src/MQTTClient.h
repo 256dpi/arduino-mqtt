@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Client.h>
 #include <Stream.h>
+#include <functional>
 
 extern "C" {
 #include "lwmqtt/lwmqtt.h"
@@ -22,6 +23,7 @@ typedef struct {
 
 class MQTTClient;
 
+typedef std::function<void(String&, String&)> MQTTClientCallbackLambda;
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
 typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length);
 
@@ -29,6 +31,7 @@ typedef struct {
   MQTTClient *client = nullptr;
   MQTTClientCallbackSimple simple = nullptr;
   MQTTClientCallbackAdvanced advanced = nullptr;
+  MQTTClientCallbackLambda lambda = nullptr;
 } MQTTClientCallback;
 
 class MQTTClient {
@@ -66,6 +69,7 @@ class MQTTClient {
   void begin(const char _hostname[], Client &_client) { this->begin(_hostname, 1883, _client); }
   void begin(const char hostname[], int port, Client &client);
 
+  void onMessage(MQTTClientCallbackLambda cb);
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
 
