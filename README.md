@@ -139,6 +139,7 @@ void onMessageAdvanced(MQTTClientCallbackAdvanced);
 ```
 
 - The set callback is mostly called during a call to `loop()` but may also be called during a call to `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` if messages have been received before receiving the required acknowledgement. Therefore, it is strongly recommended to not call `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` directly in the callback.
+- In case you need a reference to an object that manages the client, use the `void * ref` property on the client to store a pointer, and access it directly from the advanced callback..
 
 Set more advanced options:
 
