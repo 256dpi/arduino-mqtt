@@ -32,20 +32,29 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
   // set timeout
   uint32_t start = millis();
 
-  // read bytes
+  // reset counter
   *read = 0;
-  while (len && (millis() - start < timeout)) {
+
+  // read until all bytes have been read or timeout has been reached
+  while (len > 0 && (millis() - start < timeout)) {
+    // read from connection
     int r = n->client->read(buffer, len);
-    if (r > 0) { // read some bytes, advance buffer
+
+    // handle read data
+    if (r > 0) {
       buffer += r;
       *read += r;
       len -= r;
+      continue;
+    }
 
-    } else if (r < 0) { // negative result - network failure
+    // otherwise check status
+    if (!n->client->connected()) {
       return LWMQTT_NETWORK_FAILED_READ;
     }
   }
 
+  // check counter
   if (*read == 0) {
     return LWMQTT_NETWORK_TIMEOUT;
   }

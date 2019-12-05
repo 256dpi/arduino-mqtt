@@ -57,7 +57,7 @@ class MQTTClient {
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
 
  public:
-  void * ref = nullptr;
+  void *ref = nullptr;
 
   explicit MQTTClient(int bufSize = 128);
 
