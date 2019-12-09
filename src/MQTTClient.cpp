@@ -49,7 +49,7 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
     }
 
     // wait/unblock for some time (RTOS based boards may otherwise fail since the wifi task cannot provide the data)
-    delay(1);
+    delay(0);
 
     // otherwise check status
     if (!n->client->connected()) {
