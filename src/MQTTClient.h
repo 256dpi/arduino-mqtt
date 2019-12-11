@@ -23,7 +23,8 @@ typedef struct {
 class MQTTClient;
 
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
-typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length);
+typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length,
+                                           lwmqtt_serialized_properties_t props);
 
 typedef struct {
   MQTTClient *client = nullptr;
@@ -50,7 +51,7 @@ class MQTTClient {
   lwmqtt_arduino_network_t network = {nullptr};
   lwmqtt_arduino_timer_t timer1 = {0, nullptr};
   lwmqtt_arduino_timer_t timer2 = {0, nullptr};
-  lwmqtt_client_t client = {0};
+    lwmqtt_client_t client = {LWMQTT_MQTT311, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   bool _connected = false;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
@@ -63,8 +64,9 @@ class MQTTClient {
 
   ~MQTTClient();
 
-  void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client); }
-  void begin(const char hostname[], int port, Client &client);
+  void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client, LWMQTT_MQTT311); }
+  void begin(const char hostname[], int port, Client &client) { this->begin(hostname, port, client, LWMQTT_MQTT311); }
+  void begin(const char hostname[], int port, Client &client, lwmqtt_protocol_t protocol);
 
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
@@ -93,6 +95,10 @@ class MQTTClient {
   bool publish(const String &topic, const String &payload, bool retained, int qos) {
     return this->publish(topic.c_str(), payload.c_str(), retained, qos);
   }
+  bool publish(const String &topic, const String &payload, bool retained, int qos, lwmqtt_properties_t props) {
+    return this->publish(topic.c_str(), payload.c_str(), payload.length(), retained, qos, props);
+  }
+
   bool publish(const char topic[], const String &payload) { return this->publish(topic, payload.c_str()); }
   bool publish(const char topic[], const String &payload, bool retained, int qos) {
     return this->publish(topic, payload.c_str(), retained, qos);
@@ -106,15 +112,28 @@ class MQTTClient {
   bool publish(const char topic[], const char payload[], int length) {
     return this->publish(topic, payload, length, false, 0);
   }
-  bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
+  bool publish(const char topic[], const char payload[], int length, bool retained, int qos) {
+    lwmqtt_properties_t props = lwmqtt_empty_props;
+    return this->publish(topic, payload, length, retained, qos, props);
+  }
+
+  bool publish(const char topic[], const char payload[], int length, bool retained, int qos, lwmqtt_properties_t props);
 
   bool subscribe(const String &topic) { return this->subscribe(topic.c_str()); }
   bool subscribe(const String &topic, int qos) { return this->subscribe(topic.c_str(), qos); }
   bool subscribe(const char topic[]) { return this->subscribe(topic, 0); }
-  bool subscribe(const char topic[], int qos);
+  bool subscribe(const char topic[], int qos) {
+    lwmqtt_properties_t props = lwmqtt_empty_props;
+    return this->subscribe(topic, qos, props);
+  }
+  bool subscribe(const char topic[], int qos, lwmqtt_properties_t props);
 
   bool unsubscribe(const String &topic) { return this->unsubscribe(topic.c_str()); }
-  bool unsubscribe(const char topic[]);
+  bool unsubscribe(const char topic[]) {
+    lwmqtt_properties_t props = lwmqtt_empty_props;
+    return this->unsubscribe(topic, props);
+  }
+  bool unsubscribe(const char topic[], lwmqtt_properties_t props);
 
   bool loop();
   bool connected();
@@ -122,7 +141,12 @@ class MQTTClient {
   lwmqtt_err_t lastError() { return this->_lastError; }
   lwmqtt_return_code_t returnCode() { return this->_returnCode; }
 
-  bool disconnect();
+  bool disconnect() {
+    lwmqtt_properties_t props = lwmqtt_empty_props;
+    return this->disconnect(0, props);
+  }
+
+  bool disconnect(uint8_t reason, lwmqtt_properties_t props);
 
  private:
   void close();

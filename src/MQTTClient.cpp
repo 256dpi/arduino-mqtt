@@ -80,7 +80,7 @@ inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, siz
 }
 
 static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_string_t topic,
-                              lwmqtt_message_t message) {
+                              lwmqtt_message_t message, lwmqtt_serialized_properties_t props) {
   // get callback
   auto cb = (MQTTClientCallback *)ref;
 
@@ -96,7 +96,7 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
 
   // call the advanced callback and return if available
   if (cb->advanced != nullptr) {
-    cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
+      cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len, props);
     return;
   }
 
@@ -142,7 +142,7 @@ MQTTClient::~MQTTClient() {
   free(this->writeBuf);
 }
 
-void MQTTClient::begin(const char hostname[], int port, Client &client) {
+void MQTTClient::begin(const char hostname[], int port, Client &client, lwmqtt_protocol_t protocol) {
   // set hostname and port
   this->setHost(hostname, port);
 
@@ -151,6 +151,7 @@ void MQTTClient::begin(const char hostname[], int port, Client &client) {
 
   // initialize client
   lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
+  lwmqtt_set_protocol(&this->client, protocol);
 
   // set timers
   lwmqtt_set_timers(&this->client, &this->timer1, &this->timer2, lwmqtt_arduino_timer_set, lwmqtt_arduino_timer_get);
@@ -246,7 +247,8 @@ void MQTTClient::setOptions(int keepAlive, bool cleanSession, int timeout) {
   this->timeout = (uint32_t)timeout;
 }
 
-bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos) {
+bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos,
+                         lwmqtt_properties_t props) {
   // return immediately if not connected
   if (!this->connected()) {
     return false;
@@ -260,7 +262,7 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   message.qos = lwmqtt_qos_t(qos);
 
   // publish message
-  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout);
+  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, props, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -319,14 +321,15 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
   return true;
 }
 
-bool MQTTClient::subscribe(const char topic[], int qos) {
+bool MQTTClient::subscribe(const char topic[], int qos, lwmqtt_properties_t props) {
   // return immediately if not connected
   if (!this->connected()) {
     return false;
   }
 
   // subscribe to topic
-  this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), (lwmqtt_qos_t)qos, this->timeout);
+  lwmqtt_sub_options_t subopts = {.qos = (lwmqtt_qos_t)qos};
+  this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), subopts, props, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -337,14 +340,14 @@ bool MQTTClient::subscribe(const char topic[], int qos) {
   return true;
 }
 
-bool MQTTClient::unsubscribe(const char topic[]) {
+bool MQTTClient::unsubscribe(const char topic[], lwmqtt_properties_t props) {
   // return immediately if not connected
   if (!this->connected()) {
     return false;
   }
 
   // unsubscribe from topic
-  this->_lastError = lwmqtt_unsubscribe_one(&this->client, lwmqtt_string(topic), this->timeout);
+  this->_lastError = lwmqtt_unsubscribe_one(&this->client, lwmqtt_string(topic), props, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -393,14 +396,14 @@ bool MQTTClient::connected() {
   return this->netClient != nullptr && this->netClient->connected() == 1 && this->_connected;
 }
 
-bool MQTTClient::disconnect() {
+bool MQTTClient::disconnect(uint8_t reason, lwmqtt_properties_t props) {
   // return immediately if not connected anymore
   if (!this->connected()) {
     return false;
   }
 
   // cleanly disconnect
-  this->_lastError = lwmqtt_disconnect(&this->client, this->timeout);
+  this->_lastError = lwmqtt_disconnect(&this->client, reason, props, this->timeout);
 
   // close
   this->close();

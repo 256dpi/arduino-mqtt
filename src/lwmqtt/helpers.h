@@ -65,6 +65,10 @@ lwmqtt_err_t lwmqtt_read_num(uint8_t **buf, const uint8_t *buf_end, uint16_t *nu
  */
 lwmqtt_err_t lwmqtt_write_num(uint8_t **buf, const uint8_t *buf_end, uint16_t num);
 
+lwmqtt_err_t lwmqtt_write_num32(uint8_t **buf, const uint8_t *buf_end, uint32_t num);
+
+lwmqtt_err_t lwmqtt_read_num32(uint8_t **buf, const uint8_t *buf_end, uint32_t *num);
+
 /**
  * Reads a string from the specified buffer into the passed object. The pointer is incremented by the bytes read.
  *
@@ -133,5 +137,10 @@ lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t 
  * @return LWMQTT_SUCCESS, LWMQTT_BUFFER_TOO_SHORT or LWMQTT_VARNUM_OVERFLOW.
  */
 lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t varnum);
+
+size_t lwmqtt_propslen(lwmqtt_protocol_t prot, lwmqtt_properties_t props);
+
+lwmqtt_err_t lwmqtt_write_props(uint8_t **buf, const uint8_t *buf_end, lwmqtt_protocol_t prot,
+                                lwmqtt_properties_t props);
 
 #endif
