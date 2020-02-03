@@ -115,11 +115,13 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
     str_payload = String((const char *)message.payload);
   }
 
+#if has_functional
   // call the lambda callback and return if available
   if (cb->lambda != nullptr) {
     cb->lambda(str_topic, str_payload);
     return;
   }
+#endif
 
   // call simple callback
   cb->simple(str_topic, str_payload);
@@ -169,13 +171,15 @@ void MQTTClient::begin(const char _hostname[], int _port, Client &_client) {
   lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
 }
 
-void MQTTClient::onMessage(MQTTClientCallbackLambda cb) {
+#if has_functional
+void MQTTClient::onMessage(MQTTClientCallbackSimpleLambda cb) {
   // set callback
   this->callback.client = this;
   this->callback.simple = nullptr;
   this->callback.lambda = cb;
   this->callback.advanced = nullptr;
 }
+#endif
 
 void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
   // set callback
