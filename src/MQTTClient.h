@@ -79,6 +79,9 @@ class MQTTClient {
   void setWill(const char topic[], const char payload[], bool retained, int qos);
   void clearWill();
 
+  void setKeepAlive(int keepAlive);
+  void setCleanSession(bool cleanSession);
+  void setTimeout(int timeout);
   void setOptions(int keepAlive, bool cleanSession, int timeout);
 
   bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr, skip); }

@@ -239,11 +239,16 @@ void MQTTClient::clearWill() {
   this->will = nullptr;
 }
 
-void MQTTClient::setOptions(int keepAlive, bool cleanSession, int timeout) {
-  // set new options
-  this->keepAlive = (uint16_t)keepAlive;
-  this->cleanSession = cleanSession;
-  this->timeout = (uint32_t)timeout;
+void MQTTClient::setKeepAlive(int _keepAlive) { this->keepAlive = _keepAlive; }
+
+void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cleanSession; }
+
+void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
+
+void MQTTClient::setOptions(int _keepAlive, bool _cleanSession, int _timeout) {
+  this->setKeepAlive(_keepAlive);
+  this->setCleanSession(_cleanSession);
+  this->setTimeout(_timeout);
 }
 
 bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos) {
