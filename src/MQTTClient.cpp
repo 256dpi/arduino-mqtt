@@ -74,7 +74,7 @@ inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, siz
   *sent = n->client->write(buffer, len);
   if (*sent <= 0) {
     return LWMQTT_NETWORK_FAILED_WRITE;
-  };
+  }
 
   return LWMQTT_SUCCESS;
 }
@@ -142,12 +142,12 @@ MQTTClient::~MQTTClient() {
   free(this->writeBuf);
 }
 
-void MQTTClient::begin(const char hostname[], int port, Client &client) {
+void MQTTClient::begin(const char _hostname[], int _port, Client &_client) {
   // set hostname and port
-  this->setHost(hostname, port);
+  this->setHost(_hostname, _port);
 
   // set client
-  this->netClient = &client;
+  this->netClient = &_client;
 
   // initialize client
   lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
@@ -181,15 +181,15 @@ void MQTTClient::setClockSource(MQTTClientClockSource cb) {
   this->timer2.millis = cb;
 }
 
-void MQTTClient::setHost(const char hostname[], int port) {
+void MQTTClient::setHost(const char _hostname[], int _port) {
   // free hostname if set
   if (this->hostname != nullptr) {
     free((void *)this->hostname);
   }
 
   // set hostname and port
-  this->hostname = strdup(hostname);
-  this->port = port;
+  this->hostname = strdup(_hostname);
+  this->port = _port;
 }
 
 void MQTTClient::setWill(const char topic[], const char payload[], bool retained, int qos) {

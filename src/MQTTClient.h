@@ -7,7 +7,7 @@
 
 extern "C" {
 #include "lwmqtt/lwmqtt.h"
-};
+}
 
 typedef uint32_t (*MQTTClientClockSource)();
 
@@ -63,7 +63,7 @@ class MQTTClient {
 
   ~MQTTClient();
 
-  void begin(const char hostname[], Client &client) { this->begin(hostname, 1883, client); }
+  void begin(const char _hostname[], Client &_client) { this->begin(_hostname, 1883, _client); }
   void begin(const char hostname[], int port, Client &client);
 
   void onMessage(MQTTClientCallbackSimple cb);
@@ -71,7 +71,7 @@ class MQTTClient {
 
   void setClockSource(MQTTClientClockSource cb);
 
-  void setHost(const char hostname[]) { this->setHost(hostname, 1883); }
+  void setHost(const char _hostname[]) { this->setHost(_hostname, 1883); }
   void setHost(const char hostname[], int port);
 
   void setWill(const char topic[]) { this->setWill(topic, ""); }
