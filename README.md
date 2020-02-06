@@ -149,6 +149,9 @@ void onMessageAdvanced(MQTTClientCallbackAdvanced);
 Set more advanced options:
 
 ```c++
+void setKeepAlive(int keepAlive);
+void setCleanSession(bool cleanSession);
+void setTimeout(int timeout);
 void setOptions(int keepAlive, bool cleanSession, int timeout);
 ```
 
@@ -174,7 +177,7 @@ bool connect(const char clientId[], const char username[], const char password[]
 ```
 
 - If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
-- This functions returns a boolean that indicates if the connection has been established successfully.
+- The functions return a boolean that indicates if the connection has been established successfully (true).
 
 Publishes a message to the broker with an optional payload:
 
@@ -191,6 +194,8 @@ bool publish(const char topic[], const char payload[], int length);
 bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
 ```
 
+- The functions return a boolean that indicates if the publish has been successful (true).
+
 Subscribe to a topic:
 
 ```c++
@@ -200,12 +205,16 @@ bool subscribe(const char topic[]);
 bool subscribe(const char topic[], int qos);
 ```
 
+- The functions return a boolean that indicates if the subscribe has been successful (true).
+
 Unsubscribe from a topic:
 
 ```c++
 bool unsubscribe(const String &topic);
 bool unsubscribe(const char topic[]);
 ```
+
+- The functions return a boolean that indicates if the unsubscribe has been successful (true).
 
 Sends and receives packets:
 
@@ -214,6 +223,7 @@ bool loop();
 ```
 
 - This function should be called in every `loop`.
+- The function returns a boolean that indicates if the loop has been successful (true).
 
 Check if the client is currently connected:
 
@@ -236,6 +246,8 @@ Disconnect from the broker:
 ```c++
 bool disconnect();
 ```
+
+- The function returns a boolean that indicates if the disconnect has been successful (true).
 
 ## Release Management
 
