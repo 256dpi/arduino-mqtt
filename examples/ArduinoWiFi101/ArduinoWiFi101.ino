@@ -35,13 +35,7 @@ void connect() {
 
   Serial.println("\nconnected!");
 
-  // Publish a blank retained message in order to prevent us receiving large
-  // retained messages that have been published by others. Large retained
-  // messages can result in overflowing the ardiuno-mqtt client's default
-  // buffer size. If a large retained message is still being set, then it may
-  // still glitch this program if that message is published between this
-  // retained message and the subscription to the topic.
-  // Then, subscribe to the same topic
+  // Clear retained messages that may have been published earlier on this topic.
   client.publish("/hello", "", 1, true);
   client.subscribe("/hello");
   // client.unsubscribe("/hello");
