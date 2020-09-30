@@ -50,7 +50,7 @@ class MQTTClient {
   lwmqtt_arduino_network_t network = {nullptr};
   lwmqtt_arduino_timer_t timer1 = {0, nullptr};
   lwmqtt_arduino_timer_t timer2 = {0, nullptr};
-  lwmqtt_client_t client = {0};
+  lwmqtt_client_t client = lwmqtt_client_t();
 
   bool _connected = false;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;

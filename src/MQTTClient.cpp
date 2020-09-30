@@ -120,9 +120,6 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
 }
 
 MQTTClient::MQTTClient(int bufSize) {
-  // reset client
-  memset(&this->client, 0, sizeof(lwmqtt_client_t));
-
   // allocate buffers
   this->bufSize = (size_t)bufSize;
   this->readBuf = (uint8_t *)malloc((size_t)bufSize + 1);
