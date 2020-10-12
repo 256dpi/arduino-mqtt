@@ -4,23 +4,34 @@ inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
-  // set future end time
+  t->timeout = timeout;
   if (t->millis != nullptr) {
-    t->end = (uint32_t)(t->millis() + timeout);
+    t->start = t->millis();
   } else {
-    t->end = (uint32_t)(millis() + timeout);
+    t->start = millis();
   }
 }
 
 inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
-
-  // get difference to end time
+  uint32_t current, diff;
   if (t->millis != nullptr) {
-    return (int32_t)(t->end - t->millis());
+    current = t->millis();
   } else {
-    return (int32_t)(t->end - millis());
+    current = millis();
+  }
+
+  if (current < t->start) {
+      diff = ULONG_MAX - t->start + current;
+  } else {
+      diff = current - t->start;
+  }
+
+  if (diff > t->timeout) {
+    return -(diff - t->timeout);
+  } else {
+    return t->timeout - diff;
   }
 }
 

@@ -12,7 +12,8 @@ extern "C" {
 typedef uint32_t (*MQTTClientClockSource)();
 
 typedef struct {
-  uint32_t end;
+  uint32_t start;
+  uint32_t timeout;
   MQTTClientClockSource millis;
 } lwmqtt_arduino_timer_t;
 
@@ -48,8 +49,8 @@ class MQTTClient {
   MQTTClientCallback callback;
 
   lwmqtt_arduino_network_t network = {nullptr};
-  lwmqtt_arduino_timer_t timer1 = {0, nullptr};
-  lwmqtt_arduino_timer_t timer2 = {0, nullptr};
+  lwmqtt_arduino_timer_t timer1 = {0, 0, nullptr};
+  lwmqtt_arduino_timer_t timer2 = {0, 0, nullptr};
   lwmqtt_client_t client = {0};
 
   bool _connected = false;
