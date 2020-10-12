@@ -1,6 +1,20 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
+#if defined(ESP8266)
+  #include <functional>
+  #define MQTT_HAS_FUNCTIONAL 1
+#elif defined __has_include
+  #if __has_include(<functional>)
+    #include <functional>
+    #define MQTT_HAS_FUNCTIONAL 1
+  #else
+    #define MQTT_HAS_FUNCTIONAL 0
+  #endif
+#else
+  #define MQTT_HAS_FUNCTIONAL 0
+#endif
+
 #include <Arduino.h>
 #include <Client.h>
 #include <Stream.h>
@@ -25,11 +39,19 @@ class MQTTClient;
 
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
 typedef void (*MQTTClientCallbackAdvanced)(MQTTClient *client, char topic[], char bytes[], int length);
+#if MQTT_HAS_FUNCTIONAL
+typedef std::function<void(String &topic, String &payload)> MQTTClientCallbackSimpleFunction;
+typedef std::function<void(MQTTClient *client, char topic[], char bytes[], int length)> MQTTClientCallbackAdvancedFunction;
+#endif
 
 typedef struct {
   MQTTClient *client = nullptr;
   MQTTClientCallbackSimple simple = nullptr;
   MQTTClientCallbackAdvanced advanced = nullptr;
+#if MQTT_HAS_FUNCTIONAL
+  MQTTClientCallbackSimpleFunction functionSimple = nullptr;
+  MQTTClientCallbackAdvancedFunction functionAdvanced = nullptr;
+#endif
 } MQTTClientCallback;
 
 class MQTTClient {
@@ -79,6 +101,10 @@ class MQTTClient {
 
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
+#if MQTT_HAS_FUNCTIONAL
+  void onMessage(MQTTClientCallbackSimpleFunction cb);
+  void onMessageAdvanced(MQTTClientCallbackAdvancedFunction cb);
+#endif
 
   void setClockSource(MQTTClientClockSource cb);
 
