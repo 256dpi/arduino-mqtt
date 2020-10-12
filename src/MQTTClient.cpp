@@ -111,11 +111,23 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
     cb->advanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
     return;
   }
+#if MQTT_HAS_FUNCTIONAL
+  if (cb->functionAdvanced != nullptr) {
+    cb->functionAdvanced(cb->client, terminated_topic, (char *)message.payload, (int)message.payload_len);
+    return;
+  }
+#endif
 
   // return if simple callback is not set
+#if MQTT_HAS_FUNCTIONAL
+  if (cb->simple == nullptr && cb->functionSimple == nullptr) {
+    return;
+  }
+#else
   if (cb->simple == nullptr) {
     return;
   }
+#endif
 
   // create topic string
   String str_topic = String(terminated_topic);
@@ -127,7 +139,15 @@ static void MQTTClientHandler(lwmqtt_client_t * /*client*/, void *ref, lwmqtt_st
   }
 
   // call simple callback
+#if MQTT_HAS_FUNCTIONAL
+  if (cb->functionSimple != nullptr) {
+    cb->functionSimple(str_topic, str_payload);
+  } else {
+    cb->simple(str_topic, str_payload);
+  }
+#else
   cb->simple(str_topic, str_payload);
+#endif
 }
 
 MQTTClient::MQTTClient(int bufSize) {
@@ -173,6 +193,10 @@ void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
   this->callback.client = this;
   this->callback.simple = cb;
   this->callback.advanced = nullptr;
+#if MQTT_HAS_FUNCTIONAL
+  this->callback.functionSimple = nullptr;
+  this->callback.functionAdvanced = nullptr;
+#endif
 }
 
 void MQTTClient::onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
@@ -180,7 +204,31 @@ void MQTTClient::onMessageAdvanced(MQTTClientCallbackAdvanced cb) {
   this->callback.client = this;
   this->callback.simple = nullptr;
   this->callback.advanced = cb;
+#if MQTT_HAS_FUNCTIONAL
+  this->callback.functionSimple = nullptr;
+  this->callback.functionAdvanced = nullptr;
+#endif
 }
+
+#if MQTT_HAS_FUNCTIONAL
+void MQTTClient::onMessage(MQTTClientCallbackSimpleFunction cb) {
+  // set callback
+  this->callback.client = this;
+  this->callback.simple = nullptr;
+  this->callback.functionSimple = cb;
+  this->callback.advanced = nullptr;
+  this->callback.functionAdvanced = nullptr;
+}
+
+void MQTTClient::onMessageAdvanced(MQTTClientCallbackAdvancedFunction cb) {
+  // set callback
+  this->callback.client = this;
+  this->callback.simple = nullptr;
+  this->callback.functionSimple = nullptr;
+  this->callback.advanced = nullptr;
+  this->callback.functionAdvanced = cb;
+}
+#endif
 
 void MQTTClient::setClockSource(MQTTClientClockSource cb) {
   this->timer1.millis = cb;

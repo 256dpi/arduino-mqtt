@@ -148,6 +148,28 @@ void onMessageAdvanced(MQTTClientCallbackAdvanced);
 // Callback signature: void messageReceived(MQTTClient *client, char topic[], char payload[], int payload_length) {}
 ```
 
+If the platform has C++ `functional` support additional callback types are available:
+
+```c++
+void onMessage(MQTTClientCallbackSimpleFunction cb);
+// Callback signature: std::function<void(String &topic, String &payload)>
+void onMessageAdvanced(MQTTClientCallbackAdvancedFunction cb);
+// Callback signature: std::function<void(MQTTClient *client, char topic[], char bytes[], int length)>
+// Using with lambda:
+mqtt_client.onMessageAdvanced(
+  [device](MQTTClient *client, char topic[], char payload[], int length) {
+    if (strcmp("mydevice/set", topic) == 0) {
+      device->handlePayload(payload, length);
+  });
+// Using with a method of a class
+void Device::registerHandler(MQTTClient &mqtt_client)
+{
+  using namespace std::placeholders;
+
+  mqtt_client.onMessageAdvanced(std::bind(&Device::handleMessage, this, _1, _2, _3, _4));
+}
+```
+
 - The set callback is mostly called during a call to `loop()` but may also be called during a call to `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` if messages have been received before receiving the required acknowledgement. Therefore, it is strongly recommended to not call `subscribe()`, `unsubscribe()` or `publish() // QoS > 0` directly in the callback.
 - In case you need a reference to an object that manages the client, use the `void * ref` property on the client to store a pointer, and access it directly from the advanced callback..
 
