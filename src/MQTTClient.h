@@ -4,8 +4,14 @@
 #if defined(ESP8266)
 #include <functional>
 #define MQTT_HAS_FUNCTIONAL 1
-#elif defined __has_include
+#elif defined(__has_include)
 #if __has_include(<functional>)
+#if defined(min)
+#undef min
+#endif
+#if defined(max)
+#undef max
+#endif
 #include <functional>
 #define MQTT_HAS_FUNCTIONAL 1
 #else
