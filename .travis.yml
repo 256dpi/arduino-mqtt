@@ -1,7 +1,7 @@
 language: generic
 env:
   global:
-    - IDE_VERSION=1.8.7
+    - IDE_VERSION=1.8.13
   matrix:
     - EXAMPLE="AdafruitHuzzahESP8266" BOARD="esp8266:esp8266:huzzah:eesz=4M3M,xtal=80"
     - EXAMPLE="AdafruitHuzzahESP8266Secure" BOARD="esp8266:esp8266:huzzah:eesz=4M3M,xtal=80"
