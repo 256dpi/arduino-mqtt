@@ -1,6 +1,10 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
+#include <Arduino.h>
+#include <Client.h>
+#include <Stream.h>
+
 #if defined(ESP8266)
 #include <functional>
 #define MQTT_HAS_FUNCTIONAL 1
@@ -14,10 +18,6 @@
 #else
 #define MQTT_HAS_FUNCTIONAL 0
 #endif
-
-#include <Arduino.h>
-#include <Client.h>
-#include <Stream.h>
 
 extern "C" {
 #include "lwmqtt/lwmqtt.h"
