@@ -4,7 +4,10 @@ inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
 
+  // set timeout
   t->timeout = timeout;
+
+  // set start
   if (t->millis != nullptr) {
     t->start = t->millis();
   } else {
@@ -15,19 +18,24 @@ inline void lwmqtt_arduino_timer_set(void *ref, uint32_t timeout) {
 inline int32_t lwmqtt_arduino_timer_get(void *ref) {
   // cast timer reference
   auto t = (lwmqtt_arduino_timer_t *)ref;
-  uint32_t current, diff;
+
+  // get now
+  uint32_t now;
   if (t->millis != nullptr) {
-    current = t->millis();
+    now = t->millis();
   } else {
-    current = millis();
+    now = millis();
   }
 
-  if (current < t->start) {
-      diff = ULONG_MAX - t->start + current;
+  // get difference (account for roll-overs)
+  uint32_t diff;
+  if (now < t->start) {
+    diff = UINT32_MAX - t->start + now;
   } else {
-      diff = current - t->start;
+    diff = now - t->start;
   }
 
+  // return relative time
   if (diff > t->timeout) {
     return -(diff - t->timeout);
   } else {
