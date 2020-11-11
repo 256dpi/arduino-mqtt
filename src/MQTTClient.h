@@ -43,6 +43,7 @@ class MQTTClient {
 
   Client *netClient = nullptr;
   const char *hostname = nullptr;
+  IPAddress ipaddress;
   int port = 0;
   lwmqtt_will_t *will = nullptr;
   MQTTClientCallback callback;
@@ -65,6 +66,9 @@ class MQTTClient {
 
   void begin(const char _hostname[], Client &_client) { this->begin(_hostname, 1883, _client); }
   void begin(const char hostname[], int port, Client &client);
+  
+  void begin(IPAddress _ipAddr, Client &client) { this->begin(_ipAddr, 1883, client); }
+  void begin(IPAddress ipAddr, int port, Client &client);
 
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
@@ -73,6 +77,9 @@ class MQTTClient {
 
   void setHost(const char _hostname[]) { this->setHost(_hostname, 1883); }
   void setHost(const char hostname[], int port);
+  
+  void setHost(IPAddress _ipAddr) { this->setHost(_ipAddr, 1883); }
+  void setHost(IPAddress ipAddr, int port);
 
   void setWill(const char topic[]) { this->setWill(topic, ""); }
   void setWill(const char topic[], const char payload[]) { this->setWill(topic, payload, false, 0); }
