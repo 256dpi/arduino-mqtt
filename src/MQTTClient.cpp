@@ -206,15 +206,15 @@ void MQTTClient::setHost(IPAddress ipAddr, int port) {
   this->port = port;
 }
 
-void MQTTClient::setHost(const char hostname[], int port) {
+void MQTTClient::setHost(const char _hostname[], int _port) {
   // free hostname if set
   if (this->hostname != nullptr) {
     free((void *)this->hostname);
   }
 
   // set hostname and port
-  this->hostname = strdup(hostname);
-  this->port = port;
+  this->hostname = strdup(_hostname);
+  this->port = _port;
 }
 
 void MQTTClient::setWill(const char topic[], const char payload[], bool retained, int qos) {
