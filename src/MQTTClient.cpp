@@ -140,12 +140,32 @@ MQTTClient::~MQTTClient() {
   free(this->writeBuf);
 }
 
-void MQTTClient::begin(const char _hostname[], int _port, Client &_client) {
+void MQTTClient::begin(IPAddress ipAddr, int port, Client &client) {
   // set hostname and port
-  this->setHost(_hostname, _port);
+  this->setHost(ipAddr, port);
 
   // set client
-  this->netClient = &_client;
+  this->netClient = &client;
+
+  // initialize client
+  lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
+
+  // set timers
+  lwmqtt_set_timers(&this->client, &this->timer1, &this->timer2, lwmqtt_arduino_timer_set, lwmqtt_arduino_timer_get);
+
+  // set network
+  lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
+
+  // set callback
+  lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
+}
+
+void MQTTClient::begin(const char hostname[], int port, Client &client) {
+  // set hostname and port
+  this->setHost(hostname, port);
+
+  // set client
+  this->netClient = &client;
 
   // initialize client
   lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
@@ -179,15 +199,22 @@ void MQTTClient::setClockSource(MQTTClientClockSource cb) {
   this->timer2.millis = cb;
 }
 
-void MQTTClient::setHost(const char _hostname[], int _port) {
+void MQTTClient::setHost(IPAddress ipAddr, int port) {
+  // set hostname and port
+  this->ipaddress = ipAddr;
+  
+  this->port = port;
+}
+
+void MQTTClient::setHost(const char hostname[], int port) {
   // free hostname if set
   if (this->hostname != nullptr) {
     free((void *)this->hostname);
   }
 
   // set hostname and port
-  this->hostname = strdup(_hostname);
-  this->port = _port;
+  this->hostname = strdup(hostname);
+  this->port = port;
 }
 
 void MQTTClient::setWill(const char topic[], const char payload[], bool retained, int qos) {
@@ -285,7 +312,19 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
 
   // connect to host
   if (!skip) {
-    int ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
+	int ret = 0;
+	if(this->hostname != nullptr){
+	  ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
+	}else{
+	  uint32_t thisIP = 0;
+	  thisIP = ipaddress[0];
+	  thisIP |= uint32_t(ipaddress[1] << 8);
+	  thisIP |= uint32_t(ipaddress[2] << 16);
+	  thisIP |= uint32_t(ipaddress[3] << 24);
+	  
+	  ret = this->netClient->connect(thisIP, (uint16_t)this->port);
+	}
+	
     if (ret <= 0) {
       this->_lastError = LWMQTT_NETWORK_FAILED_CONNECT;
       return false;
