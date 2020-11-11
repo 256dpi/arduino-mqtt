@@ -140,23 +140,9 @@ MQTTClient::~MQTTClient() {
   free(this->writeBuf);
 }
 
-void MQTTClient::begin(IPAddress ipAddr, int port, Client &client) {
-  // set hostname and port
-  this->setHost(ipAddr, port);
-  // finish up begin() call
-  _begin(port, client);
-}
-
-void MQTTClient::begin(const char hostname[], int port, Client &client) {
-  // set hostname and port
-  this->setHost(hostname, port);
-  // finish up begin() call
-  _begin(port, client);
-}
-
-void MQTTClient::_begin(int port, Client &client){
+void MQTTClient::begin(Client &_client) {
   // set client
-  this->netClient = &client;
+  this->netClient = &_client;
 
   // initialize client
   lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
@@ -190,10 +176,9 @@ void MQTTClient::setClockSource(MQTTClientClockSource cb) {
   this->timer2.millis = cb;
 }
 
-void MQTTClient::setHost(IPAddress _ipAddr, int _port) {
-  // set hostname and port
-  this->ipaddress = _ipAddr;
-  
+void MQTTClient::setHost(IPAddress _address, int _port) {
+  // set address and port
+  this->address = _address;
   this->port = _port;
 }
 
@@ -292,7 +277,7 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   return true;
 }
 
-bool MQTTClient::connect(const char clientId[], const char username[], const char password[], bool skip) {
+bool MQTTClient::connect(const char clientID[], const char username[], const char password[], bool skip) {
   // close left open connection if still connected
   if (!skip && this->connected()) {
     this->close();
@@ -303,13 +288,12 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
 
   // connect to host
   if (!skip) {
-	int ret = 0;
-	if(this->hostname != nullptr){
-	  ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
-	}else{
-	  ret = this->netClient->connect(this->ipaddress, (uint16_t)this->port);
-	}
-	
+    int ret;
+    if (this->hostname != nullptr) {
+      ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
+    } else {
+      ret = this->netClient->connect(this->address, (uint16_t)this->port);
+    }
     if (ret <= 0) {
       this->_lastError = LWMQTT_NETWORK_FAILED_CONNECT;
       return false;
@@ -320,7 +304,7 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
   lwmqtt_options_t options = lwmqtt_default_options;
   options.keep_alive = this->keepAlive;
   options.clean_session = this->cleanSession;
-  options.client_id = lwmqtt_string(clientId);
+  options.client_id = lwmqtt_string(clientID);
 
   // set username and password if available
   if (username != nullptr) {

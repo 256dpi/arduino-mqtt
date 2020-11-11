@@ -110,8 +110,11 @@ void loop() {
 Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
+void begin(Client &client);
 void begin(const char hostname[], Client &client);
 void begin(const char hostname[], int port, Client &client);
+void begin(IPAddress address, Client &client);
+void begin(IPAddress address, int port, Client &client);
 ```
 
 - Specify port `8883` when using secure clients for encrypted connections.
@@ -122,6 +125,8 @@ The hostname and port can also be changed after calling `begin()`:
 ```c++
 void setHost(const char hostname[]);
 void setHost(const char hostname[], int port);
+void setHost(IPAddress address);
+void setHost(IPAddress address, int port);
 ```
 
 Set a will message (last testament) that gets registered on the broker after connecting. `setWill()` has to be called before calling `connect()`:
@@ -171,9 +176,9 @@ void setClockSource(MQTTClientClockSource);
 Connect to broker using the supplied client id and an optional username and password:
 
 ```c++
-bool connect(const char clientId[], bool skip = false);
-bool connect(const char clientId[], const char username[], bool skip = false);
-bool connect(const char clientId[], const char username[], const char password[], bool skip = false);
+bool connect(const char clientID[], bool skip = false);
+bool connect(const char clientID[], const char username[], bool skip = false);
+bool connect(const char clientID[], const char username[], const char password[], bool skip = false);
 ```
 
 - If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
