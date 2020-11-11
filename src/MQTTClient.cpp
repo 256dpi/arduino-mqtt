@@ -246,12 +246,6 @@ void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cle
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
 
-void MQTTClient::setOptions(int _keepAlive, bool _cleanSession, int _timeout) {
-  this->setKeepAlive(_keepAlive);
-  this->setCleanSession(_cleanSession);
-  this->setTimeout(_timeout);
-}
-
 bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos) {
   // return immediately if not connected
   if (!this->connected()) {

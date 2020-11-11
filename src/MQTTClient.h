@@ -94,7 +94,12 @@ class MQTTClient {
   void setKeepAlive(int keepAlive);
   void setCleanSession(bool cleanSession);
   void setTimeout(int timeout);
-  void setOptions(int keepAlive, bool cleanSession, int timeout);
+
+  void setOptions(int _keepAlive, bool _cleanSession, int _timeout) {
+    this->setKeepAlive(_keepAlive);
+    this->setCleanSession(_cleanSession);
+    this->setTimeout(_timeout);
+  }
 
   bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr, skip); }
   bool connect(const char clientId[], const char username[], bool skip = false) {
