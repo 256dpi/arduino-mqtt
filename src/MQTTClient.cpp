@@ -143,27 +143,18 @@ MQTTClient::~MQTTClient() {
 void MQTTClient::begin(IPAddress ipAddr, int port, Client &client) {
   // set hostname and port
   this->setHost(ipAddr, port);
-
-  // set client
-  this->netClient = &client;
-
-  // initialize client
-  lwmqtt_init(&this->client, this->writeBuf, this->bufSize, this->readBuf, this->bufSize);
-
-  // set timers
-  lwmqtt_set_timers(&this->client, &this->timer1, &this->timer2, lwmqtt_arduino_timer_set, lwmqtt_arduino_timer_get);
-
-  // set network
-  lwmqtt_set_network(&this->client, &this->network, lwmqtt_arduino_network_read, lwmqtt_arduino_network_write);
-
-  // set callback
-  lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
+  // finish up begin() call
+  _begin(port, client);
 }
 
 void MQTTClient::begin(const char hostname[], int port, Client &client) {
   // set hostname and port
   this->setHost(hostname, port);
+  // finish up begin() call
+  _begin(port, client);
+}
 
+void MQTTClient::_begin(int port, Client &client){
   // set client
   this->netClient = &client;
 
@@ -199,11 +190,11 @@ void MQTTClient::setClockSource(MQTTClientClockSource cb) {
   this->timer2.millis = cb;
 }
 
-void MQTTClient::setHost(IPAddress ipAddr, int port) {
+void MQTTClient::setHost(IPAddress _ipAddr, int _port) {
   // set hostname and port
-  this->ipaddress = ipAddr;
+  this->ipaddress = _ipAddr;
   
-  this->port = port;
+  this->port = _port;
 }
 
 void MQTTClient::setHost(const char _hostname[], int _port) {
@@ -316,13 +307,7 @@ bool MQTTClient::connect(const char clientId[], const char username[], const cha
 	if(this->hostname != nullptr){
 	  ret = this->netClient->connect(this->hostname, (uint16_t)this->port);
 	}else{
-	  uint32_t thisIP = 0;
-	  thisIP = ipaddress[0];
-	  thisIP |= uint32_t(ipaddress[1] << 8);
-	  thisIP |= uint32_t(ipaddress[2] << 16);
-	  thisIP |= uint32_t(ipaddress[3] << 24);
-	  
-	  ret = this->netClient->connect(thisIP, (uint16_t)this->port);
+	  ret = this->netClient->connect(this->ipaddress, (uint16_t)this->port);
 	}
 	
     if (ret <= 0) {

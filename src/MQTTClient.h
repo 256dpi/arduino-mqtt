@@ -136,6 +136,7 @@ class MQTTClient {
 
  private:
   void close();
+  void _begin(int port, Client &client);
 };
 
 #endif
