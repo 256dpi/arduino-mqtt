@@ -43,7 +43,7 @@ class MQTTClient {
 
   Client *netClient = nullptr;
   const char *hostname = nullptr;
-  IPAddress ipaddress;
+  IPAddress address;
   int port = 0;
   lwmqtt_will_t *will = nullptr;
   MQTTClientCallback callback;
@@ -64,11 +64,17 @@ class MQTTClient {
 
   ~MQTTClient();
 
+  void begin(Client &_client);
   void begin(const char _hostname[], Client &_client) { this->begin(_hostname, 1883, _client); }
-  void begin(const char hostname[], int port, Client &client);
-  
-  void begin(IPAddress _ipAddr, Client &client) { this->begin(_ipAddr, 1883, client); }
-  void begin(IPAddress ipAddr, int port, Client &client);
+  void begin(const char _hostname[], int _port, Client &_client) {
+    this->begin(_client);
+    this->setHost(_hostname, _port);
+  }
+  void begin(IPAddress _address, Client &_client) { this->begin(_address, 1883, _client); }
+  void begin(IPAddress _address, int _port, Client &_client) {
+    this->begin(_client);
+    this->setHost(_address, _port);
+  }
 
   void onMessage(MQTTClientCallbackSimple cb);
   void onMessageAdvanced(MQTTClientCallbackAdvanced cb);
@@ -77,9 +83,8 @@ class MQTTClient {
 
   void setHost(const char _hostname[]) { this->setHost(_hostname, 1883); }
   void setHost(const char hostname[], int port);
-  
-  void setHost(IPAddress _ipAddr) { this->setHost(_ipAddr, 1883); }
-  void setHost(IPAddress ipAddr, int port);
+  void setHost(IPAddress _address) { this->setHost(_address, 1883); }
+  void setHost(IPAddress _address, int port);
 
   void setWill(const char topic[]) { this->setWill(topic, ""); }
   void setWill(const char topic[], const char payload[]) { this->setWill(topic, payload, false, 0); }
@@ -95,7 +100,7 @@ class MQTTClient {
   bool connect(const char clientId[], const char username[], bool skip = false) {
     return this->connect(clientId, username, nullptr, skip);
   }
-  bool connect(const char clientId[], const char username[], const char password[], bool skip = false);
+  bool connect(const char clientID[], const char username[], const char password[], bool skip = false);
 
   bool publish(const String &topic) { return this->publish(topic.c_str(), ""); }
   bool publish(const char topic[]) { return this->publish(topic, ""); }
@@ -136,7 +141,6 @@ class MQTTClient {
 
  private:
   void close();
-  void _begin(int port, Client &client);
 };
 
 #endif
