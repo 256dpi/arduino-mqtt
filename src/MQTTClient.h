@@ -9,6 +9,9 @@
 #if defined(min)
 #undef min
 #endif
+#if defined(max)
+#undef max
+#endif
 #include <functional>
 #define MQTT_HAS_FUNCTIONAL 1
 #else
