@@ -2,7 +2,7 @@
 // a WiFi Shield to connect to shiftr.io.
 //
 // You can check on your device after a successful
-// connection here: https://shiftr.io/try.
+// connection here: https://www.shiftr.io/try.
 //
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
@@ -26,7 +26,7 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "try", "try")) {
+  while (!client.connect("arduino", "public", "public")) {
     Serial.print(".");
     delay(1000);
   }
@@ -52,7 +52,7 @@ void setup() {
 
   // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
   // by Arduino. You need to set the IP address directly.
-  client.begin("broker.shiftr.io", net);
+  client.begin("public.cloud.shiftr.io", net);
   client.onMessage(messageReceived);
 
   connect();

@@ -7,7 +7,7 @@
 // https://github.com/arduino-libraries/WiFi101-FirmwareUpdater#to-update-ssl-certificates
 //
 // You can check on your device after a successful
-// connection here: https://shiftr.io/try.
+// connection here: https://www.shiftr.io/try.
 //
 // by Gilberto Conti
 // https://github.com/256dpi/arduino-mqtt
@@ -31,7 +31,7 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "try", "try")) {
+  while (!client.connect("arduino", "public", "public")) {
     Serial.print(".");
     delay(1000);
   }
@@ -59,7 +59,7 @@ void setup() {
   // by Arduino. You need to set the IP address directly.
   //
   // MQTT brokers usually use port 8883 for secure connections.
-  client.begin("broker.shiftr.io", 8883, net);
+  client.begin("public.cloud.shiftr.io", 8883, net);
   client.onMessage(messageReceived);
 
   connect();
