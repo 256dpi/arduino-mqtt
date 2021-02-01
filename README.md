@@ -148,7 +148,7 @@ void onMessage(MQTTClientCallbackSimpleFunction cb);
 // Callback signature: std::function<void(String &topic, String &payload)>
 
 void onMessageAdvanced(MQTTClientCallbackAdvanced);
-// Callback signature: void messageReceived(MQTTClient *client, char topic[], char payload[], int payload_length) {}
+// Callback signature: void messageReceived(MQTTClient *client, char topic[], char bytes[], int length) {}
 
 void onMessageAdvanced(MQTTClientCallbackAdvancedFunction cb);
 // Callback signature: std::function<void(MQTTClient *client, char topic[], char bytes[], int length)>
