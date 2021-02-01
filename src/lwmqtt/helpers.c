@@ -2,10 +2,12 @@
 
 #include "helpers.h"
 
-uint8_t lwmqtt_read_bits(uint8_t byte, int pos, int num) { return (byte & (uint8_t)((~(0xFF << num)) << pos)) >> pos; }
+uint8_t lwmqtt_read_bits(uint8_t byte, int pos, int num) {
+  return (byte & (uint8_t)((~(0xFF << (uint8_t)num)) << (uint8_t)pos)) >> (uint8_t)pos;
+}
 
 void lwmqtt_write_bits(uint8_t *byte, uint8_t value, int pos, int num) {
-  *byte = (*byte & ~(uint8_t)((~(0xFF << num)) << pos)) | (value << pos);
+  *byte = (*byte & ~(uint8_t)((~(0xFFu << (uint8_t)num)) << (uint8_t)pos)) | (value << (uint8_t)pos);
 }
 
 lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, const uint8_t *buf_end, uint8_t **data, size_t len) {
@@ -199,11 +201,11 @@ lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t 
     byte = (*buf)[len - 1];
 
     // add byte to number
-    *varnum += (byte & 127) * multiplier;
+    *varnum += (byte & 127u) * multiplier;
 
     // increase multiplier
     multiplier *= 128;
-  } while ((byte & 128) != 0);
+  } while ((byte & 128u) != 0);
 
   // adjust pointer
   *buf += len;
@@ -235,7 +237,7 @@ lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t
 
     // set the top bit of this byte if there are more to encode
     if (varnum > 0) {
-      byte |= 0x80;
+      byte |= 0x80u;
     }
 
     // write byte

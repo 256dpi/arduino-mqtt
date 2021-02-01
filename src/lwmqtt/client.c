@@ -22,6 +22,9 @@ void lwmqtt_init(lwmqtt_client_t *client, uint8_t *write_buf, size_t write_buf_s
   client->command_timer = NULL;
   client->timer_set = NULL;
   client->timer_get = NULL;
+
+  client->drop_overflow = false;
+  client->overflow_counter = NULL;
 }
 
 void lwmqtt_set_network(lwmqtt_client_t *client, void *ref, lwmqtt_network_read_t read, lwmqtt_network_write_t write) {
@@ -44,6 +47,11 @@ void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *co
 void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t cb) {
   client->callback_ref = ref;
   client->callback = cb;
+}
+
+void lwmqtt_drop_overflow(lwmqtt_client_t *client, bool enabled, uint32_t *counter) {
+  client->drop_overflow = enabled;
+  client->overflow_counter = counter;
 }
 
 static uint16_t lwmqtt_get_next_packet_id(lwmqtt_client_t *client) {
@@ -86,6 +94,36 @@ static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t off
 
     // increment counter
     read += partial_read;
+  }
+
+  return LWMQTT_SUCCESS;
+}
+
+static lwmqtt_err_t lwmqtt_drain_network(lwmqtt_client_t *client, size_t amount) {
+  // read while data is left
+  while (amount > 0) {
+    // check remaining time
+    int32_t remaining_time = client->timer_get(client->command_timer);
+    if (remaining_time <= 0) {
+      return LWMQTT_NETWORK_TIMEOUT;
+    }
+
+    // get max read
+    size_t max_read = amount;
+    if (max_read > client->read_buf_size) {
+      max_read = client->read_buf_size;
+    }
+
+    // read
+    size_t partial_read = 0;
+    lwmqtt_err_t err =
+        client->network_read(client->network, client->read_buf, max_read, &partial_read, (uint32_t)remaining_time);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // decrement counter
+    amount -= partial_read;
   }
 
   return LWMQTT_SUCCESS;
@@ -159,6 +197,26 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *client, size_t
   // check final error
   if (err != LWMQTT_SUCCESS) {
     return err;
+  }
+
+  // handle overflow
+  if (client->drop_overflow && 1 + len + rem_len > client->read_buf_size) {
+    // drain network
+    err = lwmqtt_drain_network(client, rem_len);
+    if (err != LWMQTT_SUCCESS) {
+      return err;
+    }
+
+    // unset packet
+    *packet_type = LWMQTT_NO_PACKET;
+    *read = 0;
+
+    // increment if counter is available
+    if (client->overflow_counter != NULL) {
+      *client->overflow_counter += 1;
+    }
+
+    return LWMQTT_SUCCESS;
   }
 
   // read the rest of the buffer if needed

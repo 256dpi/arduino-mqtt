@@ -163,6 +163,9 @@ struct lwmqtt_client_t {
   void *command_timer;
   lwmqtt_timer_set_t timer_set;
   lwmqtt_timer_get_t timer_get;
+
+  bool drop_overflow;
+  uint32_t *overflow_counter;
 };
 
 /**
@@ -207,6 +210,16 @@ void lwmqtt_set_timers(lwmqtt_client_t *client, void *keep_alive_timer, void *co
  * @param cb - The callback to be called.
  */
 void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t cb);
+
+/**
+ * Will configure the client to drop packets that overflow the read buffer. If a counter is provided it will be
+ * incremented with each dropped packet.
+ *
+ * @param client - The client.
+ * @param enabled - Whether dropping is enabled.
+ * @param counter - The dropped packet counter.
+ */
+void lwmqtt_drop_overflow(lwmqtt_client_t *client, bool enabled, uint32_t *counter);
 
 /**
  * The object defining the last will of a client.
@@ -271,7 +284,8 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
                             lwmqtt_return_code_t *return_code, uint32_t timeout);
 
 /**
- * Will send a publish packet and wait for all acks to complete.
+ * Will send a publish packet and wait for all acks to complete. If the encoded packet is bigger than the write buffer
+ * the function will return LWMQTT_BUFFER_TOO_SHORT without attempting to send the packet.
  *
  * Note: The message callback might be called with incoming messages as part of this call.
  *
