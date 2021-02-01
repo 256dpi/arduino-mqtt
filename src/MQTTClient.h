@@ -1,6 +1,8 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
+// include functional API if possible. remove min and max macros for some
+// platforms as they will be defined again by Arduino later
 #if defined(ESP8266)
 #include <functional>
 #define MQTT_HAS_FUNCTIONAL 1
