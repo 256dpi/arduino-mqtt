@@ -26,6 +26,7 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
+  net.setInsecure();
   while (!client.connect("arduino", "public", "public")) {
     Serial.print(".");
     delay(1000);
