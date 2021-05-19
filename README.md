@@ -1,6 +1,6 @@
 # arduino-mqtt
 
-[![Build Status](https://travis-ci.org/256dpi/arduino-mqtt.svg?branch=master)](https://travis-ci.org/256dpi/arduino-mqtt)
+[![Test](https://github.com/256dpi/arduino-mqtt/actions/workflows/test.yml/badge.svg)](https://github.com/256dpi/arduino-mqtt/actions/workflows/test.yml)
 [![GitHub release](https://img.shields.io/github/release/256dpi/arduino-mqtt.svg)](https://github.com/256dpi/arduino-mqtt/releases)
 
 This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) MQTT 3.1.1 client and adds a thin wrapper to get an Arduino like API.
