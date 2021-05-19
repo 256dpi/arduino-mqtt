@@ -26,6 +26,10 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
+  // do not verify tls certificate
+  // check the following example for methods to verify the server:
+  // https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFiClientSecure/examples/WiFiClientSecure/WiFiClientSecure.ino
+  net.setInsecure();
   while (!client.connect("arduino", "public", "public")) {
     Serial.print(".");
     delay(1000);
