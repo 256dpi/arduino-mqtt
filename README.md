@@ -29,6 +29,8 @@ Other shields and boards should also work if they provide a [Client](https://www
 
 - The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` instead of just `MQTTClient client` on the top of your sketch. The passed value denotes the read and write buffer size.
 
+_--> This fork is modified at the buffer behavier: The publish method sents the payload data without buffering directly from the given pointer to the network. I'm using this to send large image data (~200..300K) with one publish call on ESP32-CAM Module._
+
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
 - To use the library with shiftr.io, you need to provide the token key (username) and token secret (password) as the second and third argument to `client.connect(name, key, secret)`. 
