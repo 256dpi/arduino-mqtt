@@ -474,6 +474,9 @@ lwmqtt_err_t lwmqtt_decode_publish(uint8_t *buf, size_t buf_len, bool *dup, uint
 
 lwmqtt_err_t lwmqtt_encode_publish(uint8_t *buf, size_t buf_len, size_t *len, bool dup, uint16_t packet_id,
                                    lwmqtt_string_t topic, lwmqtt_message_t msg) {
+  /////////////////////////////////////////////////
+  // BUILD THE HEADER AND COPY INTO CLIENT BUFFER
+
   // prepare pointer
   uint8_t *buf_ptr = buf;
   uint8_t *buf_end = buf + buf_len;
@@ -531,12 +534,13 @@ lwmqtt_err_t lwmqtt_encode_publish(uint8_t *buf, size_t buf_len, size_t *len, bo
       return err;
     }
   }
-
-  // write payload
-  err = lwmqtt_write_data(&buf_ptr, buf_end, msg.payload, msg.payload_len);
-  if (err != LWMQTT_SUCCESS) {
-    return err;
-  }
+  /////////////////////////////////////////////////
+  // write payload - DO NOT WRITE PAYLOAD INTO BUFFER
+  // err = lwmqtt_write_data(&buf_ptr, buf_end, msg.payload, msg.payload_len);
+  // if (err != LWMQTT_SUCCESS) {
+  //   return err;
+  // }
+  /////////////////////////////////////////////////
 
   // set length
   *len = buf_ptr - buf;
