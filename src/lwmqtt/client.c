@@ -164,7 +164,9 @@ static lwmqtt_err_t lwmqtt_write_to_network(lwmqtt_client_t *client, size_t offs
 
     // write
     size_t partial_write = 0;
-    lwmqtt_err_t err = client->network_write(client->network, payload + written, payload_len - written,
+    size_t next_block = (payload_len - written);
+    next_block = next_block >= 1024 ? 1024 : next_block;
+    lwmqtt_err_t err = client->network_write(client->network, payload + written, next_block,
                                              &partial_write, (uint32_t)remaining_time);
     if (err != LWMQTT_SUCCESS) {
       return err;
