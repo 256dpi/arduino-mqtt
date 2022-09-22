@@ -19,6 +19,7 @@ The following examples show how you can use the library with various Arduino com
 - [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266Secure/AdafruitHuzzahESP8266Secure.ino))
 - [Arduino/Genuino WiFi101 Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101/ArduinoWiFi101.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101Secure/ArduinoWiFi101Secure.ino))
 - [Arduino MKR GSM 1400](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400/ArduinoMKRGSM1400.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400Secure/ArduinoMKRGSM1400Secure.ino))
+- [Arduino MKR NB 1500](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRNB1500/ArduinoMKRNB1500.ino)
 - [ESP32 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino))
 
 Other shields and boards should also work if they provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.

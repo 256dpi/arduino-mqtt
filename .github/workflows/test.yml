@@ -16,6 +16,8 @@ jobs:
           board: "arduino:samd:mkrgsm1400"
         - example: "ArduinoMKRGSM1400Secure"
           board: "arduino:samd:mkrgsm1400"
+        - example: "ArduinoMKRNB1500"
+          board: "arduino:samd:mkrnb1500"
         - example: "ArduinoWiFi101Secure"
           board: "arduino:avr:uno"
         - example: "ArduinoWiFiShield"
@@ -59,6 +61,10 @@ jobs:
           if [[ "$BOARD" =~ "arduino:samd:mkrgsm1400" ]]; then
             arduino --install-boards arduino:samd;
             arduino --install-library MKRGSM;
+          fi
+          if [[ "$BOARD" =~ "arduino:samd:mkrnb1500" ]]; then
+            arduino --install-boards arduino:samd;
+            arduino --install-library MKRNB;
           fi
           arduino --install-library WiFi101
           mkdir -p ~/Arduino/libraries
