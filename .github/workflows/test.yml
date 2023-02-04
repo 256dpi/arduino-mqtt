@@ -27,46 +27,60 @@ jobs:
         - example: "ArduinoYunSecure"
           board: "arduino:avr:yun"
         - example: "ESP32DevelopmentBoard"
-          board: "espressif:esp32:esp32:FlashFreq=80"
+          board: "esp32:esp32:esp32:FlashFreq=80"
         - example: "ESP32DevelopmentBoardSecure"
-          board: "espressif:esp32:esp32:FlashFreq=80"
+          board: "esp32:esp32:esp32:FlashFreq=80"
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Append Path
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Test
         env:
-          IDE_VERSION: "1.8.19"
           EXAMPLE: ${{ matrix.example }}
           BOARD: ${{ matrix.board }}
         run: |
-          /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
-          sleep 3
-          export DISPLAY=:1.0
-          wget https://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
-          tar xf arduino-$IDE_VERSION-linux64.tar.xz
-          mv arduino-$IDE_VERSION ~/arduino-ide
-          export PATH=$PATH:~/arduino-ide
+          # ensure directory
+          mkdir -p "$HOME/.local/bin"
+          
+          # install arduino-cli into "$HOME/.local/bin"
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="$HOME/.local/bin" sh
+          
+          # prepare config
+          arduino-cli config init
+          
+          # add cores to config
+          arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+          arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          
+          # update index
+          arduino-cli core update-index
+          
+          # install core
           if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
-            arduino --pref "boardsmanager.additional.urls=https://arduino.esp8266.com/stable/package_esp8266com_index.json" --install-boards esp8266:esp8266;
-            arduino --pref "boardsmanager.additional.urls=" --save-prefs;
+            arduino-cli core install esp8266:esp8266;
           fi
-          if [[ "$BOARD" =~ "espressif:esp32:" ]]; then
-            mkdir -p ~/Arduino/hardware/espressif &&
-            cd ~/Arduino/hardware/espressif &&
-            git clone https://github.com/espressif/arduino-esp32.git esp32 &&
-            cd esp32/tools/ &&
-            python get.py &&
-            cd $GITHUB_WORKSPACE;
+          if [[ "$BOARD" =~ "esp32:esp32:" ]]; then
+            arduino-cli core install esp32:esp32;
           fi
-          if [[ "$BOARD" =~ "arduino:samd:mkrgsm1400" ]]; then
-            arduino --install-boards arduino:samd;
-            arduino --install-library MKRGSM;
+          if [[ "$BOARD" =~ "arduino:samd:" ]]; then
+            arduino-cli core install arduino:samd;
           fi
-          if [[ "$BOARD" =~ "arduino:samd:mkrnb1500" ]]; then
-            arduino --install-boards arduino:samd;
-            arduino --install-library MKRNB;
+          if [[ "$BOARD" =~ "arduino:avr:" ]]; then
+            arduino-cli core install arduino:avr;
           fi
-          arduino --install-library WiFi101
+          
+          # install libraries
+          arduino-cli lib install WiFi
+          arduino-cli lib install WiFi101
+          arduino-cli lib install MKRGSM
+          arduino-cli lib install MKRNB
+          arduino-cli lib install Ethernet
+          arduino-cli lib install Bridge
+          
+          # link library
           mkdir -p ~/Arduino/libraries
           ln -s $PWD ~/Arduino/libraries/.
-          arduino --verbose-build --verify --board $BOARD $PWD/examples/$EXAMPLE/$EXAMPLE.ino;
+          
+          # build example
+          arduino-cli compile --fqbn $BOARD $PWD/examples/$EXAMPLE
