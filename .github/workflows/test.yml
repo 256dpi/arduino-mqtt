@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Test
         env:
-          IDE_VERSION: "1.8.13"
+          IDE_VERSION: "1.8.19"
           EXAMPLE: ${{ matrix.example }}
           BOARD: ${{ matrix.board }}
         run: |
