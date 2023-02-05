@@ -245,6 +245,12 @@ Check if the client is currently connected:
 bool connected();
 ```
 
+Check whether a session was present at the time of the last connect:
+
+```c++
+bool sessionPresent();
+```
+
 Configure dropping of overflowing messages (exceeding read buffer):
 
 ```c++

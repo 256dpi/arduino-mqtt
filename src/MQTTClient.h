@@ -72,6 +72,7 @@ class MQTTClient {
   uint16_t keepAlive = 10;
   bool cleanSession = true;
   uint32_t timeout = 1000;
+  bool _sessionPresent = false;
 
   Client *netClient = nullptr;
   const char *hostname = nullptr;
@@ -177,6 +178,7 @@ class MQTTClient {
 
   bool loop();
   bool connected();
+  bool sessionPresent() { return this->_sessionPresent; }
 
   lwmqtt_err_t lastError() { return this->_lastError; }
   lwmqtt_return_code_t returnCode() { return this->_returnCode; }

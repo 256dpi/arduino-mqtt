@@ -371,6 +371,9 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
     return false;
   }
 
+  // copy session present flag
+  this->_sessionPresent = options.session_present;
+
   // set flag
   this->_connected = true;
 
