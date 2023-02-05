@@ -189,6 +189,7 @@ bool connect(const char clientID[], const char username[], bool skip = false);
 bool connect(const char clientID[], const char username[], const char password[], bool skip = false);
 ```
 
+- If `password` is present but `username` is absent, the client will fall back to an empty username.
 - If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
 - The functions return a boolean that indicates if the connection has been established successfully (true).
 

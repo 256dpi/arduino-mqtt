@@ -352,10 +352,9 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
   // set username and password if available
   if (username != nullptr) {
     options.username = lwmqtt_string(username);
-
-    if (password != nullptr) {
-      options.password = lwmqtt_string(password);
-    }
+  }
+  if (password != nullptr) {
+    options.password = lwmqtt_string(password);
   }
 
   // connect to broker
