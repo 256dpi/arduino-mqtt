@@ -3,44 +3,14 @@ name: Test
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-        - example: "AdafruitHuzzahESP8266"
-          board: "esp8266:esp8266:huzzah:eesz=4M3M,xtal=80"
-        - example: "AdafruitHuzzahESP8266Secure"
-          board: "esp8266:esp8266:huzzah:eesz=4M3M,xtal=80"
-        - example: "ArduinoEthernetShield"
-          board: "arduino:avr:uno"
-        - example: "ArduinoMKRGSM1400"
-          board: "arduino:samd:mkrgsm1400"
-        - example: "ArduinoMKRGSM1400Secure"
-          board: "arduino:samd:mkrgsm1400"
-        - example: "ArduinoMKRNB1500"
-          board: "arduino:samd:mkrnb1500"
-        - example: "ArduinoWiFi101Secure"
-          board: "arduino:avr:uno"
-        - example: "ArduinoWiFiShield"
-          board: "arduino:avr:uno"
-        - example: "ArduinoYun"
-          board: "arduino:avr:yun"
-        - example: "ArduinoYunSecure"
-          board: "arduino:avr:yun"
-        - example: "ESP32DevelopmentBoard"
-          board: "esp32:esp32:esp32:FlashFreq=80"
-        - example: "ESP32DevelopmentBoardSecure"
-          board: "esp32:esp32:esp32:FlashFreq=80"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Append Path
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Test
-        env:
-          EXAMPLE: ${{ matrix.example }}
-          BOARD: ${{ matrix.board }}
         run: |
-          # ensure directory
+          # ensure bin directory
           mkdir -p "$HOME/.local/bin"
           
           # install arduino-cli into "$HOME/.local/bin"
@@ -48,39 +18,15 @@ jobs:
           
           # prepare config
           arduino-cli config init
-          
-          # add cores to config
           arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
           arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           
-          # update index
-          arduino-cli core update-index
-          
-          # install core
-          if [[ "$BOARD" =~ "esp8266:esp8266:" ]]; then
-            arduino-cli core install esp8266:esp8266;
-          fi
-          if [[ "$BOARD" =~ "esp32:esp32:" ]]; then
-            arduino-cli core install esp32:esp32;
-          fi
-          if [[ "$BOARD" =~ "arduino:samd:" ]]; then
-            arduino-cli core install arduino:samd;
-          fi
-          if [[ "$BOARD" =~ "arduino:avr:" ]]; then
-            arduino-cli core install arduino:avr;
-          fi
-          
-          # install libraries
-          arduino-cli lib install WiFi
-          arduino-cli lib install WiFi101
-          arduino-cli lib install MKRGSM
-          arduino-cli lib install MKRNB
-          arduino-cli lib install Ethernet
-          arduino-cli lib install Bridge
+          # install
+          make install
           
           # link library
           mkdir -p ~/Arduino/libraries
           ln -s $PWD ~/Arduino/libraries/.
           
-          # build example
-          arduino-cli compile --fqbn $BOARD $PWD/examples/$EXAMPLE
+          # build examples
+          make build

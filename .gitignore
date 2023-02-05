@@ -1,2 +1,5 @@
 .DS_Store
 cmake-build-debug/
+examples/*/debug.cfg
+examples/*/debug_custom.json
+examples/*/esp32.svd
