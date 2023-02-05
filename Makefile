@@ -30,6 +30,10 @@ install:
 	arduino-cli lib install Ethernet
 	arduino-cli lib install Bridge
 
+test:
+	# expects repository to be linked to libraries
+	arduino-cli compile --fqbn "esp32:esp32:esp32:FlashFreq=80" ./examples/ESP32DevelopmentBoard
+
 build:
 	# expects repository to be linked to libraries
 	arduino-cli compile --fqbn "esp8266:esp8266:huzzah:eesz=4M3M,xtal=80" ./examples/AdafruitHuzzahESP8266
