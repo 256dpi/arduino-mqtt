@@ -251,11 +251,11 @@ Check whether a session was present at the time of the last connect:
 bool sessionPresent();
 ```
 
-Configure dropping of overflowing messages (exceeding read buffer):
+Configure dropping of overflowing messages (exceeding read buffer) and checking the count of dropped messages:
 
 ```c++
 void dropOverflow(bool enabled);
-uint32_t getDropped();
+uint32_t droppedMessages();
 ```
 
 Access low-level information for debugging:
