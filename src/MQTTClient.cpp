@@ -313,6 +313,13 @@ void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cle
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
 
+void MQTTClient::dropOverflow(bool enabled) {
+  // configure drop overflow
+  lwmqtt_drop_overflow(&this->client, enabled, &this->droppedMessages);
+}
+
+uint32_t MQTTClient::getDropped() { return this->droppedMessages; }
+
 bool MQTTClient::connect(const char clientID[], const char username[], const char password[], bool skip) {
   // close left open connection if still connected
   if (!skip && this->connected()) {

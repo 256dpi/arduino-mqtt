@@ -244,6 +244,13 @@ Check if the client is currently connected:
 bool connected();
 ```
 
+Configure dropping of overflowing messages (exceeding read buffer):
+
+```c++
+void dropOverflow(bool enabled);
+uint32_t getDropped();
+```
+
 Access low-level information for debugging:
 
 ```c++

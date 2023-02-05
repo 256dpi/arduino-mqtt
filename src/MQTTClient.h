@@ -88,6 +88,7 @@ class MQTTClient {
   bool _connected = false;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
+  uint32_t droppedMessages = 0;
 
  public:
   void *ref = nullptr;
@@ -135,6 +136,9 @@ class MQTTClient {
     this->setCleanSession(_cleanSession);
     this->setTimeout(_timeout);
   }
+
+  void dropOverflow(bool enabled);
+  uint32_t getDropped();
 
   bool connect(const char clientId[], bool skip = false) { return this->connect(clientId, nullptr, nullptr, skip); }
   bool connect(const char clientId[], const char username[], bool skip = false) {
