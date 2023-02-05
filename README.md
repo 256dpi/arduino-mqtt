@@ -211,6 +211,17 @@ bool publish(const char topic[], const char payload[], int length, bool retained
 - Beginning with version 2.6, payloads of arbitrary length may be published, see [Notes](#notes).
 - The functions return a boolean that indicates if the publishing has been successful (true).
 
+Obtain the last used packet ID and prepare the publication of a duplicate message using the specified packet ID:
+
+```c++
+uint16_t lastPacketID();
+void prepareDuplicate(uint16_t packetID);
+```
+
+- These functions may be used to implement a retry logic for failed publications of QoS1 and QoS2 messages.
+- The `lastPacketID()` function can be used after calling `publish()` to obtain the used packet ID.
+- The `prepareDuplicate()` function may be called before `publish()` to temporarily change the next used packet ID and flag the message as a duplicate.
+
 Subscribe to a topic:
 
 ```c++

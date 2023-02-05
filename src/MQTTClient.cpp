@@ -392,8 +392,16 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   message.retained = retained;
   message.qos = lwmqtt_qos_t(qos);
 
+  // prepare options
+  lwmqtt_publish_options_t options = lwmqtt_default_publish_options;
+
+  // set duplicate packet id if available
+  if (this->nextDupPacketID > 0) {
+    options.dup_id = &this->nextDupPacketID;
+  }
+
   // publish message
-  this->_lastError = lwmqtt_publish(&this->client, nullptr, lwmqtt_string(topic), message, this->timeout);
+  this->_lastError = lwmqtt_publish(&this->client, &options, lwmqtt_string(topic), message, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -402,6 +410,16 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   }
 
   return true;
+}
+
+uint16_t MQTTClient::lastPacketID() {
+  // get last packet id from client
+  return this->client.last_packet_id;
+}
+
+void MQTTClient::prepareDuplicate(uint16_t packetID) {
+  // set next duplicate packet id
+  this->nextDupPacketID = packetID;
 }
 
 bool MQTTClient::subscribe(const char topic[], int qos) {

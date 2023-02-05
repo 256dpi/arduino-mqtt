@@ -88,6 +88,7 @@ class MQTTClient {
   lwmqtt_client_t client = lwmqtt_client_t();
 
   bool _connected = false;
+  uint16_t nextDupPacketID = 0;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
   uint32_t _droppedMessages = 0;
@@ -169,6 +170,9 @@ class MQTTClient {
     return this->publish(topic, payload, length, false, 0);
   }
   bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
+
+  uint16_t lastPacketID();
+  void prepareDuplicate(uint16_t packetID);
 
   bool subscribe(const String &topic) { return this->subscribe(topic.c_str()); }
   bool subscribe(const String &topic, int qos) { return this->subscribe(topic.c_str(), qos); }
