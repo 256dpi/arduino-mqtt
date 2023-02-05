@@ -72,8 +72,8 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
     rem_len += will->topic.len + 2 + will->payload.len + 2;
   }
 
-  // add username if present to remaining length
-  if (options.username.len > 0) {
+  // add username if username or password is present to remaining length
+  if (options.username.len > 0 || options.password.len > 0) {
     rem_len += options.username.len + 2;
 
     // add password if present to remaining length
@@ -130,8 +130,8 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
     lwmqtt_write_bits(&flags, (uint8_t)(will->retained), 5, 1);
   }
 
-  // set username flag if present
-  if (options.username.len > 0) {
+  // set username flag if username or password is present
+  if (options.username.len > 0 || options.password.len > 0) {
     lwmqtt_write_bits(&flags, 1, 7, 1);
 
     // set password flag if present
@@ -179,8 +179,8 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
     }
   }
 
-  // write username if present
-  if (options.username.len > 0) {
+  // write username if username of password is present
+  if (options.username.len > 0 || options.password.len > 0) {
     err = lwmqtt_write_string(&buf_ptr, buf_end, options.username);
     if (err != LWMQTT_SUCCESS) {
       return err;
@@ -530,12 +530,6 @@ lwmqtt_err_t lwmqtt_encode_publish(uint8_t *buf, size_t buf_len, size_t *len, bo
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
-  }
-
-  // write payload
-  err = lwmqtt_write_data(&buf_ptr, buf_end, msg.payload, msg.payload_len);
-  if (err != LWMQTT_SUCCESS) {
-    return err;
   }
 
   // set length

@@ -5,11 +5,12 @@ fmt:
 
 update:
 	rm -rf ./lwmqtt
-	git clone --branch v0.7.0 https://github.com/256dpi/lwmqtt.git ./lwmqtt
+	git clone --branch v0.8.0 https://github.com/256dpi/lwmqtt.git ./lwmqtt
 	mkdir -p ./src/lwmqtt
 	cp -r ./lwmqtt/src/*.c ./src/lwmqtt/
 	cp -r ./lwmqtt/src/*.h ./src/lwmqtt/
 	cp -r ./lwmqtt/include/*.h ./src/lwmqtt/
+	rm ./src/lwmqtt/posix.c
 	rm -rf ./lwmqtt
 	sed -i '' "s/<lwmqtt.h>/\"lwmqtt.h\"/g" ./src/lwmqtt/*
 

@@ -327,7 +327,7 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   message.qos = lwmqtt_qos_t(qos);
 
   // publish message
-  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout);
+  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout, nullptr);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
