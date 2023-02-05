@@ -130,7 +130,6 @@ class MQTTClient {
   void setKeepAlive(int keepAlive);
   void setCleanSession(bool cleanSession);
   void setTimeout(int timeout);
-
   void setOptions(int _keepAlive, bool _cleanSession, int _timeout) {
     this->setKeepAlive(_keepAlive);
     this->setCleanSession(_cleanSession);

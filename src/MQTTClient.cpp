@@ -313,31 +313,6 @@ void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cle
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
 
-bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos) {
-  // return immediately if not connected
-  if (!this->connected()) {
-    return false;
-  }
-
-  // prepare message
-  lwmqtt_message_t message = lwmqtt_default_message;
-  message.payload = (uint8_t *)payload;
-  message.payload_len = (size_t)length;
-  message.retained = retained;
-  message.qos = lwmqtt_qos_t(qos);
-
-  // publish message
-  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout, nullptr);
-  if (this->_lastError != LWMQTT_SUCCESS) {
-    // close connection
-    this->close();
-
-    return false;
-  }
-
-  return true;
-}
-
 bool MQTTClient::connect(const char clientID[], const char username[], const char password[], bool skip) {
   // close left open connection if still connected
   if (!skip && this->connected()) {
@@ -387,6 +362,31 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
 
   // set flag
   this->_connected = true;
+
+  return true;
+}
+
+bool MQTTClient::publish(const char topic[], const char payload[], int length, bool retained, int qos) {
+  // return immediately if not connected
+  if (!this->connected()) {
+    return false;
+  }
+
+  // prepare message
+  lwmqtt_message_t message = lwmqtt_default_message;
+  message.payload = (uint8_t *)payload;
+  message.payload_len = (size_t)length;
+  message.retained = retained;
+  message.qos = lwmqtt_qos_t(qos);
+
+  // publish message
+  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout, nullptr);
+  if (this->_lastError != LWMQTT_SUCCESS) {
+    // close connection
+    this->close();
+
+    return false;
+  }
 
   return true;
 }
