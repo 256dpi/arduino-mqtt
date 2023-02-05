@@ -28,11 +28,11 @@ Other shields and boards should also work if they provide a [Client](https://www
 
 ## Notes
 
-- The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` instead of just `MQTTClient client` on the top of your sketch. The passed value denotes the read and write buffer size.
+- The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` instead of just `MQTTClient client` on the top of your sketch. The passed value denotes the read and write buffer size. **Beginning with version 2.6, the message payload is sent separately during publishing. Therefore, the write buffer is only needed to encode the packet header and topic, for which the default 128 bytes should be enough. However, the receiving of messages is still fully constrained by the read buffer.**
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
-- To use the library with shiftr.io, you need to provide the token key (username) and token secret (password) as the second and third argument to `client.connect(name, key, secret)`. 
+- To use the library with shiftr.io, you need to provide the instance name (username) and token secret (password) as the second and third argument to `client.connect(client_id, username, password)`. 
 
 ## Example
 
@@ -181,7 +181,7 @@ void setClockSource(MQTTClientClockSource);
 
 - The specified callback is used by the internal timers to get a monotonic time in milliseconds. Since the clock source for the built-in `millis` is stopped when the Arduino goes into deep sleep, you need to provide a custom callback that first syncs with a built-in or external Real Time Clock (RTC). You can pass `NULL` to reset to the default implementation.
 
-Connect to broker using the supplied client id and an optional username and password:
+Connect to broker using the supplied client ID and an optional username and password:
 
 ```c++
 bool connect(const char clientID[], bool skip = false);
@@ -208,6 +208,7 @@ bool publish(const char topic[], const char payload[], int length);
 bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
 ```
 
+- Beginning with version 2.6, payloads for arbitrary length may be published, see [Notes](#notes).
 - The functions return a boolean that indicates if the publishing has been successful (true).
 
 Subscribe to a topic:
