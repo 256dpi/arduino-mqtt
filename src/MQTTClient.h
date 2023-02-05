@@ -65,7 +65,8 @@ typedef struct {
 
 class MQTTClient {
  private:
-  size_t bufSize = 0;
+  size_t readBufSize = 0;
+  size_t writeBufSize = 0;
   uint8_t *readBuf = nullptr;
   uint8_t *writeBuf = nullptr;
 
@@ -94,7 +95,8 @@ class MQTTClient {
  public:
   void *ref = nullptr;
 
-  explicit MQTTClient(int bufSize = 128);
+  explicit MQTTClient(int bufSize = 128) : MQTTClient(bufSize, bufSize) {}
+  MQTTClient(int readSize, int writeBufSize);
 
   ~MQTTClient();
 
