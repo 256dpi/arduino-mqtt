@@ -55,7 +55,7 @@ lwmqtt_err_t lwmqtt_detect_remaining_length(uint8_t *buf, size_t buf_len, uint32
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_options_t options,
+lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_connect_options_t *options,
                                    lwmqtt_will_t *will) {
   // prepare pointers
   uint8_t *buf_ptr = buf;
@@ -65,7 +65,7 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   uint32_t rem_len = 10;
 
   // add client id to remaining length
-  rem_len += options.client_id.len + 2;
+  rem_len += options->client_id.len + 2;
 
   // add will if present to remaining length
   if (will != NULL) {
@@ -73,12 +73,12 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   }
 
   // add username if username or password is present to remaining length
-  if (options.username.len > 0 || options.password.len > 0) {
-    rem_len += options.username.len + 2;
+  if (options->username.len > 0 || options->password.len > 0) {
+    rem_len += options->username.len + 2;
 
     // add password if present to remaining length
-    if (options.password.len > 0) {
-      rem_len += options.password.len + 2;
+    if (options->password.len > 0) {
+      rem_len += options->password.len + 2;
     }
   }
 
@@ -121,7 +121,7 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   uint8_t flags = 0;
 
   // set clean session
-  lwmqtt_write_bits(&flags, (uint8_t)(options.clean_session), 1, 1);
+  lwmqtt_write_bits(&flags, (uint8_t)(options->clean_session), 1, 1);
 
   // set will flags if present
   if (will != NULL) {
@@ -131,11 +131,11 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   }
 
   // set username flag if username or password is present
-  if (options.username.len > 0 || options.password.len > 0) {
+  if (options->username.len > 0 || options->password.len > 0) {
     lwmqtt_write_bits(&flags, 1, 7, 1);
 
     // set password flag if present
-    if (options.password.len > 0) {
+    if (options->password.len > 0) {
       lwmqtt_write_bits(&flags, 1, 6, 1);
     }
   }
@@ -147,13 +147,13 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   }
 
   // write keep alive
-  err = lwmqtt_write_num(&buf_ptr, buf_end, options.keep_alive);
+  err = lwmqtt_write_num(&buf_ptr, buf_end, options->keep_alive);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
 
   // write client id
-  err = lwmqtt_write_string(&buf_ptr, buf_end, options.client_id);
+  err = lwmqtt_write_string(&buf_ptr, buf_end, options->client_id);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -180,16 +180,16 @@ lwmqtt_err_t lwmqtt_encode_connect(uint8_t *buf, size_t buf_len, size_t *len, lw
   }
 
   // write username if username of password is present
-  if (options.username.len > 0 || options.password.len > 0) {
-    err = lwmqtt_write_string(&buf_ptr, buf_end, options.username);
+  if (options->username.len > 0 || options->password.len > 0) {
+    err = lwmqtt_write_string(&buf_ptr, buf_end, options->username);
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
   }
 
   // write password if present
-  if (options.username.len > 0 && options.password.len > 0) {
-    err = lwmqtt_write_string(&buf_ptr, buf_end, options.password);
+  if (options->username.len > 0 && options->password.len > 0) {
+    err = lwmqtt_write_string(&buf_ptr, buf_end, options->password);
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
@@ -246,7 +246,7 @@ lwmqtt_err_t lwmqtt_decode_connack(uint8_t *buf, size_t buf_len, bool *session_p
   }
 
   // get session present
-  *session_present = lwmqtt_read_bits(flags, 7, 1) == 1;
+  *session_present = lwmqtt_read_bits(flags, 0, 1) == 1;
 
   // get return code
   switch (raw_return_code) {
@@ -300,8 +300,7 @@ lwmqtt_err_t lwmqtt_encode_zero(uint8_t *buf, size_t buf_len, size_t *len, lwmqt
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t packet_type, bool *dup,
-                               uint16_t *packet_id) {
+lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_t packet_type, uint16_t *packet_id) {
   // prepare pointer
   uint8_t *buf_ptr = buf;
   uint8_t *buf_end = buf + buf_len;
@@ -317,9 +316,6 @@ lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_
   if (lwmqtt_read_bits(header, 4, 4) != packet_type) {
     return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
-
-  // get dup
-  *dup = lwmqtt_read_bits(header, 3, 1) == 1;
 
   // read remaining length
   uint32_t rem_len;
@@ -342,7 +338,7 @@ lwmqtt_err_t lwmqtt_decode_ack(uint8_t *buf, size_t buf_len, lwmqtt_packet_type_
   return LWMQTT_SUCCESS;
 }
 
-lwmqtt_err_t lwmqtt_encode_ack(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_packet_type_t packet_type, bool dup,
+lwmqtt_err_t lwmqtt_encode_ack(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt_packet_type_t packet_type,
                                uint16_t packet_id) {
   // prepare pointer
   uint8_t *buf_ptr = buf;
@@ -353,9 +349,6 @@ lwmqtt_err_t lwmqtt_encode_ack(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt
 
   // set packet type
   lwmqtt_write_bits(&header, packet_type, 4, 4);
-
-  // set dup
-  lwmqtt_write_bits(&header, (uint8_t)(dup), 3, 1);
 
   // set qos
   lwmqtt_write_bits(&header, (uint8_t)(packet_type == LWMQTT_PUBREL_PACKET ? LWMQTT_QOS1 : LWMQTT_QOS0), 1, 2);

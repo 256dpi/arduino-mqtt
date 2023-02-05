@@ -344,7 +344,7 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
   }
 
   // prepare options
-  lwmqtt_options_t options = lwmqtt_default_options;
+  lwmqtt_connect_options_t options = lwmqtt_default_connect_options;
   options.keep_alive = this->keepAlive;
   options.clean_session = this->cleanSession;
   options.client_id = lwmqtt_string(clientID);
@@ -359,7 +359,12 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
   }
 
   // connect to broker
-  this->_lastError = lwmqtt_connect(&this->client, options, this->will, &this->_returnCode, this->timeout);
+  this->_lastError = lwmqtt_connect(&this->client, &options, this->will, this->timeout);
+
+  // copy return code
+  this->_returnCode = options.return_code;
+
+  // handle error
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -387,7 +392,7 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   message.qos = lwmqtt_qos_t(qos);
 
   // publish message
-  this->_lastError = lwmqtt_publish(&this->client, lwmqtt_string(topic), message, this->timeout, nullptr);
+  this->_lastError = lwmqtt_publish(&this->client, nullptr, lwmqtt_string(topic), message, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();

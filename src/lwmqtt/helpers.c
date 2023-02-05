@@ -187,7 +187,7 @@ lwmqtt_err_t lwmqtt_read_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t 
     // increment length
     len++;
 
-    // return error if buffer is to small
+    // return error if buffer is too small
     if ((size_t)(buf_end - (*buf)) < len) {
       return LWMQTT_BUFFER_TOO_SHORT;
     }
@@ -224,7 +224,7 @@ lwmqtt_err_t lwmqtt_write_varnum(uint8_t **buf, const uint8_t *buf_end, uint32_t
       return LWMQTT_VARNUM_OVERFLOW;
     }
 
-    // return error if buffer is to small
+    // return error if buffer is too small
     if ((size_t)(buf_end - (*buf)) < len + 1) {
       return LWMQTT_BUFFER_TOO_SHORT;
     }

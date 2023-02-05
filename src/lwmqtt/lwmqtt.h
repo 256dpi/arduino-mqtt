@@ -30,7 +30,7 @@ typedef enum {
 } lwmqtt_err_t;
 
 /**
- * A common string object.
+ * The common string object.
  */
 typedef struct {
   uint16_t len;
@@ -38,7 +38,7 @@ typedef struct {
 } lwmqtt_string_t;
 
 /**
- * The initializer for string objects.
+ * The default initializer for string objects.
  */
 #define lwmqtt_default_string \
   { 0, NULL }
@@ -71,7 +71,7 @@ typedef enum {
 } lwmqtt_qos_t;
 
 /**
- * The message object used to publish and receive messages.
+ * The common message object.
  */
 typedef struct {
   lwmqtt_qos_t qos;
@@ -81,7 +81,7 @@ typedef struct {
 } lwmqtt_message_t;
 
 /**
- * The initializer for message objects.
+ * The default initializer for message objects.
  */
 #define lwmqtt_default_message \
   { LWMQTT_QOS0, false, NULL, 0 }
@@ -97,27 +97,10 @@ typedef struct {
 } lwmqtt_will_t;
 
 /**
- * The default initializer for the will object.
+ * The default initializer for will objects.
  */
 #define lwmqtt_default_will \
   { lwmqtt_default_string, LWMQTT_QOS0, false, lwmqtt_default_string }
-
-/**
- * The object containing the connection options for a client.
- */
-typedef struct {
-  lwmqtt_string_t client_id;
-  uint16_t keep_alive;
-  bool clean_session;
-  lwmqtt_string_t username;
-  lwmqtt_string_t password;
-} lwmqtt_options_t;
-
-/**
- * The default initializer for the options object.
- */
-#define lwmqtt_default_options \
-  { lwmqtt_default_string, 60, true, lwmqtt_default_string, lwmqtt_default_string }
 
 /**
  * The available return codes transported by the connack packet.
@@ -133,7 +116,26 @@ typedef enum {
 } lwmqtt_return_code_t;
 
 /**
- * Additional options for publishing messages.
+ * The object containing the connection options.
+ */
+typedef struct {
+  lwmqtt_string_t client_id;
+  uint16_t keep_alive;
+  bool clean_session;
+  lwmqtt_string_t username;
+  lwmqtt_string_t password;
+  lwmqtt_return_code_t return_code;
+  bool session_present;
+} lwmqtt_connect_options_t;
+
+/**
+ * The default initializer for the connect options objects.
+ */
+#define lwmqtt_default_connect_options \
+  { lwmqtt_default_string, 60, true, lwmqtt_default_string, lwmqtt_default_string, LWMQTT_UNKNOWN_RETURN_CODE, false }
+
+/**
+ * The object containing the publish options.
  */
 typedef struct {
   uint16_t *dup_id;
@@ -141,7 +143,7 @@ typedef struct {
 } lwmqtt_publish_options_t;
 
 /**
- * The initializer for publish options objects.
+ * The default initializer for publish options object.
  */
 #define lwmqtt_default_publish_options \
   { NULL, false }
@@ -292,20 +294,20 @@ void lwmqtt_set_callback(lwmqtt_client_t *client, void *ref, lwmqtt_callback_t c
 void lwmqtt_drop_overflow(lwmqtt_client_t *client, bool enabled, uint32_t *counter);
 
 /**
- * Will send a connect packet and wait for a connack response and set the return code.
+ * Will send a connect packet and wait for a connack response. If options are provided they are used for the
+ * connection attempt and the return code and whether a session was present is stored in it.
  *
  * The network object must already be connected to the server. An error is returned if the broker rejects the
  * connection.
  *
  * @param client The client object.
- * @param options The options object.
+ * @param options The optional connect options.
  * @param will The will object.
- * @param return_code The variable that will receive the return code.
  * @param timeout The command timeout.
  * @return An error value.
  */
-lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, lwmqtt_will_t *will,
-                            lwmqtt_return_code_t *return_code, uint32_t timeout);
+lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_connect_options_t *options, lwmqtt_will_t *will,
+                            uint32_t timeout);
 
 /**
  * Will send a publish packet and wait for all acks to complete. If the encoded packet (without payload) is bigger than
@@ -318,14 +320,14 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_options_t options, l
  * Note: The message callback might be called with incoming messages as part of this call.
  *
  * @param client The client object.
+ * @param options The optional publish options.
  * @param topic The topic.
- * @param message The message.
+ * @param msg The message.
  * @param timeout The command timeout.
- * @param options The publish options.
  * @return An error value.
  */
-lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_string_t topic, lwmqtt_message_t msg, uint32_t timeout,
-                            lwmqtt_publish_options_t *options);
+lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_publish_options_t *options, lwmqtt_string_t topic,
+                            lwmqtt_message_t msg, uint32_t timeout);
 
 /**
  * Will send a subscribe packet with multiple topic filters plus QOS levels and wait for the suback to complete.
