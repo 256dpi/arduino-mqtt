@@ -5,7 +5,7 @@
 
 This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) MQTT 3.1.1 client and adds a thin wrapper to get an Arduino like API.
 
-Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section. Or even better use the builtin Library Manager in the Arduino IDE and search for "lwmqtt" or "MQTT".
+Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section. Or even better use the built-in Library Manager in the Arduino IDE and search for "lwmqtt".
 
 The library is also available on [PlatformIO](https://platformio.org/lib/show/617/MQTT). You can install it by running: `pio lib install "256dpi/MQTT"`. 
 
@@ -17,7 +17,7 @@ The following examples show how you can use the library with various Arduino com
 - [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)    
 - [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
 - [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266Secure/AdafruitHuzzahESP8266Secure.ino))
-- [Arduino/Genuino WiFi101 Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101/ArduinoWiFi101.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101Secure/ArduinoWiFi101Secure.ino))
+- [Arduino WiFi101 Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101/ArduinoWiFi101.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101Secure/ArduinoWiFi101Secure.ino))
 - [Arduino MKR GSM 1400](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400/ArduinoMKRGSM1400.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400Secure/ArduinoMKRGSM1400Secure.ino))
 - [Arduino MKR NB 1500](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRNB1500/ArduinoMKRNB1500.ino)
 - [ESP32 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino))
@@ -179,7 +179,7 @@ void setClockSource(MQTTClientClockSource);
 // Callback signature: uint32_t clockSource() {}
 ```
 
-- The specified callback is used by the internal timers to get a monotonic time in milliseconds. Since the clock source for the built-in `millis` is stopped when the the Arduino goes into deep sleep, you need to provide a custom callback that first syncs with a built-in or external Real Time Clock (RTC). You can pass `NULL` to reset to the default implementation.
+- The specified callback is used by the internal timers to get a monotonic time in milliseconds. Since the clock source for the built-in `millis` is stopped when the Arduino goes into deep sleep, you need to provide a custom callback that first syncs with a built-in or external Real Time Clock (RTC). You can pass `NULL` to reset to the default implementation.
 
 Connect to broker using the supplied client id and an optional username and password:
 
@@ -207,7 +207,7 @@ bool publish(const char topic[], const char payload[], int length);
 bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
 ```
 
-- The functions return a boolean that indicates if the publish has been successful (true).
+- The functions return a boolean that indicates if the publishing has been successful (true).
 
 Subscribe to a topic:
 
@@ -218,7 +218,7 @@ bool subscribe(const char topic[]);
 bool subscribe(const char topic[], int qos);
 ```
 
-- The functions return a boolean that indicates if the subscribe has been successful (true).
+- The functions return a boolean that indicates if the subscription has been successful (true).
 
 Unsubscribe from a topic:
 
@@ -227,7 +227,7 @@ bool unsubscribe(const String &topic);
 bool unsubscribe(const char topic[]);
 ```
 
-- The functions return a boolean that indicates if the unsubscribe has been successful (true).
+- The functions return a boolean that indicates if the unsubscription has been successful (true).
 
 Sends and receives packets:
 
