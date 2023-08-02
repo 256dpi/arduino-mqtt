@@ -1,6 +1,6 @@
 #include "MQTTClient.h"
 
-#ifdef ARDUINO_UNOR4_WIFI
+#if defined(ARDUINO_UNOR4_WIFI) || defined(ARDUINO_UNOR4_MINIMA)
 
 inline char *strdup(const char *dup) {
   size_t len = strlen(dup) + 1;
