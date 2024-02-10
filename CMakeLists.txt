@@ -10,9 +10,9 @@ include_directories(
         /Users/256dpi/Documents/Arduino/libraries/MKRGSM/src
         /Users/256dpi/Documents/Arduino/libraries/MKRNB/src
         /Applications/Arduino.app/Contents/Java/libraries/Bridge/src
-        /Users/256dpi/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/libraries/ESP8266WiFi/src
-        /Users/256dpi/Library/Arduino15/packages/esp32/libraries/WiFi/src
-        /Users/256dpi/Library/Arduino15/packages/esp32/libraries/WiFiClientSecure/src
+        /Users/256dpi/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/ESP8266WiFi/src
+        /Users/256dpi/Library/Arduino15/packages/esp32/hardware/esp32/2.0.11/libraries/WiFi/src
+        /Users/256dpi/Library/Arduino15/packages/esp32/hardware/esp32/2.0.11/libraries/WiFiClientSecure/src
         src)
 
 include_directories(src/)
