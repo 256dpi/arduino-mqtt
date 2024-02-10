@@ -398,6 +398,7 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   // set duplicate packet id if available
   if (this->nextDupPacketID > 0) {
     options.dup_id = &this->nextDupPacketID;
+    this->nextDupPacketID = 0;
   }
 
   // publish message
