@@ -465,7 +465,7 @@ bool MQTTClient::loop() {
   }
 
   // get available bytes on the network
-  auto available = (size_t)this->netClient->available();
+  int available = this->netClient->available();
 
   // yield if data is available
   if (available > 0) {
