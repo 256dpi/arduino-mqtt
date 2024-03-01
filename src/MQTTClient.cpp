@@ -364,6 +364,9 @@ bool MQTTClient::connect(const char clientID[], const char username[], const cha
 
   // handle error
   if (this->_lastError != LWMQTT_SUCCESS) {
+    DEBUG_MQTT_CLIENT_MP("connect(): Error after lwmqtt_connect: ");
+    DEBUG_MQTT_CLIENT(this->_lastError);
+    DEBUG_MQTT_CLIENT_P("\n");
     // close connection
     this->close();
 
@@ -404,6 +407,11 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   // publish message
   this->_lastError = lwmqtt_publish(&this->client, &options, lwmqtt_string(topic), message, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
+    DEBUG_MQTT_CLIENT_MP("publish(");
+    DEBUG_MQTT_CLIENT(topic);
+    DEBUG_MQTT_CLIENT_P("): Error after lwmqtt_publish: ");
+    DEBUG_MQTT_CLIENT(this->_lastError);
+    DEBUG_MQTT_CLIENT_P("\n");
     // close connection
     this->close();
 
@@ -432,6 +440,11 @@ bool MQTTClient::subscribe(const char topic[], int qos) {
   // subscribe to topic
   this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), (lwmqtt_qos_t)qos, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
+    DEBUG_MQTT_CLIENT_MP("subscribe(");
+    DEBUG_MQTT_CLIENT(topic);
+    DEBUG_MQTT_CLIENT_P("): Error after lwmqtt_subscribe_one: ");
+    DEBUG_MQTT_CLIENT(this->_lastError);
+    DEBUG_MQTT_CLIENT_P("\n");
     // close connection
     this->close();
 
@@ -450,6 +463,11 @@ bool MQTTClient::unsubscribe(const char topic[]) {
   // unsubscribe from topic
   this->_lastError = lwmqtt_unsubscribe_one(&this->client, lwmqtt_string(topic), this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
+    DEBUG_MQTT_CLIENT_MP("unsubscribe(");
+    DEBUG_MQTT_CLIENT(topic);
+    DEBUG_MQTT_CLIENT_P("): Error after lwmqtt_unsubscribe_one: ");
+    DEBUG_MQTT_CLIENT(this->_lastError);
+    DEBUG_MQTT_CLIENT_P("\n");
     // close connection
     this->close();
 
@@ -472,6 +490,9 @@ bool MQTTClient::loop() {
   if (available > 0) {
     this->_lastError = lwmqtt_yield(&this->client, available, this->timeout);
     if (this->_lastError != LWMQTT_SUCCESS) {
+      DEBUG_MQTT_CLIENT_MP("loop(): Error after lwmqtt_yield: ");
+      DEBUG_MQTT_CLIENT(this->_lastError);
+      DEBUG_MQTT_CLIENT_P("\n");
       // close connection
       this->close();
 
@@ -482,6 +503,9 @@ bool MQTTClient::loop() {
   // keep the connection alive
   this->_lastError = lwmqtt_keep_alive(&this->client, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
+    DEBUG_MQTT_CLIENT_MP("loop(): Error after lwmqtt_keep_alive: ");
+    DEBUG_MQTT_CLIENT(this->_lastError);
+    DEBUG_MQTT_CLIENT_P("\n");
     // close connection
     this->close();
 

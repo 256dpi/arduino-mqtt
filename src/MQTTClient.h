@@ -1,6 +1,26 @@
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
+// #define DEBUG_MQTT
+
+#ifdef DEBUG_MQTT
+#define DEBUG_MQTT_MARK "[MQTT_CLIENT] "
+#ifdef DEBUG_ESP_PORT
+#define DEBUG_MQTT_CLIENT_MP(f) do { DEBUG_ESP_PORT.print(PSTR(DEBUG_MQTT_MARK f)); } while (0)
+#define DEBUG_MQTT_CLIENT_P(f) do { DEBUG_ESP_PORT.print(PSTR(f)); } while (0)
+#define DEBUG_MQTT_CLIENT(f) do { DEBUG_ESP_PORT.print(f); } while (0)
+#else
+#define DEBUG_MQTT_CLIENT_MP(f) do { Serial.print(PSTR(DEBUG_MQTT_MARK f)); } while (0)
+#define DEBUG_MQTT_CLIENT_P(f) do { Serial.print(PSTR(f)); } while (0)
+#define DEBUG_MQTT_CLIENT(f) do { Serial.print(f); } while (0)
+#endif
+#else
+#define DEBUG_MQTT_CLIENT_MP(...)
+#define DEBUG_MQTT_CLIENT_P(...)
+#define DEBUG_MQTT_CLIENT(...)
+#endif
+
+
 // include functional API if possible. remove min and max macros for some
 // platforms as they will be defined again by Arduino later
 #if defined(ESP8266) || (defined ESP32)
