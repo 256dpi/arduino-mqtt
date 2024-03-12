@@ -108,6 +108,17 @@ void loop() {
 
 ## API
 
+Create the object with:
+
+```c++
+MQTTClient()
+MQTTClient(int bufSize)
+MQTTClient(int readBufSize, int writeBufSize)
+```
+
+- `MQTTClient` has two buffers. One for read and one for write. Default buffer size is 128 bytes. In summary are 256 bytes are used for buffers.
+- The `bufSize` option sets `readBufSize` and `writeBufSize` to the same value.
+
 Initialize the object using the hostname of the broker, the brokers port (default: `1883`) and the underlying Client class for network transport:
 
 ```c++
