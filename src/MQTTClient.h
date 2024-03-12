@@ -97,7 +97,7 @@ class MQTTClient {
   void *ref = nullptr;
 
   explicit MQTTClient(int bufSize = 128) : MQTTClient(bufSize, bufSize) {}
-  MQTTClient(int readSize, int writeBufSize);
+  MQTTClient(int readBufSize, int writeBufSize);
 
   ~MQTTClient();
 
