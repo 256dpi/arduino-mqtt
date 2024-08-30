@@ -28,7 +28,7 @@ Other shields and boards should also work if they provide a [Client](https://www
 
 ## Notes
 
-- The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` or `MQTTClient client(256, 512)` instead of just `MQTTClient client` at the top of your sketch. A single value denotes both the read and write buffer size, two values specify them separately. **Beginning with version 2.6, the message payload is sent directly during publishing. Therefore, the write buffer is only needed to encode the packet header and topic, for which the default 128 bytes should be enough. However, the receiving of messages is still fully constrained by the read buffer, which may be increased if necessary.**
+- The maximum size for packets being published and received is set by default to 128 bytes. To change the buffer sizes, you need to use `MQTTClient client(256)` or `MQTTClient client(256, 512)` instead of just `MQTTClient client` at the top of your sketch. A single value denotes both the read and write buffer size, two values specify them separately. **Beginning with version 2.5.2, the message payload is sent directly during publishing. Therefore, the write buffer is only needed to encode the packet header and topic, for which the default 128 bytes should be enough. However, the receiving of messages is still fully constrained by the read buffer, which may be increased if necessary.**
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
@@ -219,7 +219,7 @@ bool publish(const char topic[], const char payload[], int length);
 bool publish(const char topic[], const char payload[], int length, bool retained, int qos);
 ```
 
-- Beginning with version 2.6, payloads of arbitrary length may be published, see [Notes](#notes).
+- Beginning with version 2.5.2, payloads of arbitrary length may be published, see [Notes](#notes).
 - The functions return a boolean that indicates if the publishing has been successful (true).
 
 Obtain the last used packet ID and prepare the publication of a duplicate message using the specified packet ID:
