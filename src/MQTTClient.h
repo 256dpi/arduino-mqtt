@@ -93,6 +93,9 @@ class MQTTClient {
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
   uint32_t _droppedMessages = 0;
 
+  size_t _maxPartialWriteLength = 512;
+  uint32_t _partialWriteDelayms = 0;
+
  public:
   void *ref = nullptr;
 
@@ -140,6 +143,8 @@ class MQTTClient {
     this->setCleanSession(_cleanSession);
     this->setTimeout(_timeout);
   }
+
+  void setPartialWriteSettings(size_t maxPartialWriteLength, uint32_t partialWriteDelayms);
 
   void dropOverflow(bool enabled);
   uint32_t droppedMessages() { return this->_droppedMessages; }

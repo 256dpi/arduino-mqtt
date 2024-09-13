@@ -86,15 +86,32 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
 }
 
 inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent,
-                                                 uint32_t /*timeout*/) {
+                                                 uint32_t /*timeout*/, size_t maxPartialWriteLength, uint32_t partialWriteDelayms) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
   // write bytes
-  *sent = n->client->write(buffer, len);
-  if (*sent <= 0) {
-    return LWMQTT_NETWORK_FAILED_WRITE;
+  size_t partial_write = 0;
+  size_t written = 0;
+
+  while (true) {
+    if (len - written > maxPartialWriteLength) {
+      partial_write = n->client->write(buffer + written, maxPartialWriteLength);
+      written += partial_write;
+    }
+    else {
+      partial_write = n->client->write(buffer + written, len - written);
+      written += partial_write;
+      break;
+    }
+
+    delay(partialWriteDelayms);
+
+    if (partial_write <= 0) {
+      return LWMQTT_NETWORK_FAILED_WRITE;
+    }
   }
+  *sent = written;
 
   return LWMQTT_SUCCESS;
 }
@@ -195,6 +212,9 @@ void MQTTClient::begin(Client &_client) {
 
   // set callback
   lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
+
+  this->client.maxPartialWriteLength = this->_maxPartialWriteLength;
+  this->client.partialWriteDelayms = this->_partialWriteDelayms;
 }
 
 void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
@@ -313,6 +333,14 @@ void MQTTClient::setKeepAlive(int _keepAlive) { this->keepAlive = _keepAlive; }
 void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cleanSession; }
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
+
+void MQTTClient::setPartialWriteSettings(size_t maxPartialWriteLength, uint32_t partialWriteDelayms) {
+  this->_maxPartialWriteLength = maxPartialWriteLength;
+  this->_partialWriteDelayms = partialWriteDelayms;
+
+  this->client.maxPartialWriteLength = this->_maxPartialWriteLength;
+  this->client.partialWriteDelayms = this->_partialWriteDelayms;
+}
 
 void MQTTClient::dropOverflow(bool enabled) {
   // configure drop overflow

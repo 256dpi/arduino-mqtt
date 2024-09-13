@@ -178,8 +178,10 @@ typedef lwmqtt_err_t (*lwmqtt_network_read_t)(void *ref, uint8_t *buf, size_t le
  * @param len The length of the buffer.
  * @param sent Variable that must be set with the amount of written bytes.
  * @param timeout The timeout in milliseconds for the operation.
+ * @param maxPartialWriteLength Maximum partial write length for each successive partial client write to network buffer.
+ * @param partialWriteDelayms Delay in ms for each successive partial client write to network buffer.
  */
-typedef lwmqtt_err_t (*lwmqtt_network_write_t)(void *ref, uint8_t *buf, size_t len, size_t *sent, uint32_t timeout);
+typedef lwmqtt_err_t (*lwmqtt_network_write_t)(void *ref, uint8_t *buf, size_t len, size_t *sent, uint32_t timeout, size_t maxPartialWriteLength, uint32_t partialWriteDelayms);
 
 /**
  * The callback used to set a timer.
@@ -238,6 +240,9 @@ struct lwmqtt_client_t {
 
   bool drop_overflow;
   uint32_t *overflow_counter;
+
+  size_t maxPartialWriteLength;
+  uint32_t partialWriteDelayms;
 };
 
 /**
