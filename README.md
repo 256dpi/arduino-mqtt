@@ -183,6 +183,13 @@ void setOptions(int keepAlive, bool cleanSession, int timeout);
 - The `cleanSession` option controls the session retention on the broker side (default: true).
 - The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000).
 
+```c++
+void setPartialWriteSettings(size_t maxPartialWriteLength, uint32_t partialWriteDelayms);
+```
+
+- The `maxPartialWriteLength` option controls maximum partial write length for each successive client write into network buffer (default: 512).
+- The `partialWriteDelayms` option controls delay in ms for each successive partial client write into network buffer (default: 0).
+
 Set a custom clock source "custom millis" callback to enable deep sleep applications:
 
 ```c++
