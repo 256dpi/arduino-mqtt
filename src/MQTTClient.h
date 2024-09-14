@@ -41,6 +41,8 @@ typedef struct {
 
 typedef struct {
   Client *client;
+  size_t segmentLength;
+  uint32_t writeDelayMs;
 } lwmqtt_arduino_network_t;
 
 class MQTTClient;
@@ -93,6 +95,9 @@ class MQTTClient {
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
   uint32_t _droppedMessages = 0;
 
+  size_t _segmentLength = 65535;
+  uint32_t _writeDelayMs = 0;
+
  public:
   void *ref = nullptr;
 
@@ -140,6 +145,8 @@ class MQTTClient {
     this->setCleanSession(_cleanSession);
     this->setTimeout(_timeout);
   }
+
+  void setNetworkSegmentedWrite(size_t segmentLength, uint32_t writeDelayMs);
 
   void dropOverflow(bool enabled);
   uint32_t droppedMessages() { return this->_droppedMessages; }

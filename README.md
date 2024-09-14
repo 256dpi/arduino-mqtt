@@ -183,6 +183,14 @@ void setOptions(int keepAlive, bool cleanSession, int timeout);
 - The `cleanSession` option controls the session retention on the broker side (default: true).
 - The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000).
 
+```c++
+void setNetworkSegmentedWrite(size_t segmentLength, uint32_t writeDelayMs);
+```
+
+- The `segmentLength` option controls maximum segment write length for each successive segmented write into network buffer (default: 65535).
+- The `writeDelayMs` option controls delay in ms between each successive segmented write into network buffer (default: 0).
+- This function controls the flow of data into the network buffer, helping to prevent buffer overflows and network congestion, particularly when handling large payloads.
+
 Set a custom clock source "custom millis" callback to enable deep sleep applications:
 
 ```c++
