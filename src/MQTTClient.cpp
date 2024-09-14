@@ -86,32 +86,37 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
 }
 
 inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent,
-                                                 uint32_t /*timeout*/, size_t maxPartialWriteLength, uint32_t partialWriteDelayms) {
+                                                 uint32_t /*timeout*/) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
   // write bytes
-  size_t partial_write = 0;
+  size_t partial_written = 0;
   size_t written = 0;
 
   while (true) {
-    if (len - written > maxPartialWriteLength) {
-      partial_write = n->client->write(buffer + written, maxPartialWriteLength);
-      written += partial_write;
+    if (len - written > n->segmentLength) {
+      partial_written = n->client->write(buffer + written, n->segmentLength);
+      written += partial_written;
     }
     else {
-      partial_write = n->client->write(buffer + written, len - written);
-      written += partial_write;
+      partial_written = n->client->write(buffer + written, len - written);
+      written += partial_written;
       break;
     }
 
-    delay(partialWriteDelayms);
+    delay(n->writeDelayMs);
 
-    if (partial_write <= 0) {
+    if (partial_written <= 0) {
       return LWMQTT_NETWORK_FAILED_WRITE;
     }
   }
+
   *sent = written;
+
+  if (*sent <= 0) {
+    return LWMQTT_NETWORK_FAILED_WRITE;
+  }
 
   return LWMQTT_SUCCESS;
 }
@@ -213,8 +218,8 @@ void MQTTClient::begin(Client &_client) {
   // set callback
   lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
 
-  this->client.maxPartialWriteLength = this->_maxPartialWriteLength;
-  this->client.partialWriteDelayms = this->_partialWriteDelayms;
+  this->network.segmentLength = this->_segmentLength;
+  this->network.writeDelayMs = this->_writeDelayMs;
 }
 
 void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
@@ -334,12 +339,12 @@ void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cle
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
 
-void MQTTClient::setPartialWriteSettings(size_t maxPartialWriteLength, uint32_t partialWriteDelayms) {
-  this->_maxPartialWriteLength = maxPartialWriteLength;
-  this->_partialWriteDelayms = partialWriteDelayms;
+void MQTTClient::setNetworkSegmentedWrite(size_t segmentLength, uint32_t writeDelayMs) {
+  this->_segmentLength = segmentLength;
+  this->_writeDelayMs = writeDelayMs;
 
-  this->client.maxPartialWriteLength = this->_maxPartialWriteLength;
-  this->client.partialWriteDelayms = this->_partialWriteDelayms;
+  this->network.segmentLength = this->_segmentLength;
+  this->network.writeDelayMs = this->_writeDelayMs;
 }
 
 void MQTTClient::dropOverflow(bool enabled) {
