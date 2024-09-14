@@ -184,11 +184,12 @@ void setOptions(int keepAlive, bool cleanSession, int timeout);
 - The `timeout` option controls the default timeout for all commands in milliseconds (default: 1000).
 
 ```c++
-void setPartialWriteSettings(size_t maxPartialWriteLength, uint32_t partialWriteDelayms);
+void setNetworkSegmentedWrite(size_t segmentLength, uint32_t writeDelayMs);
 ```
 
-- The `maxPartialWriteLength` option controls maximum partial write length for each successive client write into network buffer (default: 512).
-- The `partialWriteDelayms` option controls delay in ms for each successive partial client write into network buffer (default: 0).
+- The `segmentLength` option controls maximum segment write length for each successive segmented write into network buffer (default: 65535).
+- The `writeDelayMs` option controls delay in ms between each successive segmented write into network buffer (default: 0).
+- This function controls the flow of data into the network buffer, helping to prevent buffer overflows and network congestion, particularly when handling large payloads.
 
 Set a custom clock source "custom millis" callback to enable deep sleep applications:
 
