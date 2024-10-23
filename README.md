@@ -5,16 +5,28 @@
 
 This library bundles the [lwmqtt](https://github.com/256dpi/lwmqtt) MQTT 3.1.1 client and adds a thin wrapper to get an Arduino like API.
 
-Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section. Or even better use the built-in Library Manager in the Arduino IDE and search for "lwmqtt".
+Download the latest version from the [release](https://github.com/256dpi/arduino-mqtt/releases) section.
 
-The library is also available on [PlatformIO](https://platformio.org/lib/show/617/MQTT). You can install it by running: `pio lib install "256dpi/MQTT"`. 
+Or it can be installed from the following library repositories:
+
+- Arduino IDE's Library Manager
+  - By searching for "lwmqtt".
+- [PlatformIO](https://platformio.org/lib/show/617/MQTT)
+  - By running `pio lib install "256dpi/MQTT"`.
+- [IDF Component Manager](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/tools/idf-component-manager.html)
+  - By adding it to `idf_component.yml`.
+```
+arduino_mqtt:
+  git: "https://github.com/256dpi/arduino-mqtt.git"
+  version: # tag, branch, or commit hash
+```
 
 ## Compatibility
 
 The following examples show how you can use the library with various Arduino compatible hardware:
 
 - [Arduino Yun & Yun-Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYun/ArduinoYun.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoYunSecure/ArduinoYunSecure.ino))
-- [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)    
+- [Arduino Ethernet Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoEthernetShield/ArduinoEthernetShield.ino)
 - [Arduino WiFi Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFiShield/ArduinoWiFiShield.ino)
 - [Adafruit HUZZAH ESP8266](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266/AdafruitHuzzahESP8266.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/AdafruitHuzzahESP8266Secure/AdafruitHuzzahESP8266Secure.ino))
 - [Arduino WiFi101 Shield](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101/ArduinoWiFi101.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoWiFi101Secure/ArduinoWiFi101Secure.ino))
@@ -32,7 +44,7 @@ Other shields and boards should also work if they provide a [Client](https://www
 
 - On the ESP8266 it has been reported that an additional `delay(10);` after `client.loop();` fixes many stability issues with WiFi connections.
 
-- To use the library with shiftr.io, you need to provide the instance name (username) and token secret (password) as the second and third argument to `client.connect(client_id, username, password)`. 
+- To use the library with shiftr.io, you need to provide the instance name (username) and token secret (password) as the second and third argument to `client.connect(client_id, username, password)`.
 
 ## Example
 
@@ -201,7 +213,7 @@ bool connect(const char clientID[], const char username[], const char password[]
 ```
 
 - If `password` is present but `username` is absent, the client will fall back to an empty username.
-- If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client. 
+- If the `skip` option is set to true, the client will skip the network level connection and jump to the MQTT level connection. This option can be used in order to establish and verify TLS connections manually before giving control to the MQTT client.
 - The functions return a boolean that indicates if the connection has been established successfully (true).
 
 Publish a message to the broker with an optional payload, which can be a string or binary:
@@ -237,7 +249,7 @@ Subscribe to a topic:
 
 ```c++
 bool subscribe(const String &topic);
-bool subscribe(const String &topic, int qos); 
+bool subscribe(const String &topic, int qos);
 bool subscribe(const char topic[]);
 bool subscribe(const char topic[], int qos);
 ```
