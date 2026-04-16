@@ -7,6 +7,7 @@
 // by Joël Gähwiler
 // https://github.com/256dpi/arduino-mqtt
 
+#include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <MQTT.h>
 

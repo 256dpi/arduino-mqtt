@@ -49,3 +49,4 @@ build:
 	arduino-cli compile --fqbn "arduino:avr:yun" ./examples/ArduinoYunSecure
 	arduino-cli compile --fqbn "esp32:esp32:esp32:FlashFreq=80" ./examples/ESP32DevelopmentBoard
 	arduino-cli compile --fqbn "esp32:esp32:esp32:FlashFreq=80" ./examples/ESP32DevelopmentBoardSecure
+	arduino-cli compile --fqbn "esp8266:esp8266:arduino-esp8266" ./examples/ESP8266DevelopmentBoard
