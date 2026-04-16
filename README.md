@@ -33,6 +33,7 @@ The following examples show how you can use the library with various Arduino com
 - [Arduino MKR GSM 1400](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400/ArduinoMKRGSM1400.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRGSM1400Secure/ArduinoMKRGSM1400Secure.ino))
 - [Arduino MKR NB 1500](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ArduinoMKRNB1500/ArduinoMKRNB1500.ino)
 - [ESP32 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino))
+- [ESP8266 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP8266DevelopmentBoard/ESP8266DevelopmentBoard.ino)
 
 Other shields and boards should also work if they provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.
 
