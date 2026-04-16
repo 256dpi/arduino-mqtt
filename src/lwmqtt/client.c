@@ -2,7 +2,7 @@
 
 void lwmqtt_init(lwmqtt_client_t *client, uint8_t *write_buf, size_t write_buf_size, uint8_t *read_buf,
                  size_t read_buf_size) {
-  client->last_packet_id = 1;
+  client->last_packet_id = 0;
   client->keep_alive_interval = 0;
   client->pong_pending = false;
 
@@ -404,6 +404,8 @@ lwmqtt_err_t lwmqtt_connect(lwmqtt_client_t *client, lwmqtt_connect_options_t *o
     options = &def_options;
   }
 
+  // TODO: Reject password-only credentials (MQTT 3.1.1 compliance).
+
   // set command timer
   client->timer_set(client->command_timer, timeout);
 
@@ -483,6 +485,8 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_publish_options_t *o
     }
   }
 
+  uint16_t expected_packet_id = packet_id;
+
   // encode publish packet
   size_t len = 0;
   lwmqtt_err_t err = lwmqtt_encode_publish(client->write_buf, client->write_buf_size, &len, dup, packet_id, topic, msg);
@@ -502,6 +506,9 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_publish_options_t *o
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
+
+    // Refresh keep-alive after the payload has been fully transmitted.
+    client->timer_set(client->keep_alive_timer, client->keep_alive_interval);
   }
 
   // immediately return on qos zero
@@ -536,6 +543,9 @@ lwmqtt_err_t lwmqtt_publish(lwmqtt_client_t *client, lwmqtt_publish_options_t *o
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
+  if (packet_id != expected_packet_id) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
+  }
 
   return LWMQTT_SUCCESS;
 }
@@ -546,9 +556,11 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, int count, lwmqtt_string_
   client->timer_set(client->command_timer, timeout);
 
   // encode subscribe packet
+  uint16_t expected_packet_id = lwmqtt_get_next_packet_id(client);
+
   size_t len;
-  lwmqtt_err_t err = lwmqtt_encode_subscribe(client->write_buf, client->write_buf_size, &len,
-                                             lwmqtt_get_next_packet_id(client), count, topic_filter, qos);
+  lwmqtt_err_t err = lwmqtt_encode_subscribe(client->write_buf, client->write_buf_size, &len, expected_packet_id, count,
+                                             topic_filter, qos);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -576,6 +588,9 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, int count, lwmqtt_string_
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
+  if (packet_id != expected_packet_id) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
+  }
 
   // check suback codes
   for (int i = 0; i < suback_count; i++) {
@@ -597,9 +612,11 @@ lwmqtt_err_t lwmqtt_unsubscribe(lwmqtt_client_t *client, int count, lwmqtt_strin
   client->timer_set(client->command_timer, timeout);
 
   // encode unsubscribe packet
+  uint16_t expected_packet_id = lwmqtt_get_next_packet_id(client);
+
   size_t len;
-  lwmqtt_err_t err = lwmqtt_encode_unsubscribe(client->write_buf, client->write_buf_size, &len,
-                                               lwmqtt_get_next_packet_id(client), count, topic_filter);
+  lwmqtt_err_t err = lwmqtt_encode_unsubscribe(client->write_buf, client->write_buf_size, &len, expected_packet_id,
+                                               count, topic_filter);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -624,6 +641,9 @@ lwmqtt_err_t lwmqtt_unsubscribe(lwmqtt_client_t *client, int count, lwmqtt_strin
   err = lwmqtt_decode_ack(client->read_buf, client->read_buf_size, LWMQTT_UNSUBACK_PACKET, &packet_id);
   if (err != LWMQTT_SUCCESS) {
     return err;
+  }
+  if (packet_id != expected_packet_id) {
+    return LWMQTT_MISSING_OR_WRONG_PACKET;
   }
 
   return LWMQTT_SUCCESS;

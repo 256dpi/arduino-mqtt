@@ -157,10 +157,10 @@ lwmqtt_err_t lwmqtt_varnum_length(uint32_t varnum, int *len) {
   } else if (varnum < 16384) {
     *len = 2;
     return LWMQTT_SUCCESS;
-  } else if (varnum < 2097151) {
+  } else if (varnum < 2097152) {
     *len = 3;
     return LWMQTT_SUCCESS;
-  } else if (varnum < 268435455) {
+  } else if (varnum < 268435456) {
     *len = 4;
     return LWMQTT_SUCCESS;
   } else {

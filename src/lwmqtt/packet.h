@@ -115,7 +115,7 @@ lwmqtt_err_t lwmqtt_encode_ack(uint8_t *buf, size_t buf_len, size_t *len, lwmqtt
  * @param dup The dup flag.
  * @param packet_id  The packet id.
  * @param topic The topic.
- * @parma msg The message.
+ * @param msg The message.
  * @return An error value.
  */
 lwmqtt_err_t lwmqtt_decode_publish(uint8_t *buf, size_t buf_len, bool *dup, uint16_t *packet_id, lwmqtt_string_t *topic,
