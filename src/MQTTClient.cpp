@@ -396,8 +396,9 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   lwmqtt_publish_options_t options = lwmqtt_default_publish_options;
 
   // set duplicate packet id if available
-  if (this->nextDupPacketID > 0) {
-    options.dup_id = &this->nextDupPacketID;
+  uint16_t duplicatePacketID = this->nextDupPacketID;
+  if (duplicatePacketID > 0) {
+    options.dup_id = &duplicatePacketID;
     this->nextDupPacketID = 0;
   }
 
