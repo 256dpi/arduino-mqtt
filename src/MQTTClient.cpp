@@ -395,15 +395,24 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
   // prepare options
   lwmqtt_publish_options_t options = lwmqtt_default_publish_options;
 
-  // set duplicate packet id if available
-  uint16_t duplicatePacketID = this->nextDupPacketID;
-  if (duplicatePacketID > 0) {
-    options.dup_id = &duplicatePacketID;
+  // use prepared duplicate packet id for QoS 1/2 messages (lwmqtt writes back the allocated packet id if zero)
+  bool hasPacketID = message.qos == LWMQTT_QOS1 || message.qos == LWMQTT_QOS2;
+  uint16_t packetID = 0;
+  if (hasPacketID) {
+    packetID = this->nextDupPacketID;
     this->nextDupPacketID = 0;
+    options.dup_id = &packetID;
   }
 
   // publish message
   this->_lastError = lwmqtt_publish(&this->client, &options, lwmqtt_string(topic), message, this->timeout);
+
+  // remember used packet id
+  if (hasPacketID) {
+    this->_lastPacketID = packetID;
+  }
+
+  // handle error
   if (this->_lastError != LWMQTT_SUCCESS) {
     // close connection
     this->close();
@@ -415,8 +424,8 @@ bool MQTTClient::publish(const char topic[], const char payload[], int length, b
 }
 
 uint16_t MQTTClient::lastPacketID() {
-  // get last packet id from client
-  return this->client.last_packet_id;
+  // get packet id of last QoS 1/2 publication
+  return this->_lastPacketID;
 }
 
 void MQTTClient::prepareDuplicate(uint16_t packetID) {

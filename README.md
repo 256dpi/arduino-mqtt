@@ -243,8 +243,8 @@ void prepareDuplicate(uint16_t packetID);
 ```
 
 - These functions may be used to implement a retry logic for failed publications of QoS1 and QoS2 messages.
-- The `lastPacketID()` function can be used after calling `publish()` to obtain the used packet ID.
-- The `prepareDuplicate()` function may be called before `publish()` to temporarily change the next used packet ID and flag the message as a duplicate.
+- The `lastPacketID()` function can be used after calling `publish()` to obtain the used packet ID (including when the publication failed or was a duplicate).
+- The `prepareDuplicate()` function may be called before `publish()` to temporarily change the next used packet ID and flag the message as a duplicate. The prepared packet ID is used by the next QoS1 or QoS2 publication that is attempted while connected, regardless of whether it succeeds.
 
 Subscribe to a topic:
 

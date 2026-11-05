@@ -89,6 +89,7 @@ class MQTTClient {
 
   bool _connected = false;
   uint16_t nextDupPacketID = 0;
+  uint16_t _lastPacketID = 0;
   lwmqtt_return_code_t _returnCode = (lwmqtt_return_code_t)0;
   lwmqtt_err_t _lastError = (lwmqtt_err_t)0;
   uint32_t _droppedMessages = 0;
