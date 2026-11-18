@@ -607,10 +607,13 @@ lwmqtt_err_t lwmqtt_encode_subscribe(uint8_t *buf, size_t buf_len, size_t *len, 
 }
 
 lwmqtt_err_t lwmqtt_decode_suback(uint8_t *buf, size_t buf_len, uint16_t *packet_id, int max_count, int *count,
-                                  lwmqtt_qos_t *granted_qos_levels) {
+                                  lwmqtt_qos_t *granted_qos_levels, bool *failed) {
   // prepare pointer
   uint8_t *buf_ptr = buf;
   uint8_t *buf_end = buf + buf_len;
+
+  // reset flag
+  *failed = false;
 
   // read header
   uint8_t header;
@@ -656,20 +659,27 @@ lwmqtt_err_t lwmqtt_decode_suback(uint8_t *buf, size_t buf_len, uint16_t *packet
       return err;
     }
 
-    // set qos level
+    // map qos level
+    lwmqtt_qos_t qos_level;
     switch (raw_qos_level) {
       case 0:
-        granted_qos_levels[*count] = LWMQTT_QOS0;
+        qos_level = LWMQTT_QOS0;
         break;
       case 1:
-        granted_qos_levels[*count] = LWMQTT_QOS1;
+        qos_level = LWMQTT_QOS1;
         break;
       case 2:
-        granted_qos_levels[*count] = LWMQTT_QOS2;
+        qos_level = LWMQTT_QOS2;
         break;
       default:
-        granted_qos_levels[*count] = LWMQTT_QOS_FAILURE;
+        qos_level = LWMQTT_QOS_FAILURE;
+        *failed = true;
         break;
+    }
+
+    // set qos level if requested
+    if (granted_qos_levels != NULL) {
+      granted_qos_levels[*count] = qos_level;
     }
   }
 

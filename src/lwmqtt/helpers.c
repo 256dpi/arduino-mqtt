@@ -3,11 +3,13 @@
 #include "helpers.h"
 
 uint8_t lwmqtt_read_bits(uint8_t byte, int pos, int num) {
-  return (byte & (uint8_t)((~(0xFF << (uint8_t)num)) << (uint8_t)pos)) >> (uint8_t)pos;
+  unsigned mask = (1u << num) - 1u;
+  return (uint8_t)((byte >> pos) & mask);
 }
 
 void lwmqtt_write_bits(uint8_t *byte, uint8_t value, int pos, int num) {
-  *byte = (*byte & ~(uint8_t)((~(0xFFu << (uint8_t)num)) << (uint8_t)pos)) | (value << (uint8_t)pos);
+  unsigned mask = ((1u << num) - 1u) << pos;
+  *byte = (uint8_t)((*byte & ~mask) | (((unsigned)value << pos) & mask));
 }
 
 lwmqtt_err_t lwmqtt_read_data(uint8_t **buf, const uint8_t *buf_end, uint8_t **data, size_t len) {

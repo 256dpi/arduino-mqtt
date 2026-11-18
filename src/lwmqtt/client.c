@@ -67,7 +67,12 @@ static uint16_t lwmqtt_get_next_packet_id(lwmqtt_client_t *client) {
   return client->last_packet_id;
 }
 
-static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t offset, size_t len) {
+// Once a packet has been started, aborting it at the deadline would desync the stream. A read within a started packet
+// therefore makes one more attempt to read already available data after the deadline. As a zero timeout may block
+// forever, that attempt uses this short timeout instead.
+#define LWMQTT_LAST_READ_TIMEOUT 10
+
+static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t offset, size_t len, bool started) {
   // check read buffer capacity
   if (client->read_buf_size < offset + len) {
     return LWMQTT_BUFFER_TOO_SHORT;
@@ -75,13 +80,18 @@ static lwmqtt_err_t lwmqtt_read_from_network(lwmqtt_client_t *client, size_t off
 
   // prepare counter
   size_t read = 0;
+  bool last_attempt = false;
 
   // read while data is missing
   while (read < len) {
-    // check remaining time
+    // check remaining time, a started packet gets one more attempt
     int32_t remaining_time = client->timer_get(client->command_timer);
     if (remaining_time <= 0) {
-      return LWMQTT_NETWORK_TIMEOUT;
+      if (!started || last_attempt) {
+        return LWMQTT_NETWORK_TIMEOUT;
+      }
+      remaining_time = LWMQTT_LAST_READ_TIMEOUT;
+      last_attempt = true;
     }
 
     // read
@@ -162,7 +172,7 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *client, size_t
   *packet_type = LWMQTT_NO_PACKET;
 
   // read or wait for header byte
-  lwmqtt_err_t err = lwmqtt_read_from_network(client, 0, 1);
+  lwmqtt_err_t err = lwmqtt_read_from_network(client, 0, 1, false);
   if (err == LWMQTT_NETWORK_TIMEOUT) {
     // this is ok as no data has been read at all
     return LWMQTT_SUCCESS;
@@ -185,7 +195,7 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *client, size_t
     len++;
 
     // read next byte
-    err = lwmqtt_read_from_network(client, len, 1);
+    err = lwmqtt_read_from_network(client, len, 1, true);
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
@@ -221,7 +231,7 @@ static lwmqtt_err_t lwmqtt_read_packet_in_buffer(lwmqtt_client_t *client, size_t
 
   // read the rest of the buffer if needed
   if (rem_len > 0) {
-    err = lwmqtt_read_from_network(client, 1 + len, rem_len);
+    err = lwmqtt_read_from_network(client, 1 + len, rem_len, true);
     if (err != LWMQTT_SUCCESS) {
       return err;
     }
@@ -582,9 +592,9 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, int count, lwmqtt_string_
 
   // decode packet
   int suback_count = 0;
-  lwmqtt_qos_t granted_qos[count];
+  bool failed = false;
   uint16_t packet_id;
-  err = lwmqtt_decode_suback(client->read_buf, client->read_buf_size, &packet_id, count, &suback_count, granted_qos);
+  err = lwmqtt_decode_suback(client->read_buf, client->read_buf_size, &packet_id, count, &suback_count, NULL, &failed);
   if (err != LWMQTT_SUCCESS) {
     return err;
   }
@@ -593,10 +603,8 @@ lwmqtt_err_t lwmqtt_subscribe(lwmqtt_client_t *client, int count, lwmqtt_string_
   }
 
   // check suback codes
-  for (int i = 0; i < suback_count; i++) {
-    if (granted_qos[i] == LWMQTT_QOS_FAILURE) {
-      return LWMQTT_FAILED_SUBSCRIPTION;
-    }
+  if (failed) {
+    return LWMQTT_FAILED_SUBSCRIPTION;
   }
 
   return LWMQTT_SUCCESS;

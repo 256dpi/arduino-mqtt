@@ -8,9 +8,11 @@
 /**
  * The error type used by all exposed APIs.
  *
- * If a function returns an error that operates on a connected client (e.g publish, keep_alive, etc.) the caller should
- * switch into a disconnected state, close and cleanup the current connection and start over by creating a new
- * connection.
+ * If a function that operates on a connected client (e.g. publish, yield, keep_alive, etc.) returns an error, the
+ * caller must switch into a disconnected state, close and cleanup the current connection and start over by creating a
+ * new connection. After an error, a packet may have been read or written only partially and the connection is out of
+ * sync. The only exception is LWMQTT_FAILED_SUBSCRIPTION, which is returned after the broker rejected a subscription
+ * and leaves the connection intact.
  */
 typedef enum {
   LWMQTT_SUCCESS = 0,
@@ -401,9 +403,13 @@ lwmqtt_err_t lwmqtt_disconnect(lwmqtt_client_t *client, uint32_t timeout);
  * available to read in order to constrain the yield to only receive packets that are already in-flight.
  *
  * If no availability info is given the yield will return after one packet has been successfully read or the deadline
- * has been reached but no single byte has been received.
+ * has been reached but no single byte has been received. A packet that has been started before the deadline is still
+ * completed if its remaining data is already available.
  *
  * Note: The message callback might be called with incoming messages as part of this call.
+ *
+ * Note: Reaching the deadline without receiving any data is not an error. Any returned error, including
+ * LWMQTT_NETWORK_TIMEOUT, means that a packet may have been received only partially and the connection must be closed.
  *
  * @param client The client object.
  * @param available The available bytes to read.

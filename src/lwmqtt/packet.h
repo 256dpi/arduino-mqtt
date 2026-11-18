@@ -162,11 +162,12 @@ lwmqtt_err_t lwmqtt_encode_subscribe(uint8_t *buf, size_t buf_len, size_t *len, 
  * @param packet_id The packet id.
  * @param max_count The maximum number of members allowed in the granted_qos_levels array.
  * @param count The number of members in the granted_qos_levels array.
- * @param granted_qos_levels The granted QoS levels.
+ * @param granted_qos_levels The granted QoS levels, or NULL if they are not needed.
+ * @param failed Set to whether at least one subscription failed.
  * @return An error value.
  */
 lwmqtt_err_t lwmqtt_decode_suback(uint8_t *buf, size_t buf_len, uint16_t *packet_id, int max_count, int *count,
-                                  lwmqtt_qos_t *granted_qos_levels);
+                                  lwmqtt_qos_t *granted_qos_levels, bool *failed);
 
 /**
  * Encodes the supplied unsubscribe data into the supplied buffer, ready for sending
