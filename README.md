@@ -256,6 +256,7 @@ bool subscribe(const char topic[], int qos);
 ```
 
 - The functions return a boolean that indicates if the subscription has been successful (true).
+- If the broker rejected the subscription, the connection stays open and `lastError()` returns `LWMQTT_FAILED_SUBSCRIPTION`. All other errors close the connection.
 
 Unsubscribe from a topic:
 

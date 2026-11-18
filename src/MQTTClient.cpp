@@ -470,6 +470,11 @@ bool MQTTClient::subscribe(const char topic[], int qos) {
   // subscribe to topic
   this->_lastError = lwmqtt_subscribe_one(&this->client, lwmqtt_string(topic), (lwmqtt_qos_t)qos, this->timeout);
   if (this->_lastError != LWMQTT_SUCCESS) {
+    // keep connection if the broker only rejected the subscription
+    if (this->_lastError == LWMQTT_FAILED_SUBSCRIPTION) {
+      return false;
+    }
+
     // close connection
     this->close();
 
