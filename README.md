@@ -35,7 +35,7 @@ The following examples show how you can use the library with various Arduino com
 - [ESP32 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoard/ESP32DevelopmentBoard.ino) ([Secure](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP32DevelopmentBoardSecure/ESP32DevelopmentBoardSecure.ino))
 - [ESP8266 Development Board](https://github.com/256dpi/arduino-mqtt/blob/master/examples/ESP8266DevelopmentBoard/ESP8266DevelopmentBoard.ino)
 
-Other shields and boards should also work if they provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation.
+Other shields and boards should also work if they provide a [Client](https://www.arduino.cc/en/Reference/ClientConstructor) based network implementation. For example, the Raspberry Pi Pico W (RP2040) has been reported to work with the [arduino-pico](https://github.com/earlephilhower/arduino-pico) core.
 
 **Check out the [Wiki](https://github.com/256dpi/arduino-mqtt/wiki) to find more examples.**
 
