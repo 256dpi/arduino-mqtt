@@ -91,7 +91,29 @@ inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, siz
   auto n = (lwmqtt_arduino_network_t *)ref;
 
   // write bytes
-  *sent = n->client->write(buffer, len);
+  size_t partial_written = 0;
+  size_t written = 0;
+
+  while (true) {
+    if (len - written > n->segmentLength) {
+      partial_written = n->client->write(buffer + written, n->segmentLength);
+      written += partial_written;
+    }
+    else {
+      partial_written = n->client->write(buffer + written, len - written);
+      written += partial_written;
+      break;
+    }
+
+    delay(n->writeDelayMs);
+
+    if (partial_written <= 0) {
+      return LWMQTT_NETWORK_FAILED_WRITE;
+    }
+  }
+
+  *sent = written;
+
   if (*sent <= 0) {
     return LWMQTT_NETWORK_FAILED_WRITE;
   }
@@ -195,6 +217,9 @@ void MQTTClient::begin(Client &_client) {
 
   // set callback
   lwmqtt_set_callback(&this->client, (void *)&this->callback, MQTTClientHandler);
+
+  this->network.segmentLength = this->_segmentLength;
+  this->network.writeDelayMs = this->_writeDelayMs;
 }
 
 void MQTTClient::onMessage(MQTTClientCallbackSimple cb) {
@@ -313,6 +338,14 @@ void MQTTClient::setKeepAlive(int _keepAlive) { this->keepAlive = _keepAlive; }
 void MQTTClient::setCleanSession(bool _cleanSession) { this->cleanSession = _cleanSession; }
 
 void MQTTClient::setTimeout(int _timeout) { this->timeout = _timeout; }
+
+void MQTTClient::setNetworkSegmentedWrite(size_t segmentLength, uint32_t writeDelayMs) {
+  this->_segmentLength = segmentLength;
+  this->_writeDelayMs = writeDelayMs;
+
+  this->network.segmentLength = this->_segmentLength;
+  this->network.writeDelayMs = this->_writeDelayMs;
+}
 
 void MQTTClient::dropOverflow(bool enabled) {
   // configure drop overflow
