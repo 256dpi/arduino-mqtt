@@ -86,14 +86,42 @@ inline lwmqtt_err_t lwmqtt_arduino_network_read(void *ref, uint8_t *buffer, size
 }
 
 inline lwmqtt_err_t lwmqtt_arduino_network_write(void *ref, uint8_t *buffer, size_t len, size_t *sent,
-                                                 uint32_t /*timeout*/) {
+                                                 uint32_t timeout) {
   // cast network reference
   auto n = (lwmqtt_arduino_network_t *)ref;
 
-  // write bytes
-  *sent = n->client->write(buffer, len);
-  if (*sent <= 0) {
-    return LWMQTT_NETWORK_FAILED_WRITE;
+  // set timeout
+  uint32_t start = millis();
+
+  // reset counter
+  *sent = 0;
+
+  // write until all bytes have been written or timeout has been reached
+  while (len > 0 && (millis() - start < timeout)) {
+    // write to connection
+    size_t w = n->client->write(buffer, len);
+
+    // handle written data
+    if (w > 0) {
+      buffer += w;
+      *sent += w;
+      len -= w;
+      continue;
+    }
+
+    // wait/unblock for some time (the network stack may need to free buffer
+    // space before more data can be written)
+    delay(1);
+
+    // otherwise check status
+    if (!n->client->connected()) {
+      return LWMQTT_NETWORK_FAILED_WRITE;
+    }
+  }
+
+  // check counter
+  if (*sent == 0) {
+    return LWMQTT_NETWORK_TIMEOUT;
   }
 
   return LWMQTT_SUCCESS;
